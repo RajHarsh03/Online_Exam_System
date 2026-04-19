@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
-  <title>Admin Registration — Prashiksha</title>
-  <meta name="description" content="Register your institution on Prashiksha examination platform." />
+  <title>Student Sign Up — Prashiksha</title>
+  <meta name="description" content="Create a new student account on Prashiksha online examination platform." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
@@ -17,19 +17,19 @@
       padding: 16px;
     }
 
-    .reg-shell {
+    .signup-shell {
       display: grid;
       grid-template-columns: 1fr 1fr;
       max-width: 880px;
       width: 100%;
-      height: min(96vh, 560px);
+      height: min(96vh, 580px);
       border-radius: var(--radius-xl);
       overflow: hidden;
       box-shadow: 0 20px 48px rgba(44,52,55,0.12);
     }
 
-    /* Left branding panel */
-    .reg-brand {
+    /* Left hero */
+    .signup-hero {
       position: relative;
       background: linear-gradient(160deg, var(--primary) 0%, var(--primary-dark) 100%);
       display: flex; flex-direction: column;
@@ -37,7 +37,7 @@
       padding: 28px 32px;
       overflow: hidden;
     }
-    .reg-brand::before {
+    .signup-hero::before {
       content: '';
       position: absolute;
       width: 280px; height: 280px;
@@ -45,7 +45,7 @@
       border: 2px solid rgba(255,255,255,0.06);
       top: -50px; right: -60px;
     }
-    .reg-brand::after {
+    .signup-hero::after {
       content: '';
       position: absolute;
       width: 160px; height: 160px;
@@ -53,9 +53,9 @@
       background: rgba(105,246,184,0.06);
       bottom: -30px; left: -30px;
     }
-    .reg-brand > * { position: relative; z-index: 1; }
+    .signup-hero > * { position: relative; z-index: 1; }
 
-    .brand-chip {
+    .hero-chip {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(255,255,255,0.1);
       padding: 5px 12px;
@@ -66,36 +66,36 @@
       margin-bottom: 20px;
       width: fit-content;
     }
-    .brand-chip .material-symbols-rounded { font-size: 14px; }
+    .hero-chip .material-symbols-rounded { font-size: 14px; }
 
-    .brand-title {
+    .hero-title {
       font-family: var(--font-display);
       font-size: 1.75rem; font-weight: 800;
       color: #fff; line-height: 1.15;
       margin-bottom: 6px;
     }
-    .brand-desc {
+    .hero-sub {
       font-size: 0.8125rem;
       color: rgba(255,255,255,0.65);
       max-width: 260px; line-height: 1.55;
       margin-bottom: 24px;
     }
 
-    .brand-list { display: flex; flex-direction: column; gap: 10px; }
-    .brand-list-item {
+    .hero-features { display: flex; flex-direction: column; gap: 10px; }
+    .hero-feat {
       display: flex; align-items: center; gap: 10px;
       font-size: 0.8rem; color: rgba(255,255,255,0.8);
     }
-    .brand-list-icon {
+    .hero-feat-icon {
       width: 28px; height: 28px;
       border-radius: 6px;
       background: rgba(255,255,255,0.1);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .brand-list-icon .material-symbols-rounded { font-size: 15px; color: var(--primary-container); }
+    .hero-feat-icon .material-symbols-rounded { font-size: 15px; color: var(--primary-container); }
 
-    /* Right form panel */
-    .reg-form {
+    /* Right form */
+    .signup-form {
       background: var(--surface-lowest);
       display: flex; flex-direction: column;
       justify-content: center;
@@ -111,10 +111,10 @@
     .form-sub {
       color: var(--secondary);
       font-size: 0.8rem;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    .fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
     .fields .input-wrap { padding: 0 10px; min-width: 0; }
     .fields .input-wrap input { padding: 8px 0; font-size: 0.8125rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .fields .field-label { font-size: 0.8rem; }
@@ -132,6 +132,17 @@
     .pw-bar.mid  { background: #f59e0b; }
     .pw-bar.good { background: var(--primary); }
 
+    .terms {
+      display: flex; align-items: flex-start; gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.75rem; color: var(--secondary); line-height: 1.4;
+    }
+    .terms input[type="checkbox"] {
+      width: 16px; height: 16px; margin-top: 1px;
+      accent-color: var(--primary); cursor: pointer; flex-shrink: 0;
+    }
+    .terms a { color: var(--primary); font-weight: 500; }
+
     .sep { height: 1px; background: var(--surface-high); margin: 10px 0; }
 
     .alt { text-align: center; font-size: 0.8rem; color: var(--secondary); }
@@ -148,80 +159,100 @@
       opacity: 0; transition: all 0.3s ease;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.ok { background: var(--primary); }
 
     @media (max-width: 768px) {
       html, body { overflow: auto; }
-      .reg-shell { grid-template-columns: 1fr; height: auto; max-height: none; }
-      .reg-brand { display: none; }
+      .signup-shell { grid-template-columns: 1fr; height: auto; max-height: none; }
+      .signup-hero { display: none; }
       .row2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div class="reg-shell">
+  <div class="signup-shell">
     <!-- Left -->
-    <div class="reg-brand">
-      <div class="brand-chip">
-        <span class="material-symbols-rounded">shield_locked</span>
-        Secure Registration
+    <div class="signup-hero">
+      <div class="hero-chip">
+        <span class="material-symbols-rounded">school</span>
+        Student Portal
       </div>
-      <h1 class="brand-title">Establish Your<br>Examination Hub</h1>
-      <p class="brand-desc">Set up your institution's portal to create, manage, and monitor online examinations.</p>
-      <div class="brand-list">
-        <div class="brand-list-item">
-          <div class="brand-list-icon"><span class="material-symbols-rounded">edit_note</span></div>
-          Custom exam creation
+
+      <h1 class="hero-title">Begin Your<br>Academic Journey</h1>
+      <p class="hero-sub">Create your student account for instant access to exams, results, and performance tracking.</p>
+
+      <div class="hero-features">
+        <div class="hero-feat">
+          <div class="hero-feat-icon"><span class="material-symbols-rounded">verified</span></div>
+          Instant exam access
         </div>
-        <div class="brand-list-item">
-          <div class="brand-list-icon"><span class="material-symbols-rounded">groups</span></div>
-          Student management
+        <div class="hero-feat">
+          <div class="hero-feat-icon"><span class="material-symbols-rounded">shield_locked</span></div>
+          Secure test environment
         </div>
-        <div class="brand-list-item">
-          <div class="brand-list-icon"><span class="material-symbols-rounded">monitoring</span></div>
-          Real-time analytics
+        <div class="hero-feat">
+          <div class="hero-feat-icon"><span class="material-symbols-rounded">insights</span></div>
+          Performance tracking
         </div>
       </div>
     </div>
 
     <!-- Right -->
-    <div class="reg-form">
-      <h2 class="form-heading">Admin Registration</h2>
-      <p class="form-sub">Create your account to get started.</p>
+    <div class="signup-form">
+      <h2 class="form-heading">Create Account</h2>
+      <p class="form-sub">Fill in your details to register as a student.</p>
 
-      <form id="regForm" novalidate>
+      <form id="signupForm" novalidate>
         <div class="fields">
           <div class="row2">
             <div class="field-group">
-              <label class="field-label" for="regLoginName">Login Name</label>
+              <label class="field-label" for="firstName">First Name</label>
               <div class="input-wrap">
-                <span class="material-symbols-rounded icon">manage_accounts</span>
-                <input type="text" id="regLoginName" placeholder="e.g. jdoe_admin" autocomplete="username" />
+                <span class="material-symbols-rounded icon">person</span>
+                <input type="text" id="firstName" placeholder="John" autocomplete="given-name" />
               </div>
             </div>
+            <div class="field-group">
+              <label class="field-label" for="lastName">Last Name</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">person</span>
+                <input type="text" id="lastName" placeholder="Doe" autocomplete="family-name" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row2">
             <div class="field-group">
               <label class="field-label" for="email">Email</label>
               <div class="input-wrap">
                 <span class="material-symbols-rounded icon">mail</span>
-                <input type="email" id="email" placeholder="admin@inst.edu" autocomplete="email" />
+                <input type="email" id="email" placeholder="john@univ.edu" autocomplete="email" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="studentId">Student ID</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">badge</span>
+                <input type="text" id="studentId" placeholder="Unique ID" />
               </div>
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="instituteName">Institute Name</label>
+            <label class="field-label" for="instituteId">Institute ID</label>
             <div class="input-wrap">
-              <span class="material-symbols-rounded icon">school</span>
-              <input type="text" id="instituteName" placeholder="Official institute name" />
+              <span class="material-symbols-rounded icon">account_balance</span>
+              <input type="text" id="instituteId" placeholder="Institute code" />
             </div>
           </div>
 
           <div class="row2">
             <div class="field-group">
-              <label class="field-label" for="regPassword">Password</label>
+              <label class="field-label" for="password">Password</label>
               <div class="input-wrap">
                 <span class="material-symbols-rounded icon">lock</span>
-                <input type="password" id="regPassword" placeholder="Min 8 chars" autocomplete="new-password" />
+                <input type="password" id="password" placeholder="Min 8 chars" autocomplete="new-password" />
                 <button type="button" id="togglePwd" style="background:none;border:none;cursor:pointer;color:var(--secondary);display:flex;">
                   <span class="material-symbols-rounded" style="font-size:18px;" id="eyeIcon">visibility</span>
                 </button>
@@ -230,6 +261,7 @@
                 <div class="pw-bar" id="b1"></div>
                 <div class="pw-bar" id="b2"></div>
                 <div class="pw-bar" id="b3"></div>
+                <div class="pw-bar" id="b4"></div>
               </div>
             </div>
             <div class="field-group">
@@ -242,11 +274,16 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-full" id="regBtn">Create Admin Account</button>
+        <label class="terms">
+          <input type="checkbox" id="termsCheck" />
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-full" id="signupBtn">Create Account</button>
       </form>
 
       <div class="sep"></div>
-      <p class="alt">Already have an account? <a href="admin_login.html">Sign In ↗</a></p>
+      <p class="alt">Already have an account? <a href="student_login.html">Sign In ↗</a></p>
     </div>
   </div>
 
@@ -254,51 +291,57 @@
 
   <script>
     document.getElementById('togglePwd').addEventListener('click', () => {
-      const p = document.getElementById('regPassword');
+      const p = document.getElementById('password');
       const e = document.getElementById('eyeIcon');
       const h = p.type === 'password';
       p.type = h ? 'text' : 'password';
       e.textContent = h ? 'visibility_off' : 'visibility';
     });
 
-    document.getElementById('regPassword').addEventListener('input', (e) => {
-      const v = e.target.value;
+    document.getElementById('password').addEventListener('input', (ev) => {
+      const v = ev.target.value;
       let s = 0;
-      if (v.length >= 6) s++;
-      if (v.length >= 10 && /\d/.test(v)) s++;
-      if (/[^a-zA-Z0-9]/.test(v) && /[A-Z]/.test(v)) s++;
-      const c = ['weak','mid','good'];
-      for (let i = 1; i <= 3; i++) {
+      if (v.length >= 4) s++;
+      if (v.length >= 8) s++;
+      if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+      if (/[0-9]/.test(v) || /[^a-zA-Z0-9]/.test(v)) s++;
+      const c = ['weak','weak','mid','good'];
+      for (let i = 1; i <= 4; i++) {
         const b = document.getElementById('b' + i);
         b.className = 'pw-bar';
         if (i <= s) b.classList.add(c[s - 1]);
       }
     });
 
-    function showToast(m) {
-      const t = document.getElementById('toast');
-      t.textContent = m; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+    function showToast(m, t) {
+      const el = document.getElementById('toast');
+      el.textContent = m;
+      el.className = 'toast show' + (t ? ' ' + t : '');
+      setTimeout(() => el.className = 'toast', 3500);
     }
 
-    document.getElementById('regForm').addEventListener('submit', (e) => {
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const n = document.getElementById('regLoginName').value.trim();
-      const i = document.getElementById('instituteName').value.trim();
+      const f = document.getElementById('firstName').value.trim();
+      const l = document.getElementById('lastName').value.trim();
       const em = document.getElementById('email').value.trim();
-      const p = document.getElementById('regPassword').value;
+      const sid = document.getElementById('studentId').value.trim();
+      const iid = document.getElementById('instituteId').value.trim();
+      const p = document.getElementById('password').value;
       const cp = document.getElementById('confirmPwd').value;
+      const t = document.getElementById('termsCheck').checked;
 
-      if (!n || !i || !em || !p || !cp) { showToast('Please fill in all fields.'); return; }
-      if (!/\S+@\S+\.\S+/.test(em)) { showToast('Enter a valid email address.'); return; }
+      if (!f || !l || !em || !sid || !iid || !p || !cp) { showToast('Please fill in all fields.'); return; }
+      if (!em.includes('@')) { showToast('Enter a valid email address.'); return; }
       if (p.length < 8) { showToast('Password must be at least 8 characters.'); return; }
       if (p !== cp) { showToast('Passwords do not match.'); return; }
+      if (!t) { showToast('Please accept the Terms of Service.'); return; }
 
-      const btn = document.getElementById('regBtn');
-      btn.textContent = 'Registering…'; btn.disabled = true;
+      const btn = document.getElementById('signupBtn');
+      btn.textContent = 'Creating Account…'; btn.disabled = true;
       setTimeout(() => {
-        showToast('Account created! Redirecting…');
-        setTimeout(() => window.location.href = 'admin_login.html', 1500);
+        showToast('Account created successfully!', 'ok');
+        setTimeout(() => window.location.href = 'student_login.html', 1500);
       }, 1200);
     });
   </script>

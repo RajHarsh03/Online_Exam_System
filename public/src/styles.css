@@ -3,7 +3,7 @@
    Based on DESIGN.md specifications
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
 /* ── Design Tokens ─────────────────────────────────── */
 :root {
@@ -64,7 +64,7 @@
   padding: 0;
 }
 
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 16px; scroll-behavior: smooth; color-scheme: light only; }
 
 body {
   font-family: var(--font-body);
