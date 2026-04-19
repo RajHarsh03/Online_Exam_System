@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prashiksha — Online Examination System</title>
+  <meta name="description" content="Prashiksha is an advanced online examination platform for rigorous assessment." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface-low);
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    .landing-header {
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-display); font-weight: 800; font-size: 1.25rem;
+      color: var(--primary);
+    }
+    
+    .brand-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,109,74,0.3);
+    }
+    .brand-icon .material-symbols-rounded { color: var(--on-primary); font-size: 20px; }
+
+    .nav-actions {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .hero-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px var(--space-xl) 60px;
+      overflow: hidden;
+    }
+
+    /* Abstract shapes background */
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      opacity: 0.6;
+    }
+    .shape-1 {
+      width: 450px; height: 450px;
+      background: var(--primary-container);
+      top: -100px; right: -50px;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    .shape-2 {
+      width: 600px; height: 600px;
+      background: rgba(0, 109, 74, 0.12);
+      bottom: -200px; left: -200px;
+      animation: float 12s ease-in-out infinite alternate-reverse;
+    }
+    .shape-3 {
+      width: 300px; height: 300px;
+      background: rgba(82, 96, 117, 0.15);
+      top: 40%; left: 10%;
+      animation: float 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-40px) scale(1.05); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .chip-new {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-lowest);
+      border: 1px solid var(--outline-variant);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      margin-bottom: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .chip-new .badge {
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-title {
+      font-size: 4.5rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--on-surface);
+      line-height: 1.1;
+      margin-bottom: var(--space-md);
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary), #00c88c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--secondary);
+      max-width: 650px;
+      margin: 0 auto var(--space-xl);
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-md);
+    }
+    
+    .btn-hero {
+      padding: 16px 36px;
+      font-size: 1.05rem;
+      border-radius: var(--radius-full);
+    }
+
+    .btn-hero.btn-primary {
+      box-shadow: 0 8px 24px rgba(0, 109, 74, 0.25);
+    }
+    .btn-hero.btn-primary:hover {
+      box-shadow: 0 12px 32px rgba(0, 109, 74, 0.35);
+      transform: translateY(-2px);
+    }
+    .btn-hero.btn-outline {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Cards showcase */
+    .features-showcase {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+      margin-top: 80px;
+      text-align: left;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(44, 52, 55, 0.04);
+      transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(44, 52, 55, 0.08);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .feature-icon {
+      width: 56px; height: 56px;
+      background: var(--surface-lowest);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--space-lg);
+      color: var(--primary);
+      box-shadow: 0 4px 16px rgba(0, 109, 74, 0.1);
+    }
+    .feature-icon .material-symbols-rounded {
+      font-size: 28px;
+    }
+
+    .feature-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      color: var(--on-surface);
+    }
+
+    .feature-desc {
+      font-size: 0.9375rem;
+      color: var(--secondary);
+      line-height: 1.5;
+    }
+
+    /* Animations setup from existing styles */
+    .animate-in-1 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.1s; }
+    .animate-in-2 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.2s; }
+    .animate-in-3 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.3s; }
+    .animate-in-4 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.4s; }
+    .animate-in-5 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.5s; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-title { font-size: 3.5rem; }
+      .features-showcase { grid-template-columns: 1fr; gap: var(--space-md); margin-top: 50px; }
+    }
+    @media (max-width: 600px) {
+      .hero-title { font-size: 2.5rem; }
+      .landing-header { padding: var(--space-md); }
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Shapes -->
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+
+  <!-- Header -->
+  <header class="landing-header">
+    <div class="brand-logo">
+      <div class="brand-icon">
+        <span class="material-symbols-rounded">school</span>
+      </div>
+      Prashiksha
+    </div>
+    <div class="nav-actions">
+      <a href="student_login.html" class="btn btn-outline" style="border-radius: var(--radius-full);">Student Login</a>
+      <a href="admin_login.html" class="btn btn-primary" style="border-radius: var(--radius-full);">Admin Login</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="hero-container">
+    <div class="hero-content">
+      
+      <div class="chip-new animate-in-1">
+        <span class="badge">New</span> Platform v2.4 Examination Engine Released
+      </div>
+
+      <h1 class="hero-title animate-in-2">The Future of <br><span>Secure Assessments</span></h1>
+      <p class="hero-subtitle animate-in-3">
+        Prashiksha provides a reliable, distraction-free environment for institutions to conduct rigorous and seamless online examinations, enhancing academic integrity.
+      </p>
+      
+      <div class="hero-cta animate-in-4">
+        <a href="student_login.html" class="btn btn-primary btn-hero">
+          Access Portal
+          <span class="material-symbols-rounded" style="font-size: 20px; margin-left: 4px;">arrow_forward</span>
+        </a>
+        <a href="#features" class="btn btn-outline btn-hero">Learn More</a>
+      </div>
+
+      <div id="features" class="features-showcase">
+        <div class="feature-card animate-in-5">
+          <div class="feature-icon">
+            <span class="material-symbols-rounded">shield_locked</span>
+          </div>
+          <h3 class="feature-title">High Security</h3>
+          <p class="feature-desc">Anti-cheating mechanisms and secure browser environment guarantee absolute academic integrity across all tests.</p>
+        </div>
+        
+        <div class="feature-card animate-in-5" style="animation-delay: 0.6s;">
+          <div class="feature-icon">
+            <span class="material-symbols-rounded">analytics</span>
+          </div>
+          <h3 class="feature-title">Detailed Analytics</h3>
+          <p class="feature-desc">Receive comprehensive reports and real-time monitoring insights to track student performance and engagement.</p>
+        </div>
+        
+        <div class="feature-card animate-in-5" style="animation-delay: 0.7s;">
+          <div class="feature-icon">
+            <span class="material-symbols-rounded">speed</span>
+          </div>
+          <h3 class="feature-title">Blazing Fast</h3>
+          <p class="feature-desc">Optimized perfectly for low-bandwidth connections, ensuring equal opportunity and a flawless testing experience.</p>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+
+</body>
+</html>
