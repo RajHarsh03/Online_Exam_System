@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Prashiksha</title>
+  <meta name="description" content="Secure administration portal login for Prashiksha examination platform." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body { min-height: 100vh; background: var(--surface); display: flex; align-items: center; justify-content: center; padding: var(--space-lg); }
+
+    .login-shell {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 920px;
+      width: 100%;
+      min-height: 480px;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(44,52,55,0.12);
+    }
+
+    /* Left image panel */
+    .login-image {
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80') center/cover no-repeat;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: var(--space-lg);
+    }
+    .login-image::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,40,30,0.82) 0%, rgba(0,20,15,0.35) 60%, transparent 100%);
+    }
+    .login-image > * { position: relative; z-index: 1; }
+    .img-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      color: rgba(255,255,255,0.9);
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: var(--space-sm);
+      width: fit-content;
+    }
+    .img-title {
+      font-family: var(--font-display);
+      font-size: 2rem; font-weight: 800;
+      color: #ffffff; line-height: 1.15;
+      margin-bottom: var(--space-xs);
+    }
+    .img-desc { font-size: 0.8125rem; color: rgba(255,255,255,0.75); max-width: 280px; line-height: 1.55; }
+
+    /* Right form panel */
+    .login-form-panel {
+      background: var(--surface-lowest);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: var(--space-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-form-panel::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(105,246,184,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .form-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+    .form-subtitle { color: var(--secondary); font-size: 0.8125rem; margin-bottom: var(--space-lg); }
+
+    .form-fields { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
+
+    .alt-link { text-align: center; font-size: 0.8125rem; color: var(--secondary); }
+    .alt-link a { color: var(--primary); font-weight: 600; }
+    .alt-link a:hover { text-decoration: underline; }
+
+    .divider { height: 1px; background: var(--surface-high); margin: var(--space-md) 0; }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--on-surface); color: #fff; padding: 12px 24px;
+      border-radius: var(--radius-full); font-size: 0.875rem; font-weight: 500;
+      box-shadow: var(--shadow-float); z-index: 999;
+      opacity: 0; transition: all 0.3s ease;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="login-shell">
+
+    <!-- Left: Image Panel -->
+    <div class="login-image">
+      <div class="img-badge">
+        <span class="material-symbols-rounded" style="font-size:16px;">account_balance</span>
+        Institutional Access
+      </div>
+      <h1 class="img-title">The Focused<br>Scholar</h1>
+      <p class="img-desc">Secure administration portal for managing rigorous academic evaluations and institutional records.</p>
+    </div>
+
+    <!-- Right: Form Panel -->
+    <div class="login-form-panel">
+      <h2 class="form-title">Admin Login</h2>
+      <p class="form-subtitle">Authenticate to access the central examination dashboard.</p>
+
+      <form id="adminLoginForm" novalidate>
+        <div class="form-fields">
+          <div class="field-group">
+            <label class="field-label" for="loginName">Login Name</label>
+            <div class="input-wrap">
+              <span class="material-symbols-rounded icon">manage_accounts</span>
+              <input type="text" id="loginName" name="loginName" placeholder="e.g. jdoe_admin" autocomplete="username" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="password">Password</label>
+            <div class="input-wrap">
+              <span class="material-symbols-rounded icon">lock</span>
+              <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" id="togglePwd" style="background:none;border:none;cursor:pointer;color:var(--secondary);display:flex;">
+                <span class="material-symbols-rounded" style="font-size:20px;" id="eyeIcon">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+          Enter Portal
+        </button>
+      </form>
+
+      <div class="divider"></div>
+
+      <p class="alt-link">
+        Require institutional access? <a href="admin_registration.html">Register Facility ↗</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Toggle password visibility
+    const togglePwd = document.getElementById('togglePwd');
+    const pwdInput  = document.getElementById('password');
+    const eyeIcon   = document.getElementById('eyeIcon');
+    togglePwd.addEventListener('click', () => {
+      const isHidden = pwdInput.type === 'password';
+      pwdInput.type = isHidden ? 'text' : 'password';
+      eyeIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+    });
+
+    // Toast helper
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // Form submission
+    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('loginName').value.trim();
+      const pwd  = document.getElementById('password').value;
+
+      if (!name || !pwd) {
+        showToast('Please fill in all fields.');
+        return;
+      }
+
+      const btn = document.getElementById('loginBtn');
+      btn.textContent = 'Authenticating…';
+      btn.disabled = true;
+
+      // Simulate auth delay
+      setTimeout(() => {
+        // Demo: any credentials work
+        window.location.href = 'admin_dashboard.html';
+      }, 1200);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Result — Advanced Mathematics 301 | Prashiksha</title>
+  <meta name="description" content="View your examination results and performance analytics on Prashiksha." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body { background: var(--surface); }
+
+    .result-body { padding: var(--space-md) var(--space-lg); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-md);
+      align-items: start;
+    }
+
+    /* Main result card */
+    .result-main {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      position: relative; overflow: hidden;
+    }
+    .result-main::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(105,246,184,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      padding: 4px 14px; border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: var(--space-sm);
+    }
+    .status-chip.failed { background: #fee2e2; color: #991b1b; }
+
+    .exam-result-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800; line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .exam-date { font-size: 0.8125rem; color: var(--secondary); margin-bottom: var(--space-lg); }
+
+    /* Donut chart */
+    .donut-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-lg); }
+    .donut-container { position: relative; width: 140px; height: 140px; }
+    .donut-svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+    .donut-bg { fill: none; stroke: var(--surface-high); stroke-width: 12; }
+    .donut-fill {
+      fill: none; stroke: var(--primary); stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 0 502;
+      transition: stroke-dasharray 1.2s ease;
+    }
+    .donut-label {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .donut-pct { font-family: var(--font-display); font-size: 1.75rem; font-weight: 800; color: var(--primary); }
+    .donut-sub { font-size: 0.7rem; color: var(--secondary); font-weight: 500; }
+
+    /* Summary stat row */
+    .summary-row {
+      display: flex; align-items: center; justify-content: space-around;
+      padding: var(--space-md) 0;
+      border-top: 1px solid var(--surface-low);
+      border-bottom: 1px solid var(--surface-low);
+      margin-bottom: var(--space-lg);
+    }
+    .summary-item { text-align: center; }
+    .summary-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--secondary); margin-bottom: 3px; }
+    .summary-value { font-family: var(--font-display); font-size: 1.125rem; font-weight: 800; }
+
+    /* Answer breakdown cards */
+    .breakdown-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm); }
+    .breakdown-card {
+      border-radius: var(--radius-lg); padding: var(--space-sm);
+      background: var(--surface-low);
+      border-left: 3px solid transparent;
+    }
+    .breakdown-card.correct { border-color: var(--primary); }
+    .breakdown-card.incorrect { border-color: #ef4444; }
+    .breakdown-card.skipped  { border-color: var(--surface-highest); }
+    .bd-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .bd-label { font-size: 0.7rem; color: var(--secondary); font-weight: 500; }
+    .bd-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
+    }
+    .bd-icon.correct  { background: rgba(0,109,74,0.12); color: var(--primary); }
+    .bd-icon.incorrect{ background: #fee2e2; color: #ef4444; }
+    .bd-icon.skipped  { background: var(--surface-high); color: var(--secondary); }
+    .bd-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; }
+    .bd-total { font-size: 0.75rem; color: var(--secondary); }
+
+    /* ── Right panel ── */
+    .right-panel { display: flex; flex-direction: column; gap: var(--space-md); }
+
+    /* Next steps card */
+    .next-steps-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+    }
+    .next-steps-card h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: 6px; }
+    .ns-desc { font-size: 0.8125rem; color: var(--secondary); line-height: 1.5; margin-bottom: var(--space-sm); }
+
+    .ns-actions { display: flex; flex-direction: column; gap: 8px; }
+    .ns-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 14px; border-radius: var(--radius-xl);
+      font-size: 0.8125rem; font-weight: 600; cursor: pointer;
+      transition: all var(--transition); border: none;
+      width: 100%;
+    }
+    .ns-btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+      color: var(--on-primary);
+    }
+    .ns-btn-primary:hover { box-shadow: 0 4px 16px rgba(0,109,74,0.3); }
+    .ns-btn-secondary {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .ns-btn-secondary:hover { background: #55e8a8; }
+    .ns-btn-ghost {
+      background: none; color: var(--primary);
+      justify-content: center;
+    }
+    .ns-btn-ghost:hover { background: var(--surface-low); }
+
+    /* Topic breakdown */
+    .topic-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+    }
+    .topic-card h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: var(--space-sm); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="topnav">
+    <div class="brand">Prashiksha</div>
+    <nav class="topnav-links">
+      <a href="student_dashboard.html" class="topnav-link">Exams</a>
+      <a href="exam_result.html" class="topnav-link active">Results</a>
+    </nav>
+    <div class="topnav-right">
+      <div class="topnav-search">
+        <span class="material-symbols-rounded icon">search</span>
+        <input type="text" placeholder="Search…" />
+      </div>
+      <button class="icon-btn" title="Notifications">
+        <span class="material-symbols-rounded" style="font-size:20px;">notifications</span>
+      </button>
+      <button class="icon-btn" title="Settings">
+        <span class="material-symbols-rounded" style="font-size:20px;">settings</span>
+      </button>
+      <div class="user-avatar" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-container); color: var(--on-primary-container); border-radius: 50%; font-weight: bold; font-size: 14px;">
+        AS
+      </div>
+    </div>
+  </header>
+
+  <!-- Result body -->
+  <div class="result-body">
+    <div class="result-grid">
+
+      <!-- Left: Main result card -->
+      <div class="result-main">
+        <div class="status-chip" id="statusChip">STATUS: PASSED</div>
+
+        <h1 class="exam-result-title">Advanced Mathematics 301</h1>
+        <p class="exam-date">Completed on October 24, 2023</p>
+
+        <!-- Donut chart -->
+        <div class="donut-wrap">
+          <div class="donut-container">
+            <svg class="donut-svg" width="180" height="180" viewBox="0 0 180 180">
+              <circle class="donut-bg" cx="90" cy="90" r="80" />
+              <circle class="donut-fill" cx="90" cy="90" r="80" id="donutFill" />
+            </svg>
+            <div class="donut-label">
+              <span class="donut-pct" id="donutPct">0%</span>
+              <span class="donut-sub">Score</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary row -->
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="summary-label">Total Marks</div>
+            <div class="summary-value">170 / 200</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Time Taken</div>
+            <div class="summary-value">1h 45m</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Percentile</div>
+            <div class="summary-value">92nd</div>
+          </div>
+        </div>
+
+        <!-- Answer breakdown -->
+        <div class="breakdown-row">
+          <div class="breakdown-card correct">
+            <div class="bd-header">
+              <span class="bd-label">Correct Answers</span>
+              <div class="bd-icon correct"><span class="material-symbols-rounded" style="font-size:14px;">check</span></div>
+            </div>
+            <div class="bd-value">42</div>
+            <div class="bd-total">/ 50</div>
+          </div>
+          <div class="breakdown-card incorrect">
+            <div class="bd-header">
+              <span class="bd-label">Incorrect Answers</span>
+              <div class="bd-icon incorrect"><span class="material-symbols-rounded" style="font-size:14px;">close</span></div>
+            </div>
+            <div class="bd-value">5</div>
+            <div class="bd-total">/ 50</div>
+          </div>
+          <div class="breakdown-card skipped">
+            <div class="bd-header">
+              <span class="bd-label">Unattempted</span>
+              <div class="bd-icon skipped"><span class="material-symbols-rounded" style="font-size:14px;">remove</span></div>
+            </div>
+            <div class="bd-value">3</div>
+            <div class="bd-total">/ 50</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="right-panel">
+
+        <!-- Next steps -->
+        <div class="next-steps-card">
+          <h3>Next Steps</h3>
+          <p class="ns-desc">Review your performance or return to the main dashboard to continue your academic journey.</p>
+          <div class="ns-actions">
+            <button class="ns-btn ns-btn-primary" onclick="window.location.href='student_dashboard.html'">
+              <span class="material-symbols-rounded" style="font-size:18px;">dashboard</span>
+              Return to Dashboard
+            </button>
+            <button class="ns-btn ns-btn-secondary" onclick="window.location.href='exam_interface.html'">
+              <span class="material-symbols-rounded" style="font-size:18px;">rate_review</span>
+              Review Answers
+            </button>
+            <button class="ns-btn ns-btn-ghost" onclick="downloadCert()">
+              <span class="material-symbols-rounded" style="font-size:18px;">download</span>
+              Download Certificate
+            </button>
+          </div>
+        </div>
+
+        <!-- Topic breakdown -->
+        <div class="topic-card">
+          <h3>Topic Breakdown</h3>
+          <div class="flex-col gap-sm">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-label"><span>Calculus</span><span class="pct">90%</span></div>
+              <div class="progress-track"><div class="progress-fill" data-pct="90" style="width:0%;"></div></div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-label"><span>Linear Algebra</span><span class="pct">85%</span></div>
+              <div class="progress-track"><div class="progress-fill" data-pct="85" style="width:0%;"></div></div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-label"><span>Probability</span><span class="pct">60%</span></div>
+              <div class="progress-track"><div class="progress-fill" data-pct="60" style="width:0%;background:#f59e0b;"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Animate donut chart
+    const score = 85;
+    const circumference = 2 * Math.PI * 80; // r=80, C≈502.65
+    const fill = document.getElementById('donutFill');
+    const pctEl = document.getElementById('donutPct');
+
+    fill.style.strokeDasharray = `0 ${circumference}`;
+
+    let current = 0;
+    const target = score;
+    const step = target / 60;
+    const interval = setInterval(() => {
+      if (current >= target) { clearInterval(interval); return; }
+      current = Math.min(current + step, target);
+      const drawn = (current / 100) * circumference;
+      fill.style.strokeDasharray = `${drawn} ${circumference - drawn}`;
+      pctEl.textContent = Math.round(current) + '%';
+    }, 16);
+
+    // Animate topic bars
+    setTimeout(() => {
+      document.querySelectorAll('.progress-fill[data-pct]').forEach(el => {
+        el.style.transition = 'width 0.8s ease';
+        el.style.width = el.dataset.pct + '%';
+      });
+    }, 400);
+
+    function downloadCert() {
+      alert('Certificate download started! (Demo)');
+    }
+  </script>
+</body>
+</html>

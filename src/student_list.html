@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Roster — Admin Portal | Prashiksha</title>
+  <meta name="description" content="Manage enrolled students, view academic details and platform access." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    .roster-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    .roster-search-wrap {
+      display: flex; align-items: center; gap: var(--space-sm);
+    }
+    .search-bar-lg {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-lowest);
+      border-radius: var(--radius-full);
+      padding: 8px 16px; width: 280px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--outline-variant);
+      transition: box-shadow var(--transition);
+    }
+    .search-bar-lg:focus-within { box-shadow: var(--shadow-float); border-color: var(--primary); }
+    .search-bar-lg input { background: transparent; font-size: 0.8125rem; color: var(--on-surface); flex: 1; }
+    .search-bar-lg .material-symbols-rounded { color: var(--secondary); font-size: 18px; }
+
+    .filter-btn {
+      width: 38px; height: 38px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-lowest); box-shadow: var(--shadow-card);
+      color: var(--secondary); cursor: pointer;
+      border: 1px solid var(--outline-variant);
+      transition: all var(--transition);
+    }
+    .filter-btn:hover { background: var(--surface-low); color: var(--on-surface); }
+
+    /* Student table card */
+    .table-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .student-table { width: 100%; border-collapse: collapse; }
+    .student-table thead tr {
+      background: var(--surface-low);
+    }
+    .student-table th {
+      text-align: left; padding: 10px 16px;
+      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--secondary);
+    }
+    .student-table td { padding: 12px 16px; font-size: 0.8125rem; vertical-align: middle; }
+    .student-table tbody tr { transition: background var(--transition); border-bottom: 1px solid var(--surface-low); }
+    .student-table tbody tr:last-child { border-bottom: none; }
+    .student-table tbody tr:hover { background: var(--surface-low); }
+
+    .student-cell { display: flex; align-items: center; gap: 14px; }
+    .student-avatar {
+      width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+      background: var(--primary-container);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; color: var(--primary);
+    }
+    .student-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .student-info { display: flex; flex-direction: column; }
+    .student-name { font-weight: 600; }
+    .student-email { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; }
+
+    .mono { font-family: 'Courier New', monospace; font-size: 0.8125rem; }
+
+    /* Row actions */
+    .row-actions { display: flex; align-items: center; gap: 8px; }
+    .action-icon-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-low); color: var(--secondary);
+      cursor: pointer; transition: all var(--transition); border: none;
+    }
+    .action-icon-btn:hover { background: var(--surface-high); color: var(--primary); }
+
+    /* Pagination */
+    .table-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      border-top: 1px solid var(--surface-low);
+    }
+    .table-footer p { font-size: 0.8rem; color: var(--secondary); }
+    .pagination { display: flex; gap: 4px; }
+    .page-btn {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 500;
+      background: var(--surface-low); color: var(--secondary);
+      cursor: pointer; transition: all var(--transition); border: none;
+    }
+    .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .sidebar-cta { padding: var(--space-sm); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-text">
+          <span class="brand-name">Admin Portal</span>
+          <span class="brand-subtitle">Prashiksha</span>
+        </div>
+        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+          <span class="material-symbols-rounded">menu_open</span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">dashboard</span>
+          Dashboard
+        </a>
+        <a href="question_management.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">quiz</span>
+          Questions
+        </a>
+        <a href="admin_exam_creation.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">assignment</span>
+          Exams
+        </a>
+        <a href="student_list.html" class="nav-item active">
+          <span class="material-symbols-rounded nav-icon">group</span>
+          Students
+        </a>
+        <a href="admin_results_overview.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>
+          Results
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">help_outline</span>
+          Support
+        </a>
+        <a href="admin_login.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">logout</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- Header row -->
+      <div class="roster-header">
+        <div>
+          <h1 class="page-title">Student Roster</h1>
+          <p class="page-subtitle">Manage enrolled students, viewing academic details and platform access.</p>
+        </div>
+        <div class="roster-search-wrap">
+          <div class="search-bar-lg">
+            <span class="material-symbols-rounded">search</span>
+            <input type="text" id="studentSearch" placeholder="Search by name, ID, or institute…" oninput="filterStudents()" />
+          </div>
+          <button class="filter-btn" title="Filter">
+            <span class="material-symbols-rounded">filter_list</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Student ID</th>
+              <th>Institute ID</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody"></tbody>
+        </table>
+        <div class="table-footer">
+          <p id="studentCount">Showing 1 to 3 of 45 entries</p>
+          <div class="pagination">
+            <button class="page-btn" disabled>‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    const students = [
+      { name: 'Eleanor Vance', email: 'evance@scholar.edu', id: 'STU-2023-8942', institute: 'INS-NE-04', status: 'ACTIVE', initials: 'EV', img: 'https://i.pravatar.cc/80?img=47' },
+      { name: 'Marcus Chen',   email: 'mchen@scholar.edu',  id: 'STU-2023-7719', institute: 'INS-NE-04', status: 'PENDING', initials: 'MC', img: 'https://i.pravatar.cc/80?img=12' },
+      { name: 'Sarah Jenkins', email: 'sjenkins@scholar.edu',id: 'STU-2022-4011', institute: 'INS-MW-12', status: 'ACTIVE',  initials: 'SJ', img: '' },
+      { name: 'Amir Hassan',   email: 'ahassan@scholar.edu', id: 'STU-2023-5501', institute: 'INS-SE-07', status: 'ACTIVE',  initials: 'AH', img: '' },
+      { name: 'Priya Sharma',  email: 'psharma@scholar.edu', id: 'STU-2022-3301', institute: 'INS-NE-04', status: 'PENDING', initials: 'PS', img: '' },
+    ];
+
+    const statusChip = { ACTIVE: 'chip-solid', PENDING: 'chip-neutral' };
+
+    function renderStudents(list) {
+      const tbody = document.getElementById('studentTableBody');
+      tbody.innerHTML = list.map(s => `
+        <tr>
+          <td>
+            <div class="student-cell">
+              <div class="student-avatar">
+                ${s.img ? `<img src="${s.img}" alt="${s.name}" />` : `<span>${s.initials}</span>`}
+              </div>
+              <div class="student-info">
+                <span class="student-name">${s.name}</span>
+                <span class="student-email">${s.email}</span>
+              </div>
+            </div>
+          </td>
+          <td class="mono">${s.id}</td>
+          <td class="mono">${s.institute}</td>
+          <td><span class="chip ${statusChip[s.status]}">${s.status}</span></td>
+          <td>
+            <div class="row-actions">
+              <button class="action-icon-btn" title="View student">
+                <span class="material-symbols-rounded" style="font-size:18px;">visibility</span>
+              </button>
+              <button class="action-icon-btn" title="More options">
+                <span class="material-symbols-rounded" style="font-size:18px;">more_vert</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      document.getElementById('studentCount').textContent = `Showing 1 to ${list.length} of 45 entries`;
+    }
+
+    renderStudents(students);
+
+    function filterStudents() {
+      const term = document.getElementById('studentSearch').value.toLowerCase();
+      const filtered = students.filter(s =>
+        s.name.toLowerCase().includes(term) ||
+        s.id.toLowerCase().includes(term) ||
+        s.institute.toLowerCase().includes(term) ||
+        s.email.toLowerCase().includes(term)
+      );
+      renderStudents(filtered);
+    }
+  </script>
+</body>
+</html>

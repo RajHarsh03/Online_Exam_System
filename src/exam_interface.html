@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam — Advanced Cognitive Psychology | Prashiksha</title>
+  <meta name="description" content="Online examination interface for Prashiksha." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body { background: var(--surface); }
+
+    /* ── Exam header ── */
+    .exam-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px var(--space-lg);
+      background: var(--surface-lowest);
+      border-bottom: 1px solid var(--surface-high);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .exam-info { display: flex; flex-direction: column; }
+    .exam-name { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; }
+    .exam-sub  { font-size: 0.7rem; color: var(--secondary); margin-top: 1px; }
+
+    /* Timer widget */
+    .timer-widget {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--on-surface);
+      border-radius: var(--radius-full);
+      padding: 8px 18px;
+      color: #fff;
+    }
+    .timer-widget .material-symbols-rounded { font-size: 18px; color: var(--primary-container); }
+    .timer-value { font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: 0.04em; }
+    .timer-widget.warning { background: #991b1b; }
+    .timer-widget.warning .material-symbols-rounded { color: #fca5a5; }
+
+    /* Submit button */
+    .submit-btn {
+      border-radius: var(--radius-xl);
+      padding: 8px 18px; font-weight: 600; font-size: 0.8125rem;
+      background: var(--surface-low); color: var(--on-surface-variant);
+      border: 1px solid var(--outline-variant);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .submit-btn:hover { background: var(--surface-high); color: var(--on-surface); }
+
+    /* ── Question area ── */
+    .exam-body { max-width: 740px; margin: 0 auto; padding: var(--space-md) var(--space-lg); }
+
+    /* Q progress row */
+    .q-progress-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+    .q-number-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--surface-high); border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    }
+    .q-number-badge em { font-style: normal; color: var(--secondary); font-weight: 400; }
+    .flag-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.875rem; font-weight: 500; color: var(--secondary);
+      background: none; border: none; cursor: pointer;
+      transition: color var(--transition);
+    }
+    .flag-btn:hover{ color: var(--primary); }
+    .flag-btn.flagged { color: var(--primary); }
+
+    /* Question card */
+    .question-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-md);
+    }
+    .question-text {
+      font-family: var(--font-body);
+      font-size: 0.9375rem; line-height: 1.7;
+      color: var(--on-surface); margin-bottom: var(--space-lg);
+    }
+
+    /* Answer options */
+    .options-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .option {
+      display: flex; align-items: flex-start; gap: var(--space-sm);
+      padding: 14px 16px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-high);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all var(--transition);
+    }
+    .option:hover { background: var(--surface-low); border-color: var(--outline-variant); }
+    .option.selected {
+      background: rgba(105,246,184,0.18);
+      border-color: var(--primary-container);
+    }
+    .option-radio {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      border: 2px solid var(--surface-highest);
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition); margin-top: 2px;
+    }
+    .option.selected .option-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .option.selected .option-radio::after {
+      content: ''; display: block;
+      width: 8px; height: 8px; border-radius: 50%; background: #fff;
+    }
+    .option-text { font-size: 0.8125rem; line-height: 1.55; color: var(--on-surface); flex: 1; }
+
+    /* Nav footer */
+    .exam-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--surface-lowest);
+      border-top: 1px solid var(--surface-high);
+      position: fixed; bottom: 0; left: 0; right: 0;
+    }
+    .prev-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.9375rem; font-weight: 600; color: var(--secondary);
+      background: none; border: none; cursor: pointer;
+      transition: color var(--transition);
+    }
+    .prev-btn:hover { color: var(--primary); }
+    .prev-btn:disabled { opacity: 0.3; cursor: default; }
+
+    /* Bottom padding so content isn't hidden behind footer */
+    .exam-body { padding-bottom: 80px; }
+  </style>
+</head>
+<body>
+
+  <!-- Exam header -->
+  <header class="exam-header">
+    <div style="display:flex;align-items:center;gap:var(--space-sm);">
+      <div style="width:38px;height:38px;border-radius:var(--radius-md);background:var(--primary-container);display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-rounded" style="color:var(--primary);font-size:20px;">menu_book</span>
+      </div>
+      <div class="exam-info">
+        <div class="exam-name">Advanced Cognitive Psychology</div>
+        <div class="exam-sub">Final Examination &bull; Candidate ID: 88492</div>
+      </div>
+    </div>
+
+    <div class="timer-widget" id="timerWidget">
+      <span class="material-symbols-rounded">timer</span>
+      <span class="timer-value" id="timer">01:42:15</span>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button>
+  </header>
+
+  <!-- Question body -->
+  <div class="exam-body">
+    <div class="q-progress-row">
+      <div class="q-number-badge">
+        Question <span id="qNum">14</span> <em>of <span id="qTotal">50</span></em>
+      </div>
+      <button class="flag-btn" id="flagBtn" onclick="toggleFlag()">
+        <span class="material-symbols-rounded" style="font-size:18px;">bookmark</span>
+        Flag for review
+      </button>
+    </div>
+
+    <div class="question-card">
+      <p class="question-text" id="questionText">
+        In the context of working memory models, which component is primarily responsible for temporarily holding and manipulating visual and spatial information, and how does it interact with the central executive during complex problem-solving tasks involving mental rotation?
+      </p>
+
+      <div class="options-list" id="optionsList"></div>
+    </div>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="exam-footer">
+    <button class="prev-btn" id="prevBtn" onclick="prevQuestion()">
+      Previous Question
+    </button>
+
+    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+      Save &amp; Next
+    </button>
+  </div>
+
+  <script>
+    /* ── Questions data ── */
+    const questions = [
+      {
+        id: 14,
+        text: 'In the context of working memory models, which component is primarily responsible for temporarily holding and manipulating visual and spatial information, and how does it interact with the central executive during complex problem-solving tasks involving mental rotation?',
+        options: [
+          'The Phonological Loop; it acts as an active rehearsal mechanism that offloads spatial tracking from the central executive.',
+          'The Visuospatial Sketchpad; it stores spatial layouts while the central executive directs attention and cognitive resources to manipulate that stored image.',
+          'The Episodic Buffer; it integrates visual stimuli directly into long-term memory without requiring central executive intervention.',
+          'The Semantic Network; it bypasses working memory entirely to retrieve pre-existing spatial maps for complex problem-solving.',
+        ],
+        correct: 1,
+      },
+      {
+        id: 15,
+        text: 'Which psychological theory best explains why individuals often continue investing in a failing course of action due to accumulated prior investments?',
+        options: [
+          'Cognitive Dissonance Theory',
+          'Self-Determination Theory',
+          'Sunk Cost Fallacy, a cognitive bias within Prospect Theory',
+          'Attribution Error in Social Cognitive Frameworks',
+        ],
+        correct: 2,
+      },
+    ];
+
+    let currentQ = 0;
+    let selected = new Array(questions.length).fill(null);
+    let flagged  = new Array(questions.length).fill(false);
+
+    /* Timer */
+    let seconds = 6135; // 1:42:15
+    function updateTimer() {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      document.getElementById('timer').textContent =
+        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (seconds < 300) document.getElementById('timerWidget').classList.add('warning');
+      if (seconds > 0) seconds--;
+    }
+    setInterval(updateTimer, 1000);
+
+    /* Render question */
+    function renderQuestion() {
+      const q = questions[currentQ % questions.length];
+      document.getElementById('qNum').textContent = q.id;
+      document.getElementById('questionText').textContent = q.text;
+
+      const list = document.getElementById('optionsList');
+      list.innerHTML = q.options.map((opt, i) => `
+        <div class="option ${selected[currentQ] === i ? 'selected' : ''}"
+             onclick="selectOption(${i})" id="opt${i}">
+          <div class="option-radio"></div>
+          <span class="option-text">${opt}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('flagBtn').classList.toggle('flagged', flagged[currentQ]);
+      document.getElementById('prevBtn').disabled = currentQ === 0;
+    }
+
+    function selectOption(idx) {
+      selected[currentQ] = idx;
+      renderQuestion();
+    }
+
+    function toggleFlag() {
+      flagged[currentQ] = !flagged[currentQ];
+      document.getElementById('flagBtn').classList.toggle('flagged', flagged[currentQ]);
+    }
+
+    function nextQuestion() {
+      if (currentQ < questions.length - 1) { currentQ++; renderQuestion(); }
+      else { submitExam(); }
+    }
+
+    function prevQuestion() {
+      if (currentQ > 0) { currentQ--; renderQuestion(); }
+    }
+
+    function submitExam() {
+      if (confirm('Are you sure you want to submit the exam? This action cannot be undone.')) {
+        window.location.href = 'exam_result.html';
+      }
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>

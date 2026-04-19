@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Exams — Prashiksha</title>
+  <meta name="description" content="View and start your scheduled academic examinations on Prashiksha platform." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body { background: var(--surface); }
+
+    /* ── Dashboard content area ── */
+    .dashboard-body { padding: var(--space-md) var(--space-lg); }
+
+    .welcome-header { margin-bottom: var(--space-lg); }
+    .welcome-header .headline { font-family: var(--font-display); font-size: 1.75rem; font-weight: 800; line-height: 1.1; color: var(--on-surface); }
+    .welcome-header .sub { font-size: 0.875rem; color: var(--secondary); margin-top: 6px; max-width: 480px; }
+
+    /* ── Exam grid ── */
+    .exams-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-md);
+    }
+
+    /* Priority exam card */
+    .priority-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      position: relative; overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .priority-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+    .priority-card::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(105,246,184,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .priority-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      padding: 4px 12px; border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: var(--space-sm);
+    }
+    .priority-badge .material-symbols-rounded { font-size: 13px; }
+
+    .exam-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800; line-height: 1.15;
+      margin-bottom: var(--space-xs);
+    }
+    .exam-desc { color: var(--secondary); font-size: 0.8125rem; line-height: 1.55; margin-bottom: var(--space-md); }
+
+    .exam-meta { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md); }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
+    .meta-item .material-symbols-rounded {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--surface-low);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--secondary); flex-shrink: 0;
+    }
+    .meta-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
+    .meta-value { font-size: 0.875rem; font-weight: 700; font-family: var(--font-display); }
+
+    /* Secondary exam cards */
+    .secondary-exams { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .secondary-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-sm) var(--space-md);
+      box-shadow: var(--shadow-card);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .secondary-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+    .sec-badge {
+      font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--secondary);
+      display: flex; align-items: center; gap: 4px;
+      margin-bottom: 4px;
+    }
+    .sec-badge .material-symbols-rounded { font-size: 13px; }
+    .sec-title { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: 4px; }
+    .sec-desc  { font-size: 0.8125rem; color: var(--secondary); margin-bottom: var(--space-xs); }
+    .sec-footer { display: flex; align-items: center; justify-content: space-between; }
+    .sec-duration { display: flex; align-items: center; gap: 5px; font-size: 0.8125rem; color: var(--secondary); }
+    .sec-duration .material-symbols-rounded { font-size: 14px; }
+
+    .btn-begin-sm {
+      border-radius: var(--radius-full);
+      padding: 6px 16px; font-size: 0.8125rem; font-weight: 600;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border: none; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .btn-begin-sm:hover { background: #55e8a8; }
+
+    .btn-upload-sm {
+      border-radius: var(--radius-full);
+      padding: 6px 16px; font-size: 0.8125rem; font-weight: 600;
+      background: var(--surface-high);
+      color: var(--on-surface-variant);
+      border: none; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .btn-upload-sm:hover { background: var(--surface-highest); }
+  </style>
+</head>
+<body style="background-color: var(--surface-highest);">
+  <div class="student-app-wrapper animate-in">
+    <!-- Top Navigation -->
+    <header class="topnav">
+      <div class="brand">Prashiksha</div>
+      <nav class="topnav-links">
+        <a href="student_dashboard.html" class="topnav-link active">Exams</a>
+        <a href="exam_result.html" class="topnav-link">Results</a>
+      </nav>
+      <div class="topnav-right">
+        <div class="topnav-search">
+          <span class="material-symbols-rounded icon">search</span>
+          <input type="text" placeholder="Search…" />
+        </div>
+        <button class="icon-btn" title="Notifications">
+          <span class="material-symbols-rounded" style="font-size:20px;">notifications</span>
+        </button>
+        <button class="icon-btn" title="Settings">
+          <span class="material-symbols-rounded" style="font-size:20px;">settings</span>
+        </button>
+        <div class="user-avatar" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-container); color: var(--on-primary-container); border-radius: 50%; font-weight: bold; font-size: 14px;">
+          AS
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Dashboard body -->
+      <div class="dashboard-body">
+
+        <!-- Welcome header -->
+        <div class="welcome-header">
+          <h1 class="headline">Ready for today?</h1>
+          <p class="sub">You have 3 active assessments pending. Ensure you are in a quiet environment before starting your proctored sessions.</p>
+        </div>
+
+        <!-- Exams grid -->
+        <div class="exams-grid">
+
+          <!-- Priority exam (large card) -->
+          <div class="priority-card">
+            <div class="priority-badge">
+              <span class="material-symbols-rounded">star</span>
+              Priority Assessment
+            </div>
+
+            <h2 class="exam-title">Advanced Cellular Biology Midterm</h2>
+            <p class="exam-desc">Comprehensive examination covering modules 4 through 7. Requires active webcam proctoring.</p>
+
+            <div class="exam-meta">
+              <div class="meta-item">
+                <span class="material-symbols-rounded">schedule</span>
+                <div>
+                  <div class="meta-label">Duration</div>
+                  <div class="meta-value">120 Minutes</div>
+                </div>
+              </div>
+              <div class="meta-item">
+                <span class="material-symbols-rounded">event</span>
+                <div>
+                  <div class="meta-label">Deadline</div>
+                  <div class="meta-value">Today, 11:59 PM</div>
+                </div>
+              </div>
+            </div>
+
+            <a href="exam_interface.html" class="btn btn-primary" style="width:fit-content;">
+              Start Exam Now
+            </a>
+          </div>
+
+          <!-- Secondary exams column -->
+          <div class="secondary-exams">
+
+            <div class="secondary-card">
+              <div class="sec-badge">
+                <span class="material-symbols-rounded">lock</span>
+                Proctored
+              </div>
+              <h3 class="sec-title">Introduction to Modern Physics</h3>
+              <p class="sec-desc">Multiple choice and short answer evaluation.</p>
+              <div class="sec-footer">
+                <div class="sec-duration">
+                  <span class="material-symbols-rounded">timer</span>
+                  60 Min
+                </div>
+                <button class="btn-begin-sm" onclick="window.location.href='exam_interface.html'">Begin</button>
+              </div>
+            </div>
+
+            <div class="secondary-card">
+              <div class="sec-badge">
+                <span class="material-symbols-rounded">menu_book</span>
+                Open Book
+              </div>
+              <h3 class="sec-title">European History Essay</h3>
+              <p class="sec-desc">Upload your final written submission here.</p>
+              <div class="sec-footer">
+                <div class="sec-duration">
+                  <span class="material-symbols-rounded">timer</span>
+                  Untimed
+                </div>
+                <button class="btn-upload-sm">Upload</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Animate entrance
+        document.querySelectorAll('.priority-card, .secondary-card').forEach((el, i) => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, 100 + i * 100);
+        });
+      </script>
+    </main>
+  </div>
+</body>
+</html>

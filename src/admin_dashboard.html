@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Admin Portal | Prashiksha</title>
+  <meta name="description" content="Admin dashboard for Prashiksha examination platform." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    /* Stat card accent override for first card */
+    .stat-card:first-child { position: relative; }
+    .stat-card-lozenge {
+      position: absolute; top: -1px; right: -1px;
+    }
+
+    /* Activity feed */
+    .activity-item {
+      display: flex; align-items: flex-start; gap: var(--space-sm);
+      padding: var(--space-xs) 0;
+    }
+    .activity-item + .activity-item { border-top: 1px solid var(--surface-low); }
+    .activity-icon-wrap {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .activity-icon-wrap.success { background: #d1fae5; color: #065f46; }
+    .activity-icon-wrap.info    { background: #dbeafe; color: #1d4ed8; }
+    .activity-icon-wrap.warn    { background: #fee2e2; color: #991b1b; }
+    .activity-body { flex: 1; }
+    .activity-title { font-weight: 600; font-size: 0.8125rem; }
+    .activity-subtitle { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; }
+    .activity-time { font-size: 0.7rem; color: var(--secondary); white-space: nowrap; }
+
+    /* System status card */
+    .status-card {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      min-height: 110px;
+      background: url('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600&q=60') center/cover no-repeat;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .status-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(44,52,55,0.45);
+    }
+    .status-card-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: #fff; text-align: center;
+    }
+    .status-card-content .material-symbols-rounded { font-size: 26px; color: #6ee7b7; }
+    .status-card-content span { font-weight: 600; font-size: 0.875rem; }
+
+    /* Progress panel */
+    .progress-section { padding: var(--space-sm) 0; }
+    .progress-section h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: var(--space-sm); }
+
+    /* Date badge */
+    .date-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8125rem; color: var(--secondary); font-weight: 500;
+    }
+    .date-badge .material-symbols-rounded { font-size: 16px; color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-text">
+          <span class="brand-name">Admin Portal</span>
+          <span class="brand-subtitle">Prashiksha</span>
+        </div>
+        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+          <span class="material-symbols-rounded">menu_open</span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item active" id="nav-dashboard">
+          <span class="material-symbols-rounded nav-icon">dashboard</span>
+          Dashboard
+        </a>
+        <a href="question_management.html" class="nav-item" id="nav-questions">
+          <span class="material-symbols-rounded nav-icon">quiz</span>
+          Questions
+        </a>
+        <a href="admin_exam_creation.html" class="nav-item" id="nav-exams">
+          <span class="material-symbols-rounded nav-icon">assignment</span>
+          Exams
+        </a>
+        <a href="student_list.html" class="nav-item" id="nav-students">
+          <span class="material-symbols-rounded nav-icon">group</span>
+          Students
+        </a>
+        <a href="admin_results_overview.html" class="nav-item" id="nav-results">
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>
+          Results
+        </a>
+      </nav>
+
+      <div class="sidebar-cta">
+        <a href="admin_exam_creation.html" class="btn btn-primary">
+          <span class="material-symbols-rounded" style="font-size:18px;">add</span>
+          Create New Exam
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">help_outline</span>
+          Support
+        </a>
+        <a href="admin_login.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">logout</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- Page header -->
+      <div class="page-header-row mb-md">
+        <div class="page-header" style="margin-bottom:0;">
+          <h1 class="page-title">Overview</h1>
+          <p class="page-subtitle">Welcome back. Here is the current state of the academic sanctuary.</p>
+        </div>
+        <div class="date-badge">
+          <span class="material-symbols-rounded">calendar_month</span>
+          <span id="currentDate"></span>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid">
+        <div class="stat-card" style="position:relative; overflow:visible;">
+          <span class="chip chip-solid" style="position:absolute;top:-10px;left:var(--space-md);">Active Term</span>
+          <div class="stat-icon">
+            <span class="material-symbols-rounded" style="color:var(--primary);">assignment</span>
+          </div>
+          <div class="stat-label">Total Exams</div>
+          <div class="stat-value">124</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-symbols-rounded" style="color:var(--primary);">group</span>
+          </div>
+          <div class="stat-label">Enrolled Students</div>
+          <div class="stat-value">8,405</div>
+          <div class="stat-delta">↗ +12%</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-symbols-rounded" style="color:var(--primary);">library_books</span>
+          </div>
+          <div class="stat-label">Question Bank Size</div>
+          <div class="stat-value">42.5k</div>
+        </div>
+      </div>
+
+      <!-- Content grid -->
+      <div class="content-grid">
+
+        <!-- Activity feed -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-md">
+            <h2 style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;">Recent Examination Activity</h2>
+            <a href="admin_results_overview.html" class="btn-ghost btn" style="padding:6px 0;font-size:0.875rem;">View All</a>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon-wrap success">
+              <span class="material-symbols-rounded">check_circle</span>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">Advanced Calculus 301 concluded</div>
+              <div class="activity-subtitle">245 students submitted</div>
+            </div>
+            <div class="activity-time">10 mins ago</div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon-wrap info">
+              <span class="material-symbols-rounded">edit_note</span>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">New Exam Draft Created: Bioethics</div>
+              <div class="activity-subtitle">By Dr. Eleanor Vance</div>
+            </div>
+            <div class="activity-time">2 hrs ago</div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon-wrap warn">
+              <span class="material-symbols-rounded">warning</span>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">Flagged submission in Literature 101</div>
+              <div class="activity-subtitle">Requires manual review</div>
+            </div>
+            <div class="activity-time">5 hrs ago</div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="flex-col gap-md">
+          <!-- Grading progress -->
+          <div class="card">
+            <h3 style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;margin-bottom:var(--space-md);">Grading Progress</h3>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-label"><span>Midterm Series</span><span class="pct">78%</span></div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:78%;"></div>
+              </div>
+            </div>
+            <div class="progress-bar-wrap" style="margin-top:var(--space-sm);">
+              <div class="progress-bar-label"><span>Finals Series</span><span class="pct">12%</span></div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:12%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System status -->
+          <div class="status-card">
+            <div class="status-card-content">
+              <span class="material-symbols-rounded">cloud_done</span>
+              <span>All Systems Operational</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // Set current date
+    const now = new Date();
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric'
+    });
+  </script>
+</body>
+</html>

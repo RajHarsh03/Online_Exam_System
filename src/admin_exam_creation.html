@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create New Exam — Admin Portal | Prashiksha</title>
+  <meta name="description" content="Create and configure examination parameters, grading schema, and structural boundaries." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    .main-content { max-width: 960px; }
+
+    /* Form section cards */
+    .form-section {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      box-shadow: var(--shadow-card);
+    }
+    .section-title {
+      font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: var(--space-md);
+      color: var(--on-surface);
+    }
+    .section-title .material-symbols-rounded { color: var(--primary); }
+
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-md); }
+
+    .textarea-standalone {
+      width: 100%;
+      background: var(--surface-high);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      color: var(--on-surface);
+      border: 1px solid transparent;
+      resize: vertical; min-height: 90px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .textarea-standalone:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,109,74,0.1);
+      outline: none;
+    }
+    .textarea-standalone::placeholder { color: var(--on-surface-variant); }
+
+    /* Positive/negative mark inputs with prefixed icons */
+    .mark-input-wrap {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-high);
+      border-radius: var(--radius-md);
+      padding: 0 16px;
+      border: 1px solid transparent;
+      transition: border-color var(--transition);
+    }
+    .mark-input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+    .mark-sign {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+      font-size: 0.875rem;
+    }
+    .mark-sign.pos { background: var(--primary); color: #fff; }
+    .mark-sign.neg { background: #ef4444; color: #fff; }
+    .mark-input-wrap input {
+      flex: 1; padding: 10px 0; font-size: 0.875rem;
+      color: var(--on-surface); background: transparent; border: none; outline: none;
+    }
+
+    /* Footer actions */
+    .form-actions {
+      display: flex; align-items: center; justify-content: flex-end; gap: var(--space-sm);
+      padding: var(--space-md) 0;
+      border-top: 1px solid var(--surface-high);
+      margin-top: var(--space-sm);
+    }
+
+    /* Progress indicator at top */
+    .progress-indicator {
+      height: 3px;
+      background: var(--surface-high);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-lg);
+      overflow: hidden;
+    }
+    .progress-indicator-fill {
+      height: 100%;
+      width: 35%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-container));
+      border-radius: var(--radius-full);
+    }
+
+    .hint-text { font-size: 0.75rem; color: var(--secondary); margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-text">
+          <span class="brand-name">Admin Portal</span>
+          <span class="brand-subtitle">Prashiksha</span>
+        </div>
+        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+          <span class="material-symbols-rounded">menu_open</span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">dashboard</span>
+          Dashboard
+        </a>
+        <a href="question_management.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">quiz</span>
+          Questions
+        </a>
+        <a href="admin_exam_creation.html" class="nav-item active">
+          <span class="material-symbols-rounded nav-icon">assignment</span>
+          Exams
+        </a>
+        <a href="student_list.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">group</span>
+          Students
+        </a>
+        <a href="admin_results_overview.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>
+          Results
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">help_outline</span>
+          Support
+        </a>
+        <a href="admin_login.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">logout</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="admin_dashboard.html">Exams</a>
+        <span class="sep material-symbols-rounded" style="font-size:16px;">chevron_right</span>
+        <span class="current">Create New</span>
+      </nav>
+
+      <!-- Page header -->
+      <div class="page-header">
+        <h1 class="page-title">Create New Exam</h1>
+        <p class="page-subtitle">Define examination parameters, grading schemas, and structural boundaries to construct a new academic assessment.</p>
+      </div>
+
+      <!-- Progress indicator -->
+      <div class="progress-indicator"><div class="progress-indicator-fill"></div></div>
+
+      <form id="examForm" novalidate>
+
+        <!-- Section 1: Examination Identity -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span class="material-symbols-rounded">title</span>
+            Examination Identity
+          </h2>
+
+          <div class="field-group mb-md">
+            <label class="field-label" for="examName">Exam Name</label>
+            <input type="text" class="input-standalone" id="examName" name="examName" placeholder="e.g., Advanced Calculus Final 2024" />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="examDesc">Internal Description <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
+            <textarea class="textarea-standalone" id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
+          </div>
+        </div>
+
+        <!-- Sections 2 & 3 row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
+
+          <!-- Section 2: Mechanics -->
+          <div class="form-section" style="margin-bottom:0;">
+            <h2 class="section-title">
+              <span class="material-symbols-rounded">settings</span>
+              Mechanics
+            </h2>
+
+            <div class="field-group mb-md">
+              <label class="field-label" for="numQuestions">Number of Questions</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">format_list_numbered</span>
+                <input type="number" id="numQuestions" name="numQuestions" placeholder="e.g., 50" min="1" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="timeLimit">Time Limit (Minutes)</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">timer</span>
+                <input type="number" id="timeLimit" name="timeLimit" placeholder="e.g., 120" min="1" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Grading Schema -->
+          <div class="form-section" style="margin-bottom:0;">
+            <h2 class="section-title">
+              <span class="material-symbols-rounded">rule</span>
+              Grading Schema
+            </h2>
+
+            <div class="form-grid-2 mb-md" style="gap:var(--space-sm);">
+              <div class="field-group">
+                <label class="field-label" for="posMarks">Positive Marks (per correct)</label>
+                <div class="mark-input-wrap">
+                  <div class="mark-sign pos">+</div>
+                  <input type="number" id="posMarks" name="posMarks" placeholder="4.0" step="0.5" min="0" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="negMarks">Negative Marks (per incorrect)</label>
+                <div class="mark-input-wrap">
+                  <div class="mark-sign neg">−</div>
+                  <input type="number" id="negMarks" name="negMarks" placeholder="1.0" step="0.5" min="0" />
+                </div>
+                <p class="hint-text">Leave 0 for no penalty.</p>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="passingMarks">Minimum Passing Marks</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">flag</span>
+                <input type="number" id="passingMarks" name="passingMarks" placeholder="e.g., 40" min="0" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Form actions -->
+        <div class="form-actions">
+          <a href="admin_dashboard.html" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="createBtn">
+            Create Exam
+          </button>
+        </div>
+
+      </form>
+    </main>
+
+  </div>
+
+  <script>
+    document.getElementById('examForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const examName = document.getElementById('examName').value.trim();
+      if (!examName) {
+        document.getElementById('examName').style.borderColor = '#ef4444';
+        document.getElementById('examName').focus();
+        return;
+      }
+      const btn = document.getElementById('createBtn');
+      btn.textContent = 'Creating…';
+      btn.disabled = true;
+      setTimeout(() => {
+        alert('Exam created successfully!');
+        window.location.href = 'admin_dashboard.html';
+      }, 1000);
+    });
+
+    // Reset error state on focus
+    document.getElementById('examName').addEventListener('focus', (e) => {
+      e.target.style.borderColor = '';
+    });
+  </script>
+</body>
+</html>

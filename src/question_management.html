@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Question Bank — Admin Portal | Prashiksha</title>
+  <meta name="description" content="Manage and grow the central repository of examination questions." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    .questions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    /* ── Draft new question panel ── */
+    .draft-panel {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+    }
+    .draft-panel h2 {
+      font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: var(--space-md);
+    }
+    .draft-panel h2 .material-symbols-rounded { color: var(--primary); }
+
+    /* Select dropdown */
+    .select-standalone {
+      width: 100%;
+      background: var(--surface-high);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.875rem; color: var(--on-surface);
+      border: 1px solid transparent;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%23526075' d='m7 10 5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+      transition: border-color var(--transition);
+    }
+    .select-standalone:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+
+    /* Answer options */
+    .answer-options { display: flex; flex-direction: column; gap: 10px; }
+    .answer-option {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-high);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all var(--transition);
+    }
+    .answer-option:hover { border-color: var(--outline-variant); }
+    .answer-option.selected {
+      border-color: var(--primary);
+      background: rgba(0,109,74,0.06);
+    }
+    .answer-radio {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid var(--surface-highest);
+      flex-shrink: 0; transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .answer-option.selected .answer-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .answer-option.selected .answer-radio::after {
+      content: '';
+      display: block; width: 6px; height: 6px;
+      border-radius: 50%; background: #fff;
+    }
+    .answer-letter {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--surface-highest);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--secondary);
+    }
+    .answer-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-size: 0.9375rem; color: var(--on-surface);
+    }
+
+    .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+
+    .draft-actions { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-lg); }
+
+    .textarea-draft {
+      width: 100%;
+      background: var(--surface-high);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.875rem; color: var(--on-surface);
+      border: 1px solid transparent; resize: vertical; min-height: 80px;
+      transition: border-color var(--transition);
+    }
+    .textarea-draft:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+    .textarea-draft::placeholder { color: var(--on-surface-variant); }
+
+    /* ── Repository Index Panel ── */
+    .repo-panel {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex; flex-direction: column;
+    }
+    .repo-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: var(--space-md); gap: var(--space-sm);
+    }
+    .repo-header h2 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; }
+
+    .search-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-low);
+      border-radius: var(--radius-full);
+      padding: 9px 16px; flex: 1; max-width: 260px;
+      border: 1px solid transparent;
+      transition: border-color var(--transition);
+    }
+    .search-bar:focus-within { border-color: var(--outline-variant); }
+    .search-bar input { background: transparent; font-size: 0.875rem; color: var(--on-surface); flex: 1; }
+    .search-bar .material-symbols-rounded { color: var(--secondary); font-size: 18px; }
+
+    /* Question list */
+    .q-list { flex: 1; overflow-y: auto; }
+    .q-row {
+      display: grid; grid-template-columns: 1fr 120px 80px;
+      align-items: center; gap: var(--space-sm);
+      padding: 14px 0; border-bottom: 1px solid var(--surface-low);
+      cursor: pointer; transition: background var(--transition);
+    }
+    .q-row:hover { background: var(--surface-low); margin: 0 -16px; padding: 14px 16px; border-radius: var(--radius-md); }
+    .q-snippet { font-size: 0.8125rem; color: var(--on-surface); }
+    .q-metrics { display: flex; flex-direction: column; gap: 2px; }
+    .q-metric { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; color: var(--secondary); }
+    .q-metric span { font-size: 14px; }
+
+    /* Table header */
+    .q-table-header {
+      display: grid; grid-template-columns: 1fr 120px 80px;
+      padding: 8px 0; margin-bottom: 4px;
+      border-bottom: 2px solid var(--surface-low);
+    }
+    .q-table-header span { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
+
+    .repo-footer { margin-top: var(--space-sm); display: flex; align-items: center; justify-content: space-between; }
+    .repo-footer p { font-size: 0.8rem; color: var(--secondary); }
+
+    .pagination { display: flex; gap: 4px; }
+    .page-btn {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 500; background: var(--surface-low); color: var(--secondary);
+      cursor: pointer; transition: all var(--transition); border: none;
+    }
+    .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: default; background: var(--surface-high); }
+
+    /* Add question CTA in sidebar */
+    .sidebar-cta { padding: var(--space-sm); }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-text">
+          <span class="brand-name">Admin Portal</span>
+          <span class="brand-subtitle">Prashiksha</span>
+        </div>
+        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+          <span class="material-symbols-rounded">menu_open</span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="admin_dashboard.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">dashboard</span>
+          Dashboard
+        </a>
+        <a href="question_management.html" class="nav-item active">
+          <span class="material-symbols-rounded nav-icon">quiz</span>
+          Questions
+        </a>
+        <a href="admin_exam_creation.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">assignment</span>
+          Exams
+        </a>
+        <a href="student_list.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">group</span>
+          Students
+        </a>
+        <a href="admin_results_overview.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>
+          Results
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">help_outline</span>
+          Support
+        </a>
+        <a href="admin_login.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">logout</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Question Bank</h1>
+        <p class="page-subtitle">Manage the central repository of examination questions. Add, review, or refine content for upcoming assessments.</p>
+      </div>
+
+      <!-- Progress indicator -->
+      <div style="height:3px;background:var(--surface-high);border-radius:999px;margin-bottom:var(--space-lg);overflow:hidden;">
+        <div style="height:100%;width:55%;background:linear-gradient(90deg,var(--primary),var(--primary-container));border-radius:999px;"></div>
+      </div>
+
+      <div class="questions-grid">
+
+        <!-- Draft New Question -->
+        <div class="draft-panel">
+          <h2>
+            <span class="material-symbols-rounded">add_circle</span>
+            Draft New Question
+          </h2>
+
+          <form id="questionForm" novalidate>
+            <div class="field-group mb-md">
+              <label class="field-label" for="subjectDomain">Subject Domain</label>
+              <select class="select-standalone" id="subjectDomain" name="subjectDomain">
+                <option value="">Select a domain…</option>
+                <option value="mathematics">Mathematics</option>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+                <option value="literature">Literature</option>
+                <option value="history">History</option>
+                <option value="comp-logic">Comp Logic</option>
+              </select>
+            </div>
+
+            <div class="field-group mb-md">
+              <label class="field-label" for="qPrompt">Question Prompt</label>
+              <textarea class="textarea-draft" id="qPrompt" name="qPrompt" placeholder="Enter the examination question clearly and concisely..."></textarea>
+            </div>
+
+            <div class="field-group mb-md">
+              <div class="flex items-center justify-between mb-sm" style="margin-bottom:8px;">
+                <label class="field-label" style="margin-bottom:0;">Answer Options</label>
+                <span style="font-size:0.75rem;color:var(--primary);font-weight:500;cursor:pointer;" id="selectCorrectHint">Select Correct</span>
+              </div>
+              <div class="answer-options" id="answerOptions">
+                <div class="answer-option" data-idx="0" onclick="selectAnswer(0)">
+                  <div class="answer-radio"></div>
+                  <div class="answer-letter">A</div>
+                  <input type="text" class="answer-input" placeholder="First possible answer" />
+                </div>
+                <div class="answer-option" data-idx="1" onclick="selectAnswer(1)">
+                  <div class="answer-radio"></div>
+                  <div class="answer-letter">B</div>
+                  <input type="text" class="answer-input" placeholder="Second possible answer" />
+                </div>
+                <div class="answer-option" data-idx="2" onclick="selectAnswer(2)">
+                  <div class="answer-radio"></div>
+                  <div class="answer-letter">C</div>
+                  <input type="text" class="answer-input" placeholder="Third possible answer" />
+                </div>
+                <div class="answer-option" data-idx="3" onclick="selectAnswer(3)">
+                  <div class="answer-radio"></div>
+                  <div class="answer-letter">D</div>
+                  <input type="text" class="answer-input" placeholder="Fourth possible answer" />
+                </div>
+              </div>
+            </div>
+
+            <div class="meta-row mb-md">
+              <div class="field-group">
+                <label class="field-label" for="qPoints">Points</label>
+                <input type="number" class="input-standalone" id="qPoints" name="qPoints" value="1" min="1" />
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="qDifficulty">Difficulty</label>
+                <select class="select-standalone" id="qDifficulty" name="qDifficulty">
+                  <option value="standard">Standard</option>
+                  <option value="easy">Easy</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="draft-actions">
+              <button type="button" class="btn btn-ghost" onclick="clearForm()">Clear Form</button>
+              <button type="submit" class="btn btn-primary">
+                Commit to Bank
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Repository Index -->
+        <div class="repo-panel">
+          <div class="repo-header">
+            <h2>Repository Index</h2>
+            <div class="search-bar">
+              <span class="material-symbols-rounded">search</span>
+              <input type="text" id="searchInput" placeholder="Search prompts…" oninput="filterQuestions()" />
+            </div>
+          </div>
+
+          <div class="q-table-header">
+            <span>Prompt Snippet</span>
+            <span>Domain</span>
+            <span>Metrics</span>
+          </div>
+
+          <div class="q-list" id="questionList"></div>
+
+          <div class="repo-footer">
+            <p id="qCount">Showing 1 to 4 of 248 entries</p>
+            <div class="pagination">
+              <button class="page-btn" disabled>‹</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">›</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // Sample questions data
+    const questions = [
+      { snippet: 'Evaluate the integral of e^(2x) sin(3x) dx using…', domain: 'Mathematics', pts: 3, diff: 'High' },
+      { snippet: 'Identify the primary rhetorical device utilized…', domain: 'Literature', pts: 2, diff: 'Std' },
+      { snippet: 'According to the Copenhagen interpretation…', domain: 'Physics', pts: 1, diff: 'Std' },
+      { snippet: 'Which of the following sorting algorithms…', domain: 'Comp Logic', pts: 1, diff: 'Std' },
+      { snippet: 'Describe the cellular mechanism by which…', domain: 'Biology', pts: 2, diff: 'High' },
+      { snippet: 'The Treaty of Westphalia (1648) established…', domain: 'History', pts: 1, diff: 'Std' },
+      { snippet: 'Calculate the Gibbs free energy change for…', domain: 'Chemistry', pts: 3, diff: 'High' },
+    ];
+
+    const domainColors = {
+      Mathematics: 'chip-primary', Literature: 'chip-neutral', Physics: 'chip-success',
+      'Comp Logic': 'chip-warning', Biology: 'chip-danger', History: 'chip-neutral', Chemistry: 'chip-primary'
+    };
+
+    function renderQuestions(list) {
+      const el = document.getElementById('questionList');
+      el.innerHTML = list.map((q, i) => `
+        <div class="q-row">
+          <div class="q-snippet">${q.snippet}</div>
+          <span class="chip ${domainColors[q.domain] || 'chip-neutral'}" style="font-size:0.7rem;padding:3px 10px;">${q.domain}</span>
+          <div class="q-metrics">
+            <div class="q-metric"><span class="material-symbols-rounded">add_circle</span> ${q.pts} pt</div>
+            <div class="q-metric"><span class="material-symbols-rounded">balance</span> ${q.diff}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderQuestions(questions);
+
+    function filterQuestions() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = questions.filter(q => q.snippet.toLowerCase().includes(term) || q.domain.toLowerCase().includes(term));
+      renderQuestions(filtered);
+    }
+
+    // Answer selection
+    let selectedAnswer = null;
+    function selectAnswer(idx) {
+      document.querySelectorAll('.answer-option').forEach((el, i) => {
+        el.classList.toggle('selected', i === idx);
+      });
+      selectedAnswer = idx;
+    }
+
+    function clearForm() {
+      document.getElementById('questionForm').reset();
+      document.querySelectorAll('.answer-option').forEach(el => el.classList.remove('selected'));
+      selectedAnswer = null;
+    }
+
+    document.getElementById('questionForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const domain  = document.getElementById('subjectDomain').value;
+      const prompt = document.getElementById('qPrompt').value.trim();
+      if (!domain || !prompt) { alert('Please fill in Subject Domain and Question Prompt.'); return; }
+      if (selectedAnswer === null) { alert('Please select the correct answer.'); return; }
+
+      // Add to list
+      const newQ = { snippet: prompt.substring(0, 60) + '…', domain: document.getElementById('subjectDomain').selectedOptions[0].text,
+                     pts: document.getElementById('qPoints').value, diff: document.getElementById('qDifficulty').value };
+      questions.unshift(newQ);
+      renderQuestions(questions);
+      clearForm();
+      alert('Question committed to bank!');
+    });
+  </script>
+</body>
+</html>
