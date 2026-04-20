@@ -14,36 +14,39 @@
     /* ── Exam header ── */
     .exam-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px var(--space-lg);
+      padding: 8px var(--space-md);
       background: var(--surface-lowest);
       border-bottom: 1px solid var(--surface-high);
       position: sticky; top: 0; z-index: 100;
+      gap: 4px;
     }
 
     .exam-info { display: flex; flex-direction: column; }
-    .exam-name { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; }
-    .exam-sub  { font-size: 0.7rem; color: var(--secondary); margin-top: 1px; }
+    .exam-name { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; }
+    .exam-sub  { font-size: 0.65rem; color: var(--secondary); margin-top: 0px; }
 
     /* Timer widget */
     .timer-widget {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 4px;
       background: var(--on-surface);
       border-radius: var(--radius-full);
-      padding: 8px 18px;
+      padding: 4px 8px;
       color: #fff;
+      flex-shrink: 0;
     }
-    .timer-widget .material-symbols-rounded { font-size: 18px; color: var(--primary-container); }
-    .timer-value { font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: 0.04em; }
+    .timer-widget .material-symbols-rounded { font-size: 14px; color: var(--primary-container); }
+    .timer-value { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; }
     .timer-widget.warning { background: #991b1b; }
     .timer-widget.warning .material-symbols-rounded { color: #fca5a5; }
 
     /* Submit button */
     .submit-btn {
       border-radius: var(--radius-xl);
-      padding: 8px 18px; font-weight: 600; font-size: 0.8125rem;
+      padding: 4px 8px; font-weight: 600; font-size: 0.7rem;
       background: var(--surface-low); color: var(--on-surface-variant);
       border: 1px solid var(--outline-variant);
       cursor: pointer; transition: all var(--transition);
+      flex-shrink: 0;
     }
     .submit-btn:hover { background: var(--surface-high); color: var(--on-surface); }
 
@@ -53,20 +56,25 @@
     /* Q progress row */
     .q-progress-row {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: var(--space-lg);
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
     }
     .q-number-badge {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
       background: var(--surface-high); border-radius: var(--radius-full);
-      padding: 6px 14px;
-      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 4px 10px;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      flex-shrink: 0;
     }
     .q-number-badge em { font-style: normal; color: var(--secondary); font-weight: 400; }
     .flag-btn {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.875rem; font-weight: 500; color: var(--secondary);
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.8rem; font-weight: 500; color: var(--secondary);
       background: none; border: none; cursor: pointer;
       transition: color var(--transition);
+      padding: 4px 8px;
+      flex-shrink: 0;
     }
     .flag-btn:hover{ color: var(--primary); }
     .flag-btn.flagged { color: var(--primary); }
@@ -120,39 +128,42 @@
     /* Nav footer */
     .exam-footer {
       display: flex; align-items: center; justify-content: space-between;
-      padding: var(--space-sm) var(--space-lg);
+      gap: var(--space-sm);
+      padding: 8px var(--space-md);
       background: var(--surface-lowest);
       border-top: 1px solid var(--surface-high);
       position: fixed; bottom: 0; left: 0; right: 0;
+      flex-wrap: wrap;
     }
     .prev-btn {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.9375rem; font-weight: 600; color: var(--secondary);
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.8rem; font-weight: 600; color: var(--secondary);
       background: none; border: none; cursor: pointer;
       transition: color var(--transition);
+      padding: 6px 10px;
+      flex-shrink: 0;
     }
     .prev-btn:hover { color: var(--primary); }
     .prev-btn:disabled { opacity: 0.3; cursor: default; }
 
+    .exam-footer .btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
     /* Bottom padding so content isn't hidden behind footer */
-    .exam-body { padding-bottom: 80px; }
+    .exam-body { padding-bottom: 70px; }
 
     @media (max-width: 768px) {
-      .exam-header,
-      .q-progress-row,
-      .exam-footer {
-        gap: var(--space-sm);
-      }
-
-      .exam-header,
-      .q-progress-row {
-        flex-direction: column;
-        align-items: stretch;
+      .exam-header {
+        padding: 6px var(--space-sm);
+        gap: 6px;
       }
 
       .exam-body {
-        padding: var(--space-md);
-        padding-bottom: 110px;
+        padding: var(--space-sm);
+        padding-bottom: 80px;
       }
 
       .question-card {
@@ -160,21 +171,24 @@
       }
 
       .exam-footer {
-        padding: 12px var(--space-md);
+        padding: 8px var(--space-sm);
+        gap: 6px;
       }
     }
 
     @media (max-width: 560px) {
       .exam-footer {
-        flex-direction: column-reverse;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
       }
 
       .exam-footer .btn,
       .prev-btn,
       .submit-btn {
-        width: 100%;
-        justify-content: center;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        flex-shrink: 0;
       }
     }
   </style>
@@ -183,9 +197,9 @@
 
   <!-- Exam header -->
   <header class="exam-header">
-    <div style="display:flex;align-items:center;gap:var(--space-sm);">
-      <div style="width:38px;height:38px;border-radius:var(--radius-md);background:var(--primary-container);display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-rounded" style="color:var(--primary);font-size:20px;">menu_book</span>
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      <div style="width:28px;height:28px;border-radius:var(--radius-md);background:var(--primary-container);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-rounded" style="color:var(--primary);font-size:16px;">menu_book</span>
       </div>
       <div class="exam-info">
         <div class="exam-name">Advanced Cognitive Psychology</div>
@@ -193,12 +207,14 @@
       </div>
     </div>
 
-    <div class="timer-widget" id="timerWidget">
-      <span class="material-symbols-rounded">timer</span>
-      <span class="timer-value" id="timer">01:42:15</span>
-    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="timer-widget" id="timerWidget">
+        <span class="material-symbols-rounded">timer</span>
+        <span class="timer-value" id="timer">01:42:15</span>
+      </div>
 
-    <button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button>
+    </div>
   </header>
 
   <!-- Question body -->
@@ -208,7 +224,7 @@
         Question <span id="qNum">14</span> <em>of <span id="qTotal">50</span></em>
       </div>
       <button class="flag-btn" id="flagBtn" onclick="toggleFlag()">
-        <span class="material-symbols-rounded" style="font-size:18px;">bookmark</span>
+        <span class="material-symbols-rounded" style="font-size:16px;">bookmark</span>
         Flag for review
       </button>
     </div>

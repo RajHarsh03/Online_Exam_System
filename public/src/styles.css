@@ -330,7 +330,7 @@ img { display: block; max-width: 100%; }
 /* ── Main Content Area ─────────────────────────────── */
 .main-content {
   background: var(--surface);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md);
   overflow-y: auto;
   min-height: 100vh;
 }
@@ -616,7 +616,7 @@ button:focus-visible, a:focus-visible { border-radius: var(--radius-sm); }
   }
 
   .main-content {
-    padding: 10px var(--space-md) var(--space-md) calc(var(--space-md) + 42px);
+    padding: 10px var(--space-lg) var(--space-md) var(--space-md);
   }
 
   .mobile-sidebar-backdrop {

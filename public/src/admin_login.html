@@ -104,18 +104,26 @@
       }
 
       .login-image {
-        min-height: 220px;
+        min-height: 200px;
       }
     }
 
     @media (max-width: 560px) {
-      .login-image {
-        display: none;
-      }
+      body { padding: 8px; }
+      .login-image { display: none; }
 
       .login-form-panel {
-        padding: var(--space-md);
+        padding: 12px 10px;
+        justify-content: center;
       }
+      .form-title { font-size: 1.25rem; margin-bottom: 2px; }
+      .form-subtitle { font-size: 0.75rem; margin-bottom: 10px; }
+      .form-fields { gap: 8px; margin-bottom: 10px; }
+      .field-group .field-label { font-size: 0.7rem; }
+      .field-group .input-wrap input { padding: 6px 0; font-size: 0.75rem; }
+      .btn-full { font-size: 0.8rem; padding: 8px 16px; }
+      .divider { margin: 8px 0; }
+      .alt-link { font-size: 0.75rem; }
     }
   </style>
 </head>

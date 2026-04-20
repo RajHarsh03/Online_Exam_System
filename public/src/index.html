@@ -49,6 +49,11 @@
       align-items: center;
     }
 
+    .nav-actions .btn {
+      padding: 10px 18px;
+      font-size: 0.875rem;
+    }
+
     .hero-container {
       flex: 1;
       position: relative;
@@ -241,35 +246,62 @@
     /* Responsive */
     @media (max-width: 900px) {
       .landing-header {
-        flex-wrap: wrap;
-        gap: var(--space-sm);
+        padding: var(--space-md) var(--space-lg);
+        gap: var(--space-md);
+      }
+      .brand-logo {
+        font-size: 1rem;
+      }
+      .brand-icon {
+        width: 28px; 
+        height: 28px;
+      }
+      .brand-icon .material-symbols-rounded {
+        font-size: 16px;
       }
       .nav-actions {
-        width: 100%;
-        justify-content: flex-end;
+        width: auto;
+        gap: var(--space-sm);
+      }
+      .nav-actions .btn {
+        padding: 8px 14px;
+        font-size: 0.75rem;
       }
       .hero-title { font-size: 3.5rem; }
       .features-showcase { grid-template-columns: 1fr; gap: var(--space-md); margin-top: 50px; }
     }
     @media (max-width: 600px) {
-      .hero-title { font-size: 2.5rem; }
-      .landing-header { padding: var(--space-md); }
+      .landing-header {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
+      }
+      .brand-logo {
+        font-size: 0.9rem;
+      }
+      .brand-icon {
+        width: 24px; 
+        height: 24px;
+      }
+      .brand-icon .material-symbols-rounded {
+        font-size: 14px;
+      }
       .nav-actions {
-        flex-direction: column;
-        align-items: stretch;
+        gap: 4px;
       }
       .nav-actions .btn {
-        width: 100%;
+        padding: 6px 10px;
+        font-size: 0.7rem;
       }
-      .hero-container {
-        padding: 140px var(--space-md) 48px;
-      }
+      .hero-title { font-size: 2.5rem; }
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { width: 100%; }
       .chip-new {
         flex-wrap: wrap;
         justify-content: center;
       }
-      .hero-cta { flex-direction: column; }
-      .hero-cta .btn { width: 100%; }
+      .hero-container {
+        padding: 140px var(--space-md) 48px;
+      }
     }
   </style>
 </head>

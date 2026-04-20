@@ -130,7 +130,7 @@
 </head>
 <body>
   <div class="admin-layout">
-    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation" style="color:#526075;" onmouseenter="this.style.color='#2c3437'" onmouseleave="this.style.color='#526075'">
       <span class="material-symbols-rounded">menu_open</span>
     </button>
     <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
@@ -184,6 +184,16 @@
 
     <!-- Main content -->
     <main class="main-content">
+      <!-- Top bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:var(--space-md); border-bottom:1px solid var(--outline-variant); margin-bottom:var(--space-md);">
+        <div></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
+          <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
+          <div class="user-avatar">AD</div>
+        </div>
+      </div>
+
       <!-- Header row -->
       <div class="roster-header">
         <div>

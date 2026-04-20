@@ -162,10 +162,22 @@
     .toast.ok { background: var(--primary); }
 
     @media (max-width: 768px) {
-      html, body { overflow: auto; }
+      html, body { overflow: auto; padding: 8px; }
       .signup-shell { grid-template-columns: 1fr; height: auto; max-height: none; }
       .signup-hero { display: none; }
-      .row2 { grid-template-columns: 1fr; }
+      .signup-form { padding: 16px 12px; }
+      .form-heading { font-size: 1.1rem; margin-bottom: 2px; }
+      .form-sub { font-size: 0.75rem; margin-bottom: 10px; }
+      .fields { gap: 6px; margin-bottom: 8px; }
+      .fields .input-wrap { padding: 0 6px; }
+      .fields .input-wrap input { padding: 6px 0; font-size: 0.75rem; }
+      .field-label { font-size: 0.7rem; }
+      .row2 { grid-template-columns: 1fr; gap: 6px; }
+      .terms { font-size: 0.7rem; gap: 6px; margin-bottom: 10px; }
+      .btn-full { font-size: 0.8rem; padding: 8px 16px; }
+      .pw-bars { margin-top: 2px; }
+      .sep { margin: 8px 0; }
+      .alt { font-size: 0.75rem; }
     }
   </style>
 </head>
