@@ -793,4 +793,13 @@ button:focus-visible, a:focus-visible { border-radius: var(--radius-sm); }
   .main-content {
     margin-left: 0;
   }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-footer {
+    margin-bottom: var(--space-md);
+  }
 }

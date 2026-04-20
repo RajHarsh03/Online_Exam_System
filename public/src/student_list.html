@@ -40,6 +40,22 @@
     }
     .filter-btn:hover { background: var(--surface-low); color: var(--on-surface); }
 
+    .status-filter {
+      appearance: none;
+      background: var(--surface-lowest);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 0.8125rem;
+      color: var(--on-surface);
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23526075' d='m7 10 5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+    }
+
     /* Student table card */
     .table-card {
       background: var(--surface-lowest);
@@ -205,6 +221,11 @@
             <span class="material-symbols-rounded">search</span>
             <input type="text" id="studentSearch" placeholder="Search by name, ID, or institute…" oninput="filterStudents()" />
           </div>
+          <select class="status-filter" id="statusFilter" onchange="filterStudents()">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+          </select>
           <button class="filter-btn" title="Filter">
             <span class="material-symbols-rounded">filter_list</span>
           </button>
