@@ -94,6 +94,30 @@
       opacity: 0; transition: all 0.3s ease;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      body {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: 240px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .hero-panel {
+        display: none;
+      }
+
+      .form-panel {
+        padding: var(--space-md);
+      }
+
+      .form-card {
+        padding: var(--space-md);
+      }
+    }
   </style>
 </head>
 <body>

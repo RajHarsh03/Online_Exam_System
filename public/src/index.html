@@ -240,12 +240,34 @@
     
     /* Responsive */
     @media (max-width: 900px) {
+      .landing-header {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+      }
+      .nav-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
       .hero-title { font-size: 3.5rem; }
       .features-showcase { grid-template-columns: 1fr; gap: var(--space-md); margin-top: 50px; }
     }
     @media (max-width: 600px) {
       .hero-title { font-size: 2.5rem; }
       .landing-header { padding: var(--space-md); }
+      .nav-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .nav-actions .btn {
+        width: 100%;
+      }
+      .hero-container {
+        padding: 140px var(--space-md) 48px;
+      }
+      .chip-new {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
       .hero-cta { flex-direction: column; }
       .hero-cta .btn { width: 100%; }
     }

@@ -114,6 +114,28 @@
       transition: background var(--transition);
     }
     .btn-upload-sm:hover { background: var(--surface-highest); }
+
+    @media (max-width: 1024px) {
+      .exams-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .dashboard-body {
+        padding: var(--space-md);
+      }
+
+      .exam-meta,
+      .sec-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .priority-card .btn {
+        width: 100% !important;
+      }
+    }
   </style>
 </head>
 <body style="background-color: var(--surface-highest);">

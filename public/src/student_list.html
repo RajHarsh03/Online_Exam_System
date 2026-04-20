@@ -105,10 +105,35 @@
     .page-btn:disabled { opacity: 0.4; cursor: default; }
 
     .sidebar-cta { padding: var(--space-sm); }
+
+    @media (max-width: 768px) {
+      .roster-header,
+      .roster-search-wrap,
+      .table-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-bar-lg {
+        width: 100%;
+      }
+
+      .table-card {
+        overflow-x: auto;
+      }
+
+      .student-table {
+        min-width: 720px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="admin-layout">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation">
+      <span class="material-symbols-rounded">menu_open</span>
+    </button>
+    <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -117,7 +142,7 @@
           <span class="brand-name">Admin Portal</span>
           <span class="brand-subtitle">Prashiksha</span>
         </div>
-        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+        <button class="btn-collapse" onclick="toggleAdminSidebar()" style="margin-left:auto;" title="Toggle Sidebar">
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
@@ -206,6 +231,36 @@
   </div>
 
   <script>
+    const adminLayout = document.querySelector('.admin-layout');
+
+    function closeAdminSidebar() {
+      adminLayout.classList.remove('mobile-nav-open');
+      document.body.classList.remove('admin-nav-open');
+    }
+
+    function toggleAdminSidebar() {
+      if (window.innerWidth <= 1024) {
+        adminLayout.classList.toggle('mobile-nav-open');
+        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
+        return;
+      }
+      adminLayout.classList.toggle('collapsed');
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        closeAdminSidebar();
+      }
+    });
+
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeAdminSidebar();
+        }
+      });
+    });
+
     const students = [
       { name: 'Eleanor Vance', email: 'evance@scholar.edu', id: 'STU-2023-8942', institute: 'INS-NE-04', status: 'ACTIVE', initials: 'EV', img: 'https://i.pravatar.cc/80?img=47' },
       { name: 'Marcus Chen',   email: 'mchen@scholar.edu',  id: 'STU-2023-7719', institute: 'INS-NE-04', status: 'PENDING', initials: 'MC', img: 'https://i.pravatar.cc/80?img=12' },

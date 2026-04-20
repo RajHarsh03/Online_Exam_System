@@ -122,10 +122,40 @@
       background: rgba(255,255,255,0.3); margin-top: var(--space-sm); overflow: hidden;
     }
     .pass-rate-fill { height: 100%; background: var(--primary-container); border-radius: var(--radius-full); }
+
+    @media (max-width: 900px) {
+      .results-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .filters-row,
+      .table-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-field {
+        max-width: none;
+      }
+
+      .results-table-card {
+        overflow-x: auto;
+      }
+
+      .results-table {
+        min-width: 760px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="admin-layout">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation">
+      <span class="material-symbols-rounded">menu_open</span>
+    </button>
+    <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -134,7 +164,7 @@
           <span class="brand-name">Admin Portal</span>
           <span class="brand-subtitle">Prashiksha</span>
         </div>
-        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+        <button class="btn-collapse" onclick="toggleAdminSidebar()" style="margin-left:auto;" title="Toggle Sidebar">
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
@@ -267,6 +297,36 @@
   </div>
 
   <script>
+    const adminLayout = document.querySelector('.admin-layout');
+
+    function closeAdminSidebar() {
+      adminLayout.classList.remove('mobile-nav-open');
+      document.body.classList.remove('admin-nav-open');
+    }
+
+    function toggleAdminSidebar() {
+      if (window.innerWidth <= 1024) {
+        adminLayout.classList.toggle('mobile-nav-open');
+        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
+        return;
+      }
+      adminLayout.classList.toggle('collapsed');
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        closeAdminSidebar();
+      }
+    });
+
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeAdminSidebar();
+        }
+      });
+    });
+
     const results = [
       { name:'Eleanor Shellstrop', id:'ID: 482910', initials:'ES', color:'#5b9bd5', exam:'Advanced Ethics 401', date:'Oct 24, 2023', score:'92%', status:'Passed' },
       { name:'Chidi Anagonye',     id:'ID: 482911', initials:'CA', color:'#4e8d6e', exam:'Advanced Ethics 401', date:'Oct 24, 2023', score:'98%', status:'Passed' },

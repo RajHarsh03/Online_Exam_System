@@ -136,6 +136,47 @@
 
     /* Bottom padding so content isn't hidden behind footer */
     .exam-body { padding-bottom: 80px; }
+
+    @media (max-width: 768px) {
+      .exam-header,
+      .q-progress-row,
+      .exam-footer {
+        gap: var(--space-sm);
+      }
+
+      .exam-header,
+      .q-progress-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .exam-body {
+        padding: var(--space-md);
+        padding-bottom: 110px;
+      }
+
+      .question-card {
+        padding: var(--space-md);
+      }
+
+      .exam-footer {
+        padding: 12px var(--space-md);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .exam-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .exam-footer .btn,
+      .prev-btn,
+      .submit-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>

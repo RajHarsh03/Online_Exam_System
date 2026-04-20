@@ -91,6 +91,32 @@
       opacity: 0; transition: all 0.3s ease;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 768px) {
+      body {
+        align-items: stretch;
+        padding: var(--space-md);
+      }
+
+      .login-shell {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .login-image {
+        min-height: 220px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .login-image {
+        display: none;
+      }
+
+      .login-form-panel {
+        padding: var(--space-md);
+      }
+    }
   </style>
 </head>
 <body>

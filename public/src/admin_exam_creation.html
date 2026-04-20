@@ -94,10 +94,35 @@
     }
 
     .hint-text { font-size: 0.75rem; color: var(--secondary); margin-top: 6px; }
+
+    @media (max-width: 900px) {
+      .main-content { max-width: none; }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid-2,
+      .form-grid-3,
+      form > div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .form-actions .btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="admin-layout">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation">
+      <span class="material-symbols-rounded">menu_open</span>
+    </button>
+    <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -106,7 +131,7 @@
           <span class="brand-name">Admin Portal</span>
           <span class="brand-subtitle">Prashiksha</span>
         </div>
-        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+        <button class="btn-collapse" onclick="toggleAdminSidebar()" style="margin-left:auto;" title="Toggle Sidebar">
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
@@ -262,6 +287,36 @@
   </div>
 
   <script>
+    const adminLayout = document.querySelector('.admin-layout');
+
+    function closeAdminSidebar() {
+      adminLayout.classList.remove('mobile-nav-open');
+      document.body.classList.remove('admin-nav-open');
+    }
+
+    function toggleAdminSidebar() {
+      if (window.innerWidth <= 1024) {
+        adminLayout.classList.toggle('mobile-nav-open');
+        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
+        return;
+      }
+      adminLayout.classList.toggle('collapsed');
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        closeAdminSidebar();
+      }
+    });
+
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeAdminSidebar();
+        }
+      });
+    });
+
     document.getElementById('examForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const examName = document.getElementById('examName').value.trim();

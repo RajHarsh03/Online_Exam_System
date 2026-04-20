@@ -167,10 +167,57 @@
 
     /* Add question CTA in sidebar */
     .sidebar-cta { padding: var(--space-sm); }
+
+    @media (max-width: 1024px) {
+      .questions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .meta-row,
+      .repo-header,
+      .draft-actions,
+      .repo-footer {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-bar {
+        max-width: none;
+      }
+
+      .q-table-header {
+        display: none;
+      }
+
+      .q-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 0;
+      }
+
+      .q-row:hover {
+        margin: 0;
+        padding: 12px 0;
+        border-radius: 0;
+      }
+
+      .q-metrics {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="admin-layout">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation">
+      <span class="material-symbols-rounded">menu_open</span>
+    </button>
+    <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -179,7 +226,7 @@
           <span class="brand-name">Admin Portal</span>
           <span class="brand-subtitle">Prashiksha</span>
         </div>
-        <button class="btn-collapse" onclick="document.querySelector('.admin-layout').classList.toggle('collapsed')" style="margin-left:auto;" title="Toggle Sidebar">
+        <button class="btn-collapse" onclick="toggleAdminSidebar()" style="margin-left:auto;" title="Toggle Sidebar">
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
@@ -349,6 +396,36 @@
   </div>
 
   <script>
+    const adminLayout = document.querySelector('.admin-layout');
+
+    function closeAdminSidebar() {
+      adminLayout.classList.remove('mobile-nav-open');
+      document.body.classList.remove('admin-nav-open');
+    }
+
+    function toggleAdminSidebar() {
+      if (window.innerWidth <= 1024) {
+        adminLayout.classList.toggle('mobile-nav-open');
+        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
+        return;
+      }
+      adminLayout.classList.toggle('collapsed');
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        closeAdminSidebar();
+      }
+    });
+
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeAdminSidebar();
+        }
+      });
+    });
+
     // Sample questions data
     const questions = [
       { snippet: 'Evaluate the integral of e^(2x) sin(3x) dx using…', domain: 'Mathematics', pts: 3, diff: 'High' },
