@@ -91,16 +91,54 @@
     }
     .support-link a { color: var(--primary); font-weight: 600; }
 
-    @media (max-width: 768px) {
-      body { padding: var(--space-md); }
-      .login-shell { grid-template-columns: 1fr; min-height: auto; }
-      .login-image { min-height: 200px; }
+    /* Mobile branding header — hidden by default */
+    .mobile-brand-header {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 36px var(--space-lg) 28px;
+      background: linear-gradient(145deg, #003d2a 0%, #006d4a 60%, #00a06a 100%);
+      text-align: center;
     }
-    @media (max-width: 560px) {
+    .mobile-brand-header .brand-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mobile-brand-header .brand-icon .material-symbols-rounded {
+      font-size: 28px; color: #fff;
+    }
+    .mobile-brand-header .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800;
+      color: #ffffff; letter-spacing: -0.02em;
+    }
+    .mobile-brand-header .brand-tagline {
+      font-size: 0.8125rem; color: rgba(255,255,255,0.72);
+      line-height: 1.5; max-width: 260px;
+    }
+    .mobile-brand-header .brand-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 4px 12px; border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
       body { padding: 0; }
-      .login-shell { border-radius: 0; box-shadow: none; min-height: 100vh; }
+      .login-shell { grid-template-columns: 1fr; border-radius: 0; box-shadow: none; min-height: 100vh; }
       .login-image { display: none; }
-      .login-form-panel { padding: 1.5rem; }
+      .mobile-brand-header { display: flex; }
+      .login-form-panel { padding: 0; align-items: stretch; justify-content: flex-start; }
+      .login-form-panel .form-card { padding: var(--space-lg) var(--space-md); }
     }
   </style>
 </head>
@@ -117,6 +155,18 @@
     </div>
 
     <div class="login-form-panel">
+      <!-- Mobile-only branding header -->
+      <div class="mobile-brand-header">
+        <div class="brand-badge">
+          <span class="material-symbols-rounded" style="font-size:13px;">verified_user</span>
+          Admin Portal
+        </div>
+        <div class="brand-icon">
+          <span class="material-symbols-rounded">admin_panel_settings</span>
+        </div>
+        <div class="brand-name">Prashiksha</div>
+        <p class="brand-tagline">Secure administration portal for managing academic examinations.</p>
+      </div>
       <div class="form-card">
         <h2 class="form-title">Admin Portal</h2>
         <p class="form-subtitle">Sign in with your administrator credentials to manage the examination platform.</p>

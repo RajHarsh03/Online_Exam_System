@@ -9,41 +9,47 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
-    html, body { height: 100%; margin: 0; overflow: hidden; }
-    body { display: grid; grid-template-columns: 55% 1fr; }
+    body { min-height: 100vh; background: var(--surface); display: flex; align-items: center; justify-content: center; padding: var(--space-lg); }
 
-    .hero-panel {
-      position: relative; background: var(--surface-low);
-      overflow: hidden; display: flex; flex-direction: column;
+    .login-shell {
+      display: grid; grid-template-columns: 1fr 1fr;
+      max-width: 920px; width: 100%; min-height: 520px;
+      border-radius: var(--radius-xl); overflow: hidden;
+      box-shadow: 0 20px 48px rgba(44,52,55,0.12);
     }
-    .hero-panel::after {
-      content: ''; position: absolute; inset: 0;
+
+    .login-image {
+      position: relative;
       background: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=90') center/cover no-repeat;
-      opacity: 0.45;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: var(--space-lg);
     }
-    .hero-top { position: relative; z-index: 2; padding: var(--space-md) var(--space-lg); }
-    .hero-brand {
+    .login-image::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,40,30,0.82) 0%, rgba(0,20,15,0.35) 60%, transparent 100%);
+    }
+    .login-image > * { position: relative; z-index: 1; }
+    .img-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      font-family: var(--font-display); font-weight: 800; font-size: 0.9375rem; color: var(--primary);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px; border-radius: var(--radius-full);
+      color: rgba(255,255,255,0.9); font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: var(--space-sm); width: fit-content;
     }
-    .hero-brand-icon {
-      width: 32px; height: 32px; border-radius: var(--radius-sm);
-      background: var(--primary); display: flex; align-items: center; justify-content: center;
+    .img-title {
+      font-family: var(--font-display); font-size: 2rem; font-weight: 800;
+      color: #ffffff; line-height: 1.15; margin-bottom: var(--space-xs);
     }
-    .hero-brand-icon .material-symbols-rounded { color: var(--on-primary); font-size: 18px; }
-    .hero-bottom { position: relative; z-index: 2; margin-top: auto; padding: var(--space-lg); }
-    .hero-title {
-      font-family: var(--font-display); font-size: 2.25rem; font-weight: 800;
-      color: var(--on-surface); line-height: 1.08; margin-bottom: var(--space-xs);
-    }
-    .hero-subtitle { font-size: 0.875rem; color: var(--secondary); max-width: 340px; line-height: 1.6; }
-    .secured-note { position: absolute; bottom: 24px; right: 24px; z-index: 2; font-size: 0.75rem; color: var(--secondary); }
+    .img-desc { font-size: 0.8125rem; color: rgba(255,255,255,0.75); max-width: 280px; line-height: 1.55; }
 
-    .form-panel {
-      background: var(--surface); display: flex; align-items: center; justify-content: center;
+    .login-form-panel {
+      background: var(--surface-lowest);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: var(--space-lg); overflow-y: auto;
     }
-    .form-card { width: 100%; max-width: 400px; }
+    .form-card { width: 100%; max-width: 380px; }
     .form-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
     .form-subtitle { color: var(--secondary); font-size: 0.8125rem; margin-bottom: var(--space-lg); line-height: 1.5; }
 
@@ -62,6 +68,8 @@
       padding: 12px 0; font-size: 0.875rem; color: var(--on-surface);
     }
     .field-group .input-wrap input::placeholder { color: var(--on-surface-variant); }
+
+    .password-hint { font-size: 0.7rem; color: var(--secondary); margin-top: 4px; }
 
     .btn-full {
       width: 100%; padding: 12px; border-radius: var(--radius-md);
@@ -85,79 +93,127 @@
     }
     .support-link a { color: var(--primary); font-weight: 600; }
 
-    .password-hint { font-size: 0.7rem; color: var(--secondary); margin-top: 4px; }
-
-    @media (max-width: 900px) {
-      body { grid-template-columns: 1fr; }
-      .hero-panel { min-height: 220px; }
+    /* Mobile branding header — hidden by default */
+    .mobile-brand-header {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 36px var(--space-lg) 28px;
+      background: linear-gradient(145deg, #003d2a 0%, #006d4a 60%, #00a06a 100%);
+      text-align: center;
     }
-    @media (max-width: 560px) {
-      body { grid-template-columns: 1fr; }
-      .hero-panel { display: none; }
-      .form-panel { padding: 1rem; }
+    .mobile-brand-header .brand-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mobile-brand-header .brand-icon .material-symbols-rounded {
+      font-size: 28px; color: #fff;
+    }
+    .mobile-brand-header .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800;
+      color: #ffffff; letter-spacing: -0.02em;
+    }
+    .mobile-brand-header .brand-tagline {
+      font-size: 0.8125rem; color: rgba(255,255,255,0.72);
+      line-height: 1.5; max-width: 260px;
+    }
+    .mobile-brand-header .brand-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 4px 12px; border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .login-shell { grid-template-columns: 1fr; border-radius: 0; box-shadow: none; min-height: 100vh; }
+      .login-image { display: none; }
+      .mobile-brand-header { display: flex; }
+      .login-form-panel { padding: 0; align-items: stretch; justify-content: flex-start; }
+      .login-form-panel .form-card { padding: var(--space-lg) var(--space-md); }
     }
   </style>
 </head>
 <body>
 
-  <div class="hero-panel">
-    <div class="hero-top">
-      <div class="hero-brand">
-        <div class="hero-brand-icon"><span class="material-symbols-rounded">school</span></div>
-        Prashiksha
+  <div class="login-shell">
+    <div class="login-image">
+      <div class="img-badge">
+        <span class="material-symbols-rounded" style="font-size:16px;">school</span>
+        Student Portal
       </div>
+      <h1 class="img-title">Begin Your<br>Academic<br>Journey.</h1>
+      <p class="img-desc">Create your account to access examinations, track performance, and unlock your full academic potential.</p>
     </div>
-    <div class="hero-bottom">
-      <h1 class="hero-title">Begin Your<br>Academic<br>Journey.</h1>
-      <p class="hero-subtitle">Create your account to access examinations, track performance, and unlock your full academic potential.</p>
-    </div>
-    <span class="secured-note">Secured by Prashiksha Examination Engine v2.4</span>
-  </div>
 
-  <div class="form-panel">
-    <div class="form-card">
-      <h2 class="form-title">Create Account</h2>
-      <p class="form-subtitle">Register as a student to start taking exams and tracking your progress.</p>
-
-      <div class="form-error" id="formError"></div>
-
-      <form id="signupForm" novalidate>
-        <div class="form-fields">
-          <div class="field-group">
-            <label class="field-label" for="name">Full Name</label>
-            <div class="input-wrap">
-              <span class="material-symbols-rounded">person</span>
-              <input type="text" id="name" placeholder="John Doe" required autocomplete="name" />
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="email">Email Address</label>
-            <div class="input-wrap">
-              <span class="material-symbols-rounded">mail</span>
-              <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="password">Password</label>
-            <div class="input-wrap">
-              <span class="material-symbols-rounded">lock</span>
-              <input type="password" id="password" placeholder="Create a password" required minlength="6" autocomplete="new-password" />
-            </div>
-            <p class="password-hint">Must be at least 6 characters</p>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="confirmPassword">Confirm Password</label>
-            <div class="input-wrap">
-              <span class="material-symbols-rounded">lock</span>
-              <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password" />
-            </div>
-          </div>
+    <div class="login-form-panel">
+      <!-- Mobile-only branding header -->
+      <div class="mobile-brand-header">
+        <div class="brand-badge">
+          <span class="material-symbols-rounded" style="font-size:13px;">school</span>
+          Student Portal
         </div>
+        <div class="brand-icon">
+          <span class="material-symbols-rounded">school</span>
+        </div>
+        <div class="brand-name">Prashiksha</div>
+        <p class="brand-tagline">Create your account to begin your academic journey.</p>
+      </div>
 
-        <button type="submit" class="btn-full" id="submitBtn">Create Account</button>
-      </form>
+      <div class="form-card">
+        <h2 class="form-title">Create Account</h2>
+        <p class="form-subtitle">Register as a student to start taking exams and tracking your progress.</p>
 
-      <p class="support-link">Already have an account? <a href="student_login.html">Sign In</a></p>
+        <div class="form-error" id="formError"></div>
+
+        <form id="signupForm" novalidate>
+          <div class="form-fields">
+            <div class="field-group">
+              <label class="field-label" for="name">Full Name</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">person</span>
+                <input type="text" id="name" placeholder="John Doe" required autocomplete="name" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="email">Email Address</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">mail</span>
+                <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="password">Password</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">lock</span>
+                <input type="password" id="password" placeholder="Create a password" required minlength="6" autocomplete="new-password" />
+              </div>
+              <p class="password-hint">Must be at least 6 characters</p>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="confirmPassword">Confirm Password</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">lock</span>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-full" id="submitBtn">Create Account</button>
+        </form>
+
+        <p class="support-link">Already have an account? <a href="student_login.html">Sign In</a></p>
+      </div>
     </div>
   </div>
 
