@@ -21,9 +21,11 @@
   "homepage": "https://github.com/RajHarsh03/Online_Exam_System#readme",
   "dependencies": {
     "@clerk/express": "^2.1.5",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.5.0"
   },
   "devDependencies": {

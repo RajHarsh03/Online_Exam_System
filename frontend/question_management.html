@@ -8,6 +8,7 @@
   <meta name="description" content="Manage and grow the central repository of examination questions." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
   <style>
     .questions-grid {
       display: grid;
@@ -437,76 +438,60 @@
 
   </div>
 
+  <script src="js/auth.js"></script>
   <script>
-    const adminLayout = document.querySelector('.admin-layout');
-
-    function closeAdminSidebar() {
-      adminLayout.classList.remove('mobile-nav-open');
-      document.body.classList.remove('admin-nav-open');
-    }
-
-    function toggleAdminSidebar() {
-      if (window.innerWidth <= 1024) {
-        adminLayout.classList.toggle('mobile-nav-open');
-        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
-        return;
-      }
-      adminLayout.classList.toggle('collapsed');
-    }
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 1024) {
-        closeAdminSidebar();
-      }
+    window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeAdminSidebar(); });
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach(el => {
+      el.addEventListener('click', () => { if (window.innerWidth <= 1024) closeAdminSidebar(); });
     });
 
-    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
-      el.addEventListener('click', () => {
-        if (window.innerWidth <= 1024) {
-          closeAdminSidebar();
-        }
-      });
-    });
-
-    // Sample questions data
-    const questions = [
-      { snippet: 'Evaluate the integral of e^(2x) sin(3x) dx using…', domain: 'Mathematics', pts: 3, diff: 'High' },
-      { snippet: 'Identify the primary rhetorical device utilized…', domain: 'Literature', pts: 2, diff: 'Std' },
-      { snippet: 'According to the Copenhagen interpretation…', domain: 'Physics', pts: 1, diff: 'Std' },
-      { snippet: 'Which of the following sorting algorithms…', domain: 'Comp Logic', pts: 1, diff: 'Std' },
-      { snippet: 'Describe the cellular mechanism by which…', domain: 'Biology', pts: 2, diff: 'High' },
-      { snippet: 'The Treaty of Westphalia (1648) established…', domain: 'History', pts: 1, diff: 'Std' },
-      { snippet: 'Calculate the Gibbs free energy change for…', domain: 'Chemistry', pts: 3, diff: 'High' },
-    ];
-
+    // ── Data ──
+    let questions = [];
     const domainColors = {
-      Mathematics: 'chip-primary', Literature: 'chip-neutral', Physics: 'chip-success',
-      'Comp Logic': 'chip-warning', Biology: 'chip-danger', History: 'chip-neutral', Chemistry: 'chip-primary'
+      mathematics: 'chip-primary', literature: 'chip-neutral', physics: 'chip-success',
+      'comp-logic': 'chip-warning', biology: 'chip-danger', history: 'chip-neutral', chemistry: 'chip-primary'
     };
 
+    // ── Render question list ──
     function renderQuestions(list) {
       const el = document.getElementById('questionList');
-      el.innerHTML = list.map((q, i) => `
-        <div class="q-row">
-          <div class="q-snippet">${q.snippet}</div>
-          <span class="chip ${domainColors[q.domain] || 'chip-neutral'}" style="font-size:0.7rem;padding:3px 10px;">${q.domain}</span>
+      if (!list.length) {
+        el.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--secondary);font-size:0.875rem;">No questions yet. Draft one on the left panel!</p>';
+        document.getElementById('qCount').textContent = '0 questions';
+        return;
+      }
+      el.innerHTML = list.map(q => `
+        <div class="q-row" data-id="${q._id}">
+          <div class="q-snippet">${q.questionText.substring(0, 70)}${q.questionText.length > 70 ? '…' : ''}</div>
+          <span class="chip ${domainColors[q.subject] || 'chip-neutral'}" style="font-size:0.7rem;padding:3px 10px;">${q.subject || 'General'}</span>
           <div class="q-metrics">
-            <div class="q-metric"><span class="material-symbols-rounded">add_circle</span> ${q.pts} pt</div>
-            <div class="q-metric"><span class="material-symbols-rounded">balance</span> ${q.diff}</div>
+            <div class="q-metric"><span class="material-symbols-rounded">add_circle</span> ${q.marks} pt</div>
+            <div class="q-metric"><span class="material-symbols-rounded">balance</span> ${q.difficulty}</div>
           </div>
         </div>
       `).join('');
+      document.getElementById('qCount').textContent = `${list.length} question${list.length !== 1 ? 's' : ''}`;
     }
 
-    renderQuestions(questions);
+    // ── Load questions from API ──
+    async function loadQuestions() {
+      try {
+        questions = await apiFetch('/api/questions');
+        renderQuestions(questions);
+      } catch (err) {
+        console.error('Failed to load questions:', err);
+      }
+    }
 
     function filterQuestions() {
       const term = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = questions.filter(q => q.snippet.toLowerCase().includes(term) || q.domain.toLowerCase().includes(term));
+      const filtered = questions.filter(q =>
+        q.questionText.toLowerCase().includes(term) || (q.subject || '').toLowerCase().includes(term)
+      );
       renderQuestions(filtered);
     }
 
-    // Answer selection
+    // ── Answer selection ──
     let selectedAnswer = null;
     function selectAnswer(idx) {
       document.querySelectorAll('.answer-option').forEach((el, i) => {
@@ -521,21 +506,57 @@
       selectedAnswer = null;
     }
 
-    document.getElementById('questionForm').addEventListener('submit', (e) => {
+    // ── Form submit → POST /api/questions ──
+    document.getElementById('questionForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const domain  = document.getElementById('subjectDomain').value;
-      const prompt = document.getElementById('qPrompt').value.trim();
-      if (!domain || !prompt) { alert('Please fill in Subject Domain and Question Prompt.'); return; }
+      const subject = document.getElementById('subjectDomain').value;
+      const questionText = document.getElementById('qPrompt').value.trim();
+      const marks = parseInt(document.getElementById('qPoints').value) || 1;
+      const difficulty = document.getElementById('qDifficulty').value;
+
+      if (!subject || !questionText) { alert('Please fill in Subject Domain and Question Prompt.'); return; }
       if (selectedAnswer === null) { alert('Please select the correct answer.'); return; }
 
-      // Add to list
-      const newQ = { snippet: prompt.substring(0, 60) + '…', domain: document.getElementById('subjectDomain').selectedOptions[0].text,
-                     pts: document.getElementById('qPoints').value, diff: document.getElementById('qDifficulty').value };
-      questions.unshift(newQ);
-      renderQuestions(questions);
-      clearForm();
-      alert('Question committed to bank!');
+      // Gather options
+      const inputs = document.querySelectorAll('.answer-input');
+      const options = Array.from(inputs).map((inp, i) => ({
+        text: inp.value.trim(),
+        isCorrect: i === selectedAnswer,
+      }));
+      if (options.some(o => !o.text)) { alert('Please fill in all answer options.'); return; }
+
+      const submitBtn = e.target.querySelector('[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+
+      try {
+        await apiFetch('/api/questions', {
+          method: 'POST',
+          body: JSON.stringify({ questionText, type: 'mcq', options, marks, difficulty, subject }),
+        });
+        clearForm();
+        await loadQuestions();
+        alert('Question committed to bank!');
+      } catch (err) {
+        alert('Error saving question: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Commit to Bank';
+      }
     });
+
+    // ── Logout handler ──
+    document.querySelector('a[href="admin_login.html"]').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await handleLogout('admin_login.html');
+    });
+
+    // ── Init: Auth guard + load data ──
+    const user = requireAdmin();
+    if (user) {
+      updateUserUI(user);
+      loadQuestions();
+    }
   </script>
 </body>
 </html>

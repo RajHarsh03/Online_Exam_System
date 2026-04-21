@@ -6,11 +6,9 @@ const Question = require('../models/Question');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 // GET /api/results — Get results (students see own, admins see all)
-router.get('/', requireAuth(), async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
-    const role = req.auth?.sessionClaims?.metadata?.role;
-    const filter = role === 'admin' ? {} : { student: req.auth.userId };
-
+    const filter = req.user.role === 'admin' ? {} : { student: req.user.id };
     if (req.query.exam) filter.exam = req.query.exam;
 
     const results = await Result.find(filter)
@@ -23,7 +21,7 @@ router.get('/', requireAuth(), async (req, res) => {
 });
 
 // GET /api/results/:id — Get result details
-router.get('/:id', requireAuth(), async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const result = await Result.findById(req.params.id)
       .populate('exam')
@@ -31,9 +29,7 @@ router.get('/:id', requireAuth(), async (req, res) => {
 
     if (!result) return res.status(404).json({ error: 'Result not found' });
 
-    // Students can only view their own results
-    const role = req.auth?.sessionClaims?.metadata?.role;
-    if (role !== 'admin' && result.student !== req.auth.userId) {
+    if (req.user.role !== 'admin' && result.student !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -44,16 +40,14 @@ router.get('/:id', requireAuth(), async (req, res) => {
 });
 
 // POST /api/results — Submit exam (student)
-router.post('/', requireAuth(), async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { examId, answers, timeTaken } = req.body;
 
-    // Get exam with questions
     const exam = await Exam.findById(examId).populate('questions');
     if (!exam) return res.status(404).json({ error: 'Exam not found' });
 
-    // Check if student already submitted
-    const existing = await Result.findOne({ student: req.auth.userId, exam: examId });
+    const existing = await Result.findOne({ student: req.user.id, exam: examId });
     if (existing) return res.status(400).json({ error: 'Already submitted this exam' });
 
     // Grade the answers
@@ -84,9 +78,9 @@ router.post('/', requireAuth(), async (req, res) => {
     const percentage = Math.round((obtainedMarks / exam.totalMarks) * 100);
 
     const result = new Result({
-      student: req.auth.userId,
-      studentName: req.auth?.sessionClaims?.name || '',
-      studentEmail: req.auth?.sessionClaims?.email || '',
+      student: req.user.id,
+      studentName: req.user.name || '',
+      studentEmail: req.user.email || '',
       exam: examId,
       answers: gradedAnswers,
       totalMarks: exam.totalMarks,

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
-  <title>Student Login — Prashiksha</title>
-  <meta name="description" content="Student portal login for Prashiksha online examination platform." />
+  <title>Student Sign Up — Prashiksha</title>
+  <meta name="description" content="Create your student account on Prashiksha online examination platform." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
@@ -63,10 +63,6 @@
     }
     .field-group .input-wrap input::placeholder { color: var(--on-surface-variant); }
 
-    .form-extras { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
-    .form-extras label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--secondary); cursor: pointer; }
-    .form-extras a { font-size: 0.8rem; color: var(--primary); font-weight: 500; }
-
     .btn-full {
       width: 100%; padding: 12px; border-radius: var(--radius-md);
       background: var(--primary); color: var(--on-primary);
@@ -89,13 +85,7 @@
     }
     .support-link a { color: var(--primary); font-weight: 600; }
 
-    .toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
-      background: var(--on-surface); color: #fff; padding: 10px 20px;
-      border-radius: var(--radius-full); font-size: 0.8125rem; font-weight: 500;
-      box-shadow: var(--shadow-float); z-index: 999; opacity: 0; transition: all 0.3s ease;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .password-hint { font-size: 0.7rem; color: var(--secondary); margin-top: 4px; }
 
     @media (max-width: 900px) {
       body { grid-template-columns: 1fr; }
@@ -110,7 +100,6 @@
 </head>
 <body>
 
-  <!-- Left: Hero Panel -->
   <div class="hero-panel">
     <div class="hero-top">
       <div class="hero-brand">
@@ -119,21 +108,28 @@
       </div>
     </div>
     <div class="hero-bottom">
-      <h1 class="hero-title">Enter the<br>Academic<br>Sanctuary.</h1>
-      <p class="hero-subtitle">A distraction-free environment designed for rigorous assessment. Prepare to focus, perform, and demonstrate your knowledge.</p>
+      <h1 class="hero-title">Begin Your<br>Academic<br>Journey.</h1>
+      <p class="hero-subtitle">Create your account to access examinations, track performance, and unlock your full academic potential.</p>
     </div>
+    <span class="secured-note">Secured by Prashiksha Examination Engine v2.4</span>
   </div>
 
-  <!-- Right: Form Panel -->
   <div class="form-panel">
     <div class="form-card">
-      <h2 class="form-title">Welcome Back</h2>
-      <p class="form-subtitle">Sign in to your student account to access exams and track your progress.</p>
+      <h2 class="form-title">Create Account</h2>
+      <p class="form-subtitle">Register as a student to start taking exams and tracking your progress.</p>
 
       <div class="form-error" id="formError"></div>
 
-      <form id="loginForm" novalidate>
+      <form id="signupForm" novalidate>
         <div class="form-fields">
+          <div class="field-group">
+            <label class="field-label" for="name">Full Name</label>
+            <div class="input-wrap">
+              <span class="material-symbols-rounded">person</span>
+              <input type="text" id="name" placeholder="John Doe" required autocomplete="name" />
+            </div>
+          </div>
           <div class="field-group">
             <label class="field-label" for="email">Email Address</label>
             <div class="input-wrap">
@@ -145,33 +141,38 @@
             <label class="field-label" for="password">Password</label>
             <div class="input-wrap">
               <span class="material-symbols-rounded">lock</span>
-              <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password" />
+              <input type="password" id="password" placeholder="Create a password" required minlength="6" autocomplete="new-password" />
+            </div>
+            <p class="password-hint">Must be at least 6 characters</p>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="confirmPassword">Confirm Password</label>
+            <div class="input-wrap">
+              <span class="material-symbols-rounded">lock</span>
+              <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password" />
             </div>
           </div>
         </div>
 
-        <button type="submit" class="btn-full" id="submitBtn">Sign In</button>
+        <button type="submit" class="btn-full" id="submitBtn">Create Account</button>
       </form>
 
-      <p class="support-link">Don't have an account? <a href="student_signup.html">Sign Up</a></p>
+      <p class="support-link">Already have an account? <a href="student_login.html">Sign In</a></p>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
-
   <script src="js/auth.js"></script>
   <script>
-    // Redirect if already logged in as student; clear if different role
     if (isLoggedIn()) {
       const user = getUser();
       if (user?.role === 'student') {
         window.location.href = 'student_dashboard.html';
       } else {
-        clearAuth(); // Let them log in as student
+        clearAuth();
       }
     }
 
-    const form = document.getElementById('loginForm');
+    const form = document.getElementById('signupForm');
     const errorEl = document.getElementById('formError');
     const submitBtn = document.getElementById('submitBtn');
 
@@ -179,33 +180,39 @@
       e.preventDefault();
       errorEl.style.display = 'none';
 
+      const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
 
-      if (!email || !password) {
+      if (!name || !email || !password) {
         errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (password !== confirmPassword) {
+        errorEl.textContent = 'Passwords do not match.';
         errorEl.style.display = 'block';
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Signing in…';
+      submitBtn.textContent = 'Creating account…';
 
       try {
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ name, email, password, role: 'student' }),
         });
         const data = await res.json();
 
-        if (!res.ok) {
-          throw new Error(data.error || 'Login failed');
-        }
-
-        if (data.user.role !== 'student') {
-          throw new Error('This portal is for students only. Please use the Admin Login.');
-        }
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
 
         saveAuth(data.token, data.user);
         window.location.href = 'student_dashboard.html';
@@ -213,7 +220,7 @@
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign In';
+        submitBtn.textContent = 'Create Account';
       }
     });
   </script>

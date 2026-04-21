@@ -256,35 +256,26 @@
 
   </div>
 
+  <script src="js/auth.js"></script>
   <script>
-    const adminLayout = document.querySelector('.admin-layout');
-
-    function closeAdminSidebar() {
-      adminLayout.classList.remove('mobile-nav-open');
-      document.body.classList.remove('admin-nav-open');
-    }
-
-    function toggleAdminSidebar() {
-      if (window.innerWidth <= 1024) {
-        adminLayout.classList.toggle('mobile-nav-open');
-        document.body.classList.toggle('admin-nav-open', adminLayout.classList.contains('mobile-nav-open'));
-        return;
-      }
-      adminLayout.classList.toggle('collapsed');
-    }
+    // Auth guard
+    const user = requireAdmin();
+    if (!user) { /* redirected */ }
 
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 1024) {
-        closeAdminSidebar();
-      }
+      if (window.innerWidth > 1024) closeAdminSidebar();
     });
 
     document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
       el.addEventListener('click', () => {
-        if (window.innerWidth <= 1024) {
-          closeAdminSidebar();
-        }
+        if (window.innerWidth <= 1024) closeAdminSidebar();
       });
+    });
+
+    // Logout handler
+    document.querySelector('a[href="admin_login.html"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      handleLogout('admin_login.html');
     });
 
     // Set current date
@@ -292,6 +283,9 @@
     document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
       month: 'long', day: 'numeric', year: 'numeric'
     });
+
+    // Update user avatar
+    if (user) updateUserUI(user);
   </script>
 </body>
 </html>

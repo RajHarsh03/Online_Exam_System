@@ -5,7 +5,7 @@ const Exam = require('../models/Exam');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 // GET /api/questions — List questions (optionally by exam)
-router.get('/', requireAuth(), async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const filter = req.query.exam ? { exam: req.query.exam } : {};
     const questions = await Question.find(filter).sort({ createdAt: -1 });
@@ -16,11 +16,11 @@ router.get('/', requireAuth(), async (req, res) => {
 });
 
 // POST /api/questions — Create question (admin only)
-router.post('/', requireAuth(), requireAdmin, async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const question = new Question({
       ...req.body,
-      createdBy: req.auth.userId,
+      createdBy: req.user.id,
     });
     await question.save();
 
@@ -38,7 +38,7 @@ router.post('/', requireAuth(), requireAdmin, async (req, res) => {
 });
 
 // PUT /api/questions/:id — Update question (admin only)
-router.put('/:id', requireAuth(), requireAdmin, async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const question = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!question) return res.status(404).json({ error: 'Question not found' });
@@ -49,12 +49,11 @@ router.put('/:id', requireAuth(), requireAdmin, async (req, res) => {
 });
 
 // DELETE /api/questions/:id — Delete question (admin only)
-router.delete('/:id', requireAuth(), requireAdmin, async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const question = await Question.findByIdAndDelete(req.params.id);
     if (!question) return res.status(404).json({ error: 'Question not found' });
 
-    // Remove from exam's questions array
     if (question.exam) {
       await Exam.findByIdAndUpdate(question.exam, {
         $pull: { questions: question._id },
