@@ -1,0 +1,32 @@
+{
+  "name": "online_exam_system",
+  "version": "1.0.0",
+  "description": "Prashiksha - Online Examination System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RajHarsh03/Online_Exam_System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/RajHarsh03/Online_Exam_System/issues"
+  },
+  "homepage": "https://github.com/RajHarsh03/Online_Exam_System#readme",
+  "dependencies": {
+    "@clerk/express": "^2.1.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

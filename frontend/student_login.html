@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <title>Student Login — Prashiksha</title>
+  <meta name="description" content="Student portal login for Prashiksha online examination platform." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/clerk-overrides.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script defer crossorigin="anonymous" src="https://close-snapper-5.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js" type="text/javascript"></script>
+  <script defer crossorigin="anonymous" data-clerk-publishable-key="pk_test_Y2xvc2Utc25hcHBlci01LmNsZXJrLmFjY291bnRzLmRldiQ" src="https://close-snapper-5.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js" type="text/javascript"></script>
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body { display: grid; grid-template-columns: 55% 1fr; }
+
+    /* Left hero panel */
+    .hero-panel {
+      position: relative;
+      background: var(--surface-low);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .hero-panel::after {
+      content: '';
+      position: absolute; bottom: 0; right: 0;
+      width: 100%; height: 100%;
+      background: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&q=90') center/cover no-repeat;
+      opacity: 0.45;
+    }
+
+    .hero-top {
+      position: relative; z-index: 2;
+      padding: var(--space-md) var(--space-lg);
+    }
+    .hero-brand {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-display); font-weight: 800; font-size: 0.9375rem;
+      color: var(--primary);
+    }
+    .hero-brand-icon {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      background: var(--primary); display: flex; align-items: center; justify-content: center;
+    }
+    .hero-brand-icon .material-symbols-rounded { color: var(--on-primary); font-size: 18px; }
+
+    .hero-bottom {
+      position: relative; z-index: 2;
+      margin-top: auto;
+      padding: var(--space-lg);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.25rem; font-weight: 800;
+      color: var(--on-surface); line-height: 1.08;
+      margin-bottom: var(--space-xs);
+    }
+    .hero-subtitle { font-size: 0.875rem; color: var(--secondary); max-width: 340px; line-height: 1.6; }
+
+    .secured-note {
+      position: absolute; bottom: 24px; right: 24px; z-index: 2;
+      font-size: 0.75rem; color: var(--secondary);
+    }
+
+    /* Right form panel */
+    .form-panel {
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--space-md);
+      overflow-y: auto;
+    }
+    .form-card {
+      width: 100%; max-width: 440px;
+    }
+
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--on-surface); color: #fff; padding: 10px 20px;
+      border-radius: var(--radius-full); font-size: 0.8125rem; font-weight: 500;
+      box-shadow: var(--shadow-float); z-index: 999;
+      opacity: 0; transition: all 0.3s ease;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; }
+      .hero-panel { min-height: 220px; }
+    }
+    @media (max-width: 560px) {
+      body { grid-template-columns: 1fr; }
+      .hero-panel { display: none; }
+      .form-panel { padding: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left: Hero Panel -->
+  <div class="hero-panel">
+    <div class="hero-top">
+      <div class="hero-brand">
+        <div class="hero-brand-icon">
+          <span class="material-symbols-rounded">school</span>
+        </div>
+        Prashiksha
+      </div>
+    </div>
+
+    <div class="hero-bottom">
+      <h1 class="hero-title">Enter the<br>Academic<br>Sanctuary.</h1>
+      <p class="hero-subtitle">A distraction-free environment designed for rigorous assessment. Prepare to focus, perform, and demonstrate your knowledge.</p>
+    </div>
+
+    <span class="secured-note">Secured by Prashiksha Examination Engine v2.4</span>
+  </div>
+
+  <!-- Right: Form Panel -->
+  <div class="form-panel">
+    <div class="form-card">
+      <div id="clerk-sign-in"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/clerk-appearance.js"></script>
+  <script>
+    window.addEventListener('load', async function () {
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+      if (Clerk.user) { window.location.href = 'student_dashboard.html'; return; }
+      Clerk.mountSignIn(document.getElementById('clerk-sign-in'), {
+        appearance: clerkAppearance,
+      });
+    });
+  </script>
+</body>
+</html>

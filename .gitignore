@@ -1,2 +1,4 @@
-public/src/Design.md
+/backend/node_modules
+/backend/.env
 /Docs
+/fullstack_plan.md
