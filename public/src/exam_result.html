@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
-  <title>Exam Result — Advanced Mathematics 301 | Prashiksha</title>
+  <title>Exam Result | Prashiksha</title>
   <meta name="description" content="View your examination results and performance analytics on Prashiksha." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -106,7 +106,7 @@
     .bd-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; }
     .bd-total { font-size: 0.75rem; color: var(--secondary); }
 
-    /* ── Right panel ── */
+    /* Right panel*/
     .right-panel { display: flex; flex-direction: column; gap: var(--space-md); }
 
     /* Next steps card */
@@ -178,28 +178,51 @@
   </style>
 </head>
 <body>
+  <!-- Mobile Drawer Overlay -->
+  <div class="student-drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 
-  <!-- Top Navigation -->
-  <header class="topnav">
+  <!-- Mobile Drawer (same style as admin sidebar) -->
+  <aside class="student-drawer" id="studentDrawer">
+    <div class="sidebar-brand">
+      <div class="brand-text">
+        <span class="brand-name">Student Portal</span>
+        <span class="brand-subtitle">Prashiksha</span>
+      </div>
+      <button class="btn-collapse" onclick="toggleDrawer()" style="margin-left:auto;" title="Toggle Menu"><span class="material-symbols-rounded">menu_open</span></button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="student_dashboard.html" class="nav-item">
+        <span class="material-symbols-rounded nav-icon">assignment</span>
+        Exams
+      </a>
+      <a href="exam_result.html" class="nav-item active">
+        <span class="material-symbols-rounded nav-icon">bar_chart</span>
+        Results
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item">
+        <span class="material-symbols-rounded nav-icon">help_outline</span>
+        Support
+      </a>
+      <a href="student_login.html" class="nav-item">
+        <span class="material-symbols-rounded nav-icon">logout</span>
+        Logout
+      </a>
+    </div>
+  </aside>
+<!-- Top Navigation -->
+  <header class="topnav" id="studentTopnav">
+    <button class="btn-hamburger" onclick="toggleDrawer()" style="color:#526075;" onmouseenter="this.style.color='#2c3437'" onmouseleave="this.style.color='#526075'"><span class="material-symbols-rounded">menu_open</span></button>
     <div class="brand">Prashiksha</div>
     <nav class="topnav-links">
       <a href="student_dashboard.html" class="topnav-link">Exams</a>
       <a href="exam_result.html" class="topnav-link active">Results</a>
     </nav>
     <div class="topnav-right">
-      <div class="topnav-search">
-        <span class="material-symbols-rounded icon">search</span>
-        <input type="text" placeholder="Search…" />
-      </div>
-      <button class="icon-btn" title="Notifications">
-        <span class="material-symbols-rounded" style="font-size:20px;">notifications</span>
-      </button>
-      <button class="icon-btn" title="Settings">
-        <span class="material-symbols-rounded" style="font-size:20px;">settings</span>
-      </button>
-      <div class="user-avatar" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-container); color: var(--on-primary-container); border-radius: 50%; font-weight: bold; font-size: 14px;">
-        AS
-      </div>
+      <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
+      <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
+      <div class="user-avatar" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background-color:var(--primary-container);color:var(--on-primary-container);border-radius:50%;font-weight:bold;font-size:14px;">AS</div>
     </div>
   </header>
 
@@ -320,9 +343,14 @@
   </div>
 
   <script>
+    function toggleDrawer() {
+      document.getElementById('studentDrawer').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+      document.body.style.overflow = document.getElementById('studentDrawer').classList.contains('open') ? 'hidden' : '';
+    }
     // Animate donut chart
     const score = 85;
-    const circumference = 2 * Math.PI * 80; // r=80, C≈502.65
+    const circumference = 2 * Math.PI * 80; // r=80, CÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â 502.65
     const fill = document.getElementById('donutFill');
     const pctEl = document.getElementById('donutPct');
 
