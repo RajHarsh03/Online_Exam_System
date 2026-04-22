@@ -53,6 +53,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // Block deactivated accounts (isActive: false means explicitly deactivated)
+    // undefined means field not yet set → treat as active (backward compat)
+    if (user.isActive !== undefined && user.isActive !== true) {
+      console.log(`[AUTH] Blocked login for deactivated account: ${user.email}`);
+      return res.status(403).json({ error: 'Your account has been deactivated. Please contact the administrator.' });
+    }
+
     const token = generateToken(user);
     res.json({ token, user });
   } catch (err) {
