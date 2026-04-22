@@ -24,6 +24,20 @@ const userSchema = new mongoose.Schema({
     enum: ['student', 'admin'],
     default: 'student',
   },
+    // ── Admin-only: unique institution code students use to link to this admin ──
+  instituteCode: {
+    type: String,
+    unique: true,
+    sparse: true,   
+    uppercase: true,
+    trim: true,
+  },
+  // ── Student-only: the admin they are linked to ──
+  linkedAdmin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
   isActive: {
     type: Boolean,
     default: true,

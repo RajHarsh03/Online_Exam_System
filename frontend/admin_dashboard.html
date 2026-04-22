@@ -233,6 +233,40 @@
         </div>
       </div>
 
+      <!-- ── Institute Code Banner ── -->
+      <div id="instituteCodeBanner" style="
+        display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+        background: linear-gradient(135deg, #003d2a 0%, #006d4a 100%);
+        border-radius: var(--radius-xl); padding: 16px 20px;
+        margin-bottom: var(--space-md); box-shadow: 0 4px 16px rgba(0,109,74,0.2);
+      ">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="color:#fff;font-size:20px;">domain</span>
+          </div>
+          <div>
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:2px;">Your Institute Code</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span id="instituteCodeDisplay" style="font-family:var(--font-display);font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:0.08em;">
+                <span class="skel" style="width:120px;height:22px;"></span>
+              </span>
+              <button id="copyCodeBtn" onclick="copyInstituteCode()" title="Copy code" style="
+                background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);
+                border-radius:6px;padding:4px 10px;cursor:pointer;color:#fff;
+                font-size:0.75rem;font-weight:600;display:flex;align-items:center;gap:4px;
+                transition:background 0.2s;
+              " onmouseenter="this.style.background='rgba(255,255,255,0.25)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)'">
+                <span class="material-symbols-rounded" style="font-size:14px;">content_copy</span>
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.65);max-width:300px;line-height:1.4;">
+          Share this code with your students so they can link their accounts to your institution.
+        </div>
+      </div>
+
       <!-- ── Stat cards ── -->
       <div class="stats-grid">
         <div class="stat-card">
@@ -389,15 +423,48 @@
         el.innerHTML = `<div class="dash-empty"><span class="material-symbols-rounded">assignment_late</span>No exams created yet.</div>`;
         return;
       }
-      el.innerHTML = exams.map(e => `
-        <div class="exam-row">
-          <div class="exam-icon"><span class="material-symbols-rounded">assignment</span></div>
-          <div class="exam-info">
-            <div class="exam-title">${e.title}</div>
-            <div class="exam-meta">${e.subject} &nbsp;·&nbsp; ${timeAgo(e.createdAt)}</div>
-          </div>
-          ${statusChip(e.status)}
-        </div>`).join('');
+      const rows = exams.map(function(e) {
+        var isExpired = e.expiresAt && new Date() > new Date(e.expiresAt);
+        var codeBadge = e.accessCode
+          ? '<span class="copy-exam-code" data-code="' + e.accessCode + '" style="display:inline-flex;align-items:center;gap:4px;background:' + (isExpired ? '#6b7280' : '#003d2a') + ';color:#fff;font-size:0.65rem;font-weight:700;letter-spacing:0.07em;padding:2px 8px;border-radius:4px;font-family:monospace;cursor:pointer;">🔑 ' + e.accessCode + (isExpired ? ' (expired)' : '') + '</span>'
+          : '';
+        return '<div class="exam-row">'
+          + '<div class="exam-icon"><span class="material-symbols-rounded">assignment</span></div>'
+          + '<div class="exam-info" style="flex:1;min-width:0;">'
+          + '<div class="exam-title">' + e.title + '</div>'
+          + '<div class="exam-meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+          + '<span>' + e.subject + ' &nbsp;·&nbsp; ' + timeAgo(e.createdAt) + '</span>'
+          + codeBadge
+          + '</div></div>'
+          + statusChip(e.status)
+          + '</div>';
+      });
+      el.innerHTML = rows.join('');
+
+      el.querySelectorAll('.copy-exam-code').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var code = this.getAttribute('data-code');
+          var self = this;
+          var done = function() {
+            self.textContent = '✓ Copied!';
+            self.style.background = '#16a34a';
+            setTimeout(function() {
+              self.textContent = '🔑 ' + code;
+              self.style.background = '#003d2a';
+            }, 1800);
+          };
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(code).then(done).catch(done);
+          } else {
+            var t = document.createElement('textarea');
+            t.value = code; t.style.position = 'fixed'; t.style.opacity = '0';
+            document.body.appendChild(t); t.select();
+            document.execCommand('copy');
+            document.body.removeChild(t);
+            done();
+          }
+        });
+      });
     }
 
     // ── Render recent students ──
@@ -454,6 +521,37 @@
     }
 
     if (user) loadDashboard();
+
+    // ── Load and display admin's institute code ──
+    async function loadInstituteCode() {
+      try {
+        const me = await apiFetch('/api/auth/me');
+        const display = document.getElementById('instituteCodeDisplay');
+        if (me.instituteCode) {
+          display.textContent = me.instituteCode;
+        } else {
+          display.textContent = 'N/A';
+        }
+      } catch (err) {
+        document.getElementById('instituteCodeDisplay').textContent = 'Error loading code';
+      }
+    }
+
+    function copyInstituteCode() {
+      const code = document.getElementById('instituteCodeDisplay').textContent.trim();
+      if (!code || code === 'Error loading code') return;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copyCodeBtn');
+        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">check</span> Copied!';
+        btn.style.background = 'rgba(255,255,255,0.3)';
+        setTimeout(() => {
+          btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">content_copy</span> Copy';
+          btn.style.background = 'rgba(255,255,255,0.15)';
+        }, 2000);
+      });
+    }
+
+    if (user) loadInstituteCode();
   </script>
 </body>
 </html>

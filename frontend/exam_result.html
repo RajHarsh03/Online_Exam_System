@@ -10,9 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
     body { background: var(--surface); }
-
     .result-body { padding: var(--space-md) var(--space-lg); }
-
     .result-grid {
       display: grid;
       grid-template-columns: 1fr 300px;
@@ -91,8 +89,8 @@
       background: var(--surface-low);
       border-left: 3px solid transparent;
     }
-    .breakdown-card.correct { border-color: var(--primary); }
-    .breakdown-card.incorrect { border-color: #ef4444; }
+    .breakdown-card.correct  { border-color: var(--primary); }
+    .breakdown-card.incorrect{ border-color: #ef4444; }
     .breakdown-card.skipped  { border-color: var(--surface-highest); }
     .bd-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
     .bd-label { font-size: 0.7rem; color: var(--secondary); font-weight: 500; }
@@ -106,7 +104,7 @@
     .bd-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; }
     .bd-total { font-size: 0.75rem; color: var(--secondary); }
 
-    /* Right panel*/
+    /* Right panel */
     .right-panel { display: flex; flex-direction: column; gap: var(--space-md); }
 
     /* Next steps card */
@@ -118,70 +116,139 @@
     }
     .next-steps-card h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: 6px; }
     .ns-desc { font-size: 0.8125rem; color: var(--secondary); line-height: 1.5; margin-bottom: var(--space-sm); }
-
     .ns-actions { display: flex; flex-direction: column; gap: 8px; }
     .ns-btn {
       display: flex; align-items: center; gap: 6px;
       padding: 9px 14px; border-radius: var(--radius-xl);
       font-size: 0.8125rem; font-weight: 600; cursor: pointer;
-      transition: all var(--transition); border: none;
-      width: 100%;
+      transition: all var(--transition); border: none; width: 100%;
     }
-    .ns-btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dim));
-      color: var(--on-primary);
-    }
+    .ns-btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dim)); color: var(--on-primary); }
     .ns-btn-primary:hover { box-shadow: 0 4px 16px rgba(0,109,74,0.3); }
-    .ns-btn-secondary {
-      background: var(--primary-container);
-      color: var(--on-primary-container);
-    }
+    .ns-btn-secondary { background: var(--primary-container); color: var(--on-primary-container); }
     .ns-btn-secondary:hover { background: #55e8a8; }
-    .ns-btn-ghost {
-      background: none; color: var(--primary);
-      justify-content: center;
-    }
+    .ns-btn-ghost { background: none; color: var(--primary); justify-content: center; }
     .ns-btn-ghost:hover { background: var(--surface-low); }
 
-    /* Topic breakdown */
-    .topic-card {
+    /* Review Modal */
+    #reviewModal {
+      display: none;
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      align-items: flex-start; justify-content: center;
+      padding: 20px 16px; overflow-y: auto;
+    }
+    #reviewModal.open { display: flex; }
+    .review-modal-box {
       background: var(--surface-lowest);
       border-radius: var(--radius-xl);
-      padding: var(--space-md);
-      box-shadow: var(--shadow-card);
+      width: 100%; max-width: 760px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+      animation: slideUp 0.3s ease;
+      overflow: hidden;
+      margin: auto;
     }
-    .topic-card h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: var(--space-sm); }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .review-modal-header {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, #003d2a, #006d4a);
+    }
+    .review-modal-header h2 {
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 800;
+      color: #fff; display: flex; align-items: center; gap: 8px; margin: 0;
+    }
+    .review-modal-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: none;
+      color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .review-modal-close:hover { background: rgba(255,255,255,0.28); }
+    .review-modal-body { padding: var(--space-lg); }
+
+    /* ── Dashboard topnav (exact copy from student_dashboard) ── */
+    #studentTopnav {
+      height: 60px;
+      padding: 0 var(--space-xl);
+      border-bottom: 1px solid var(--outline-variant);
+      box-shadow: 0 1px 0 rgba(44,52,55,0.04), 0 2px 8px rgba(44,52,55,0.04);
+    }
+    .btn-hamburger { display: none; }
+    @media (max-width: 1024px) {
+      .btn-hamburger { display: inline-flex; }
+      #studentTopnav { padding: 0 var(--space-md); height: 52px; }
+    }
+    @media (max-width: 768px) {
+      #studentTopnav {
+        display: flex; flex-direction: row; align-items: center;
+        justify-content: space-between; height: 52px;
+        padding: 0 var(--space-md); gap: var(--space-sm);
+      }
+      #studentTopnav .topnav-links { display: none; }
+      #studentTopnav .topnav-right  { display: none; }
+    }
+    .topnav .brand {
+      font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--primary); margin-right: var(--space-lg); white-space: nowrap;
+    }
+    .topnav-link {
+      padding: 6px 16px; border-radius: var(--radius-full);
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--on-surface-variant); transition: all var(--transition); border-bottom: none;
+    }
+    .topnav-link:hover { background: var(--surface-low); color: var(--on-surface); }
+    .topnav-link.active {
+      background: var(--primary-container); color: var(--on-primary-container);
+      font-weight: 700; border-bottom: none; border-radius: var(--radius-full);
+    }
+    .topnav-divider { width: 1px; height: 24px; background: var(--outline-variant); margin: 0 var(--space-sm); flex-shrink: 0; }
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 12px 4px 4px; border-radius: var(--radius-full);
+      background: var(--surface-low); border: 1px solid var(--outline-variant); cursor: default;
+    }
+    .user-chip .user-avatar { width: 30px !important; height: 30px !important; font-size: 12px !important; flex-shrink: 0; }
+    .user-chip .user-name {
+      font-size: 0.8125rem; font-weight: 600; color: var(--on-surface);
+      max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .topnav-logout-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 16px; border-radius: var(--radius-full);
+      border: 1.5px solid var(--outline-variant); background: var(--surface-lowest);
+      color: var(--secondary); font-size: 0.8125rem; font-weight: 600;
+      cursor: pointer; transition: all var(--transition); font-family: inherit;
+    }
+    .topnav-logout-btn:hover { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .topnav-logout-btn .material-symbols-rounded { font-size: 16px; }
 
     @media (max-width: 1024px) {
-      .result-grid {
-        grid-template-columns: 1fr;
-      }
+      .result-grid { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 768px) {
-      .result-body {
-        padding: var(--space-md);
-      }
-
-      .summary-row,
-      .breakdown-row {
+      .result-body { padding: var(--space-md); }
+      .summary-row, .breakdown-row {
         grid-template-columns: 1fr;
         flex-direction: column;
         align-items: stretch;
         gap: var(--space-sm);
       }
-
-      .summary-item {
-        text-align: left;
-      }
+      .summary-item { text-align: left; }
     }
   </style>
 </head>
 <body>
+
   <!-- Mobile Drawer Overlay -->
   <div class="student-drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 
-  <!-- Mobile Drawer (same style as admin sidebar) -->
+  <!-- Mobile Drawer -->
   <aside class="student-drawer" id="studentDrawer">
     <div class="sidebar-brand">
       <div class="brand-text">
@@ -205,25 +272,43 @@
         <span class="material-symbols-rounded nav-icon">help_outline</span>
         Support
       </a>
-      <a href="student_login.html" class="nav-item">
+      <a href="#" class="nav-item" id="drawerLogoutBtn">
         <span class="material-symbols-rounded nav-icon">logout</span>
         Logout
       </a>
     </div>
   </aside>
-<!-- Top Navigation -->
+
+  <!-- Top Navigation -->
   <header class="topnav" id="studentTopnav">
-    <button class="btn-hamburger" onclick="toggleDrawer()" style="color:#526075;" onmouseenter="this.style.color='#2c3437'" onmouseleave="this.style.color='#526075'"><span class="material-symbols-rounded">menu_open</span></button>
+    <!-- Brand -->
     <div class="brand">Prashiksha</div>
-    <nav class="topnav-links">
+
+    <!-- Nav links -->
+    <nav class="topnav-links" style="gap:4px;">
       <a href="student_dashboard.html" class="topnav-link">Exams</a>
       <a href="exam_result.html" class="topnav-link active">Results</a>
     </nav>
-    <div class="topnav-right">
-      <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
-      <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
-      <div class="user-avatar" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background-color:var(--primary-container);color:var(--on-primary-container);border-radius:50%;font-weight:bold;font-size:14px;">AS</div>
+
+    <!-- Right section -->
+    <div class="topnav-right" style="gap:12px;">
+      <div class="topnav-divider"></div>
+      <!-- User chip -->
+      <div class="user-chip">
+        <div class="user-avatar" id="navAvatar" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--primary-container);color:var(--on-primary-container);border-radius:50%;font-weight:700;font-size:12px;flex-shrink:0;">?</div>
+        <span class="user-name" id="navName">Student</span>
+      </div>
+      <!-- Logout -->
+      <button id="topnavLogoutBtn" class="topnav-logout-btn">
+        <span class="material-symbols-rounded">logout</span>
+        Logout
+      </button>
     </div>
+
+    <!-- Hamburger (mobile only) -->
+    <button class="btn-hamburger" onclick="toggleDrawer()" style="color:#526075;flex-shrink:0;">
+      <span class="material-symbols-rounded">menu_open</span>
+    </button>
   </header>
 
   <!-- Result body -->
@@ -232,10 +317,10 @@
 
       <!-- Left: Main result card -->
       <div class="result-main">
-        <div class="status-chip" id="statusChip">STATUS: PASSED</div>
+        <div class="status-chip" id="statusChip">STATUS: —</div>
 
-        <h1 class="exam-result-title">Advanced Mathematics 301</h1>
-        <p class="exam-date">Completed on October 24, 2023</p>
+        <h1 class="exam-result-title" id="resultTitle">Loading…</h1>
+        <p class="exam-date" id="resultDate"></p>
 
         <!-- Donut chart -->
         <div class="donut-wrap">
@@ -255,15 +340,15 @@
         <div class="summary-row">
           <div class="summary-item">
             <div class="summary-label">Total Marks</div>
-            <div class="summary-value">170 / 200</div>
+            <div class="summary-value" id="sumMarks">— / —</div>
           </div>
           <div class="summary-item">
             <div class="summary-label">Time Taken</div>
-            <div class="summary-value">1h 45m</div>
+            <div class="summary-value" id="sumTime">—</div>
           </div>
           <div class="summary-item">
-            <div class="summary-label">Percentile</div>
-            <div class="summary-value">92nd</div>
+            <div class="summary-label" id="rankLabel">Rank</div>
+            <div class="summary-value" id="sumRank">—</div>
           </div>
         </div>
 
@@ -274,24 +359,24 @@
               <span class="bd-label">Correct Answers</span>
               <div class="bd-icon correct"><span class="material-symbols-rounded" style="font-size:14px;">check</span></div>
             </div>
-            <div class="bd-value">42</div>
-            <div class="bd-total">/ 50</div>
+            <div class="bd-value" id="correctCount">—</div>
+            <div class="bd-total" id="correctTotal">/ —</div>
           </div>
           <div class="breakdown-card incorrect">
             <div class="bd-header">
               <span class="bd-label">Incorrect Answers</span>
               <div class="bd-icon incorrect"><span class="material-symbols-rounded" style="font-size:14px;">close</span></div>
             </div>
-            <div class="bd-value">5</div>
-            <div class="bd-total">/ 50</div>
+            <div class="bd-value" id="incorrectCount">—</div>
+            <div class="bd-total" id="incorrectTotal">/ —</div>
           </div>
           <div class="breakdown-card skipped">
             <div class="bd-header">
               <span class="bd-label">Unattempted</span>
               <div class="bd-icon skipped"><span class="material-symbols-rounded" style="font-size:14px;">remove</span></div>
             </div>
-            <div class="bd-value">3</div>
-            <div class="bd-total">/ 50</div>
+            <div class="bd-value" id="skippedCount">—</div>
+            <div class="bd-total" id="skippedTotal">/ —</div>
           </div>
         </div>
       </div>
@@ -308,7 +393,7 @@
               <span class="material-symbols-rounded" style="font-size:18px;">dashboard</span>
               Return to Dashboard
             </button>
-            <button class="ns-btn ns-btn-secondary" onclick="window.location.href='exam_interface.html'">
+            <button class="ns-btn ns-btn-secondary" onclick="openReviewModal()">
               <span class="material-symbols-rounded" style="font-size:18px;">rate_review</span>
               Review Answers
             </button>
@@ -319,64 +404,267 @@
           </div>
         </div>
 
-        <!-- Topic breakdown -->
-        <div class="topic-card">
-          <h3>Topic Breakdown</h3>
-          <div class="flex-col gap-sm">
-            <div class="progress-bar-wrap">
-              <div class="progress-bar-label"><span>Calculus</span><span class="pct">90%</span></div>
-              <div class="progress-track"><div class="progress-fill" data-pct="90" style="width:0%;"></div></div>
-            </div>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar-label"><span>Linear Algebra</span><span class="pct">85%</span></div>
-              <div class="progress-track"><div class="progress-fill" data-pct="85" style="width:0%;"></div></div>
-            </div>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar-label"><span>Probability</span><span class="pct">60%</span></div>
-              <div class="progress-track"><div class="progress-fill" data-pct="60" style="width:0%;background:#f59e0b;"></div></div>
-            </div>
-          </div>
+        <!-- Exam Details card -->
+        <div class="next-steps-card" id="examDetailsCard">
+          <h3>Exam Details</h3>
+          <div id="examDetailsContent" style="display:flex;flex-direction:column;gap:10px;margin-top:10px;"></div>
         </div>
 
       </div>
     </div>
+
+    <!-- ── Review Answers Modal ── -->
+    <div id="reviewModal" onclick="handleModalBackdrop(event)">
+      <div class="review-modal-box">
+        <div class="review-modal-header">
+          <h2>
+            <span class="material-symbols-rounded" style="font-size:18px;">rate_review</span>
+            Review Answers
+          </h2>
+          <button class="review-modal-close" onclick="closeReviewModal()">
+            <span class="material-symbols-rounded" style="font-size:18px;">close</span>
+          </button>
+        </div>
+        <div class="review-modal-body">
+          <div id="reviewList"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+  <script src="js/auth.js"></script>
   <script>
+    // ── Auth guard ──
+    const currentUser = requireAuth('student_login.html');
+    if (currentUser) {
+      // Populate user chip (same as dashboard's updateUserUI)
+      const initials = (currentUser.name || 'S').split(' ')
+        .map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('navAvatar').textContent = initials;
+      document.getElementById('navName').textContent   = currentUser.name || 'Student';
+    }
+
+    // ── Logout handlers ──
+    document.getElementById('drawerLogoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      handleLogout('student_login.html');
+    });
+    document.getElementById('topnavLogoutBtn').addEventListener('click', () => {
+      handleLogout('student_login.html');
+    });
+
     function toggleDrawer() {
       document.getElementById('studentDrawer').classList.toggle('open');
       document.getElementById('drawerOverlay').classList.toggle('open');
-      document.body.style.overflow = document.getElementById('studentDrawer').classList.contains('open') ? 'hidden' : '';
+      document.body.style.overflow =
+        document.getElementById('studentDrawer').classList.contains('open') ? 'hidden' : '';
     }
-    // Animate donut chart
-    const score = 85;
-    const circumference = 2 * Math.PI * 80; // r=80, CÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â 502.65
-    const fill = document.getElementById('donutFill');
-    const pctEl = document.getElementById('donutPct');
 
-    fill.style.strokeDasharray = `0 ${circumference}`;
+    // ── Load data from sessionStorage ──
+    const raw  = sessionStorage.getItem('examResult');
+    const exam = JSON.parse(sessionStorage.getItem('activeExam') || 'null');
 
-    let current = 0;
-    const target = score;
-    const step = target / 60;
-    const interval = setInterval(() => {
-      if (current >= target) { clearInterval(interval); return; }
-      current = Math.min(current + step, target);
-      const drawn = (current / 100) * circumference;
-      fill.style.strokeDasharray = `${drawn} ${circumference - drawn}`;
-      pctEl.textContent = Math.round(current) + '%';
-    }, 16);
+    if (!raw) {
+      document.querySelector('.result-main').innerHTML =
+        `<div style="text-align:center;padding:40px 20px;color:var(--secondary);">
+           <span class="material-symbols-rounded" style="font-size:40px;display:block;margin-bottom:12px;">error</span>
+           No result data found.
+           <br><br>
+           <a href="student_dashboard.html" class="btn btn-primary" style="display:inline-flex;gap:6px;align-items:center;">
+             <span class="material-symbols-rounded" style="font-size:16px;">arrow_back</span>
+             Back to Dashboard
+           </a>
+         </div>`;
+    } else {
+      const r = JSON.parse(raw);
 
-    // Animate topic bars
-    setTimeout(() => {
-      document.querySelectorAll('.progress-fill[data-pct]').forEach(el => {
-        el.style.transition = 'width 0.8s ease';
-        el.style.width = el.dataset.pct + '%';
-      });
-    }, 400);
+      // ── Basic info ──
+      const title       = r.exam?.title  || exam?.title  || 'Exam';
+      const subject     = r.exam?.subject || exam?.subject || '';
+      const passed      = r.status === 'passed';
+      const pct         = r.percentage ?? 0;
+      const totalMarks  = r.totalMarks  ?? exam?.totalMarks ?? 0;
+      const obtained    = r.obtainedMarks ?? 0;
+      const rank        = r.rank;
+      const submittedAt = r.submittedAt ? new Date(r.submittedAt) : new Date();
+      const dateStr     = submittedAt.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+
+      // Time taken
+      const secs   = r.timeTaken || 0;
+      const timeTxt = secs >= 3600
+        ? `${Math.floor(secs/3600)}h ${Math.floor((secs%3600)/60)}m`
+        : `${Math.floor(secs/60)}m ${String(secs%60).padStart(2,'0')}s`;
+
+      // Answer counts
+      const answers     = r.answers || [];
+      const totalQ      = (exam?.questions?.length) || answers.length;
+      const correct     = answers.filter(a => a.isCorrect).length;
+      const incorrect   = answers.filter(a => !a.isCorrect && a.selectedOption !== null && a.selectedOption !== undefined).length;
+      const unattempted = answers.filter(a => a.selectedOption === null || a.selectedOption === undefined).length;
+
+      // ── Populate DOM ──
+      document.title = `Result — ${title} | Prashiksha`;
+
+      // Header nav
+      document.getElementById('examName').textContent = title;
+      document.getElementById('examSub').textContent  =
+        `${subject ? subject + ' • ' : ''}${currentUser ? currentUser.name : 'Student'}`;
+      const chip = document.getElementById('resultChip');
+      chip.textContent = passed ? 'PASSED' : 'FAILED';
+      chip.classList.add(passed ? 'passed' : 'failed');
+
+      document.getElementById('statusChip').textContent    = `STATUS: ${passed ? 'PASSED' : 'FAILED'}`;
+      document.getElementById('statusChip').classList.toggle('failed', !passed);
+      document.getElementById('resultTitle').textContent   = title;
+      document.getElementById('resultDate').textContent    = `${subject ? subject + ' • ' : ''}Completed on ${dateStr}`;
+      document.getElementById('sumMarks').textContent      = `${obtained} / ${totalMarks}`;
+      document.getElementById('sumTime').textContent       = timeTxt;
+      document.getElementById('sumRank').textContent       = rank ? `#${rank}` : '—';
+      document.getElementById('correctCount').textContent  = correct;
+      document.getElementById('incorrectCount').textContent= incorrect;
+      document.getElementById('skippedCount').textContent  = unattempted;
+      document.getElementById('correctTotal').textContent  = `/ ${totalQ}`;
+      document.getElementById('incorrectTotal').textContent= `/ ${totalQ}`;
+      document.getElementById('skippedTotal').textContent  = `/ ${totalQ}`;
+
+      // ── Exam Details card ──
+      const examDetails = [
+        {
+          icon: 'menu_book',
+          label: 'Subject',
+          value: subject || exam?.subject || '—',
+        },
+        {
+          icon: 'schedule',
+          label: 'Duration',
+          value: exam?.duration ? `${exam.duration} minutes` : '—',
+        },
+        {
+          icon: 'quiz',
+          label: 'Total Questions',
+          value: totalQ || '—',
+        },
+        {
+          icon: 'workspace_premium',
+          label: 'Passing Marks',
+          value: exam?.passingMarks ? `${exam.passingMarks} / ${totalMarks}` : '—',
+        },
+        {
+          icon: passed ? 'verified' : 'cancel',
+          label: 'Result',
+          value: passed ? 'Eligible for Certificate' : 'Did not qualify',
+          valueColor: passed ? '#16a34a' : '#dc2626',
+        },
+      ];
+
+      document.getElementById('examDetailsContent').innerHTML = examDetails.map(d => `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface-low);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:16px;color:var(--secondary);">${d.icon}</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.68rem;color:var(--secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">${d.label}</div>
+            <div style="font-size:0.875rem;font-weight:700;color:${d.valueColor || 'var(--on-surface)'};margin-top:1px;">${d.value}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // ── Animate donut ──
+      const circumference = 2 * Math.PI * 80;
+      const fill  = document.getElementById('donutFill');
+      const pctEl = document.getElementById('donutPct');
+      fill.style.strokeDasharray = `0 ${circumference}`;
+      if (!passed) { fill.style.stroke = '#ef4444'; pctEl.style.color = '#ef4444'; }
+
+      let cur = 0;
+      const step = pct / 60;
+      const iv = setInterval(() => {
+        if (cur >= pct) { clearInterval(iv); return; }
+        cur = Math.min(cur + step, pct);
+        const drawn = (cur / 100) * circumference;
+        fill.style.strokeDasharray = `${drawn} ${circumference - drawn}`;
+        pctEl.textContent = Math.round(cur) + '%';
+      }, 16);
+
+
+
+      // ── Review Answers Section ──
+      if (exam && exam.questions && exam.questions.length > 0 && answers.length > 0) {
+        // pre-build review list (modal opened on demand)
+        const reviewList = document.getElementById('reviewList');
+
+        reviewList.innerHTML = exam.questions.map((q, idx) => {
+          const qId   = String(q._id || q.id || idx);
+          const ans   = answers.find(a => String(a.question) === qId) || {};
+          const sel   = ans.selectedOption;
+          const isOk  = ans.isCorrect;
+          const skipped = sel === null || sel === undefined;
+          const opts  = q.options || [];
+          const correctIdx = opts.findIndex(o => o.isCorrect === true);
+
+          let badge, borderColor;
+          if (skipped)   { badge = `<span style="background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:12px;font-size:0.68rem;font-weight:700;">SKIPPED</span>`; borderColor = '#e2e8f0'; }
+          else if (isOk) { badge = `<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:12px;font-size:0.68rem;font-weight:700;">✓ CORRECT</span>`; borderColor = '#86efac'; }
+          else           { badge = `<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:12px;font-size:0.68rem;font-weight:700;">✗ INCORRECT</span>`; borderColor = '#fca5a5'; }
+
+          const optHtml = opts.map((opt, i) => {
+            const text = opt.text || opt;
+            let bg = 'var(--surface-high)', border = '2px solid transparent', tagHtml = '';
+            if (i === correctIdx) {
+              bg = 'rgba(105,246,184,0.2)'; border = '2px solid #16a34a';
+              tagHtml = `<span style="margin-left:auto;white-space:nowrap;font-size:0.68rem;color:#16a34a;font-weight:700;padding:1px 8px;background:#dcfce7;border-radius:10px;">Correct</span>`;
+            }
+            if (!skipped && i === Number(sel) && i !== correctIdx) {
+              bg = '#fef2f2'; border = '2px solid #ef4444';
+              tagHtml = `<span style="margin-left:auto;white-space:nowrap;font-size:0.68rem;color:#dc2626;font-weight:700;padding:1px 8px;background:#fee2e2;border-radius:10px;">Your Answer</span>`;
+            }
+            if (!skipped && i === Number(sel) && i === correctIdx) {
+              tagHtml = `<span style="margin-left:auto;white-space:nowrap;font-size:0.68rem;color:#16a34a;font-weight:700;padding:1px 8px;background:#dcfce7;border-radius:10px;">Your Answer ✓</span>`;
+            }
+            return `<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--radius-md);background:${bg};border:${border};margin-bottom:4px;">
+              <span style="font-size:0.8125rem;color:var(--on-surface);flex:1;line-height:1.5;">${text}</span>${tagHtml}
+            </div>`;
+          }).join('');
+
+          const marksStr = (ans.marksObtained !== undefined)
+            ? `<span style="font-size:0.75rem;color:var(--secondary);">Marks: <b>${ans.marksObtained || 0}</b></span>`
+            : '';
+
+          return `
+            <div style="border-radius:var(--radius-lg);padding:var(--space-md);border-left:4px solid ${borderColor};background:var(--surface-lowest);box-shadow:var(--shadow-card);margin-bottom:var(--space-sm);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+                <span style="font-size:0.7rem;color:var(--secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Question ${idx+1}</span>
+                <div style="display:flex;align-items:center;gap:8px;">${marksStr}${badge}</div>
+              </div>
+              <p style="font-size:0.875rem;line-height:1.65;color:var(--on-surface);margin-bottom:12px;font-weight:500;">${q.text || q.questionText || 'Question not available'}</p>
+              <div>${optHtml}</div>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    function openReviewModal() {
+      const list = document.getElementById('reviewList');
+      if (!list || !list.innerHTML.trim()) {
+        alert('Answer review is not available for this result.');
+        return;
+      }
+      document.getElementById('reviewModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleModalBackdrop(e) {
+      if (e.target === document.getElementById('reviewModal')) closeReviewModal();
+    }
 
     function downloadCert() {
-      alert('Certificate download started! (Demo)');
+      alert('Certificate download will be available soon!');
     }
   </script>
 </body>

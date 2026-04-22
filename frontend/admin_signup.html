@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <title>Admin Sign Up — Prashiksha</title>
+  <meta name="description" content="Create your administrator account on Prashiksha examination platform." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body {
+      height: 100vh; background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .login-shell {
+      display: grid; grid-template-columns: 1fr 1fr;
+      max-width: 820px; width: 100%;
+      max-height: calc(100vh - 32px);
+      border-radius: var(--radius-xl); overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.13);
+    }
+
+    /* Hero image panel */
+    .login-image {
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=90') center/cover no-repeat;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px;
+    }
+    .login-image::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(0,30,20,0.3) 0%, rgba(0,50,35,0.75) 50%, rgba(0,30,20,0.95) 100%);
+    }
+    .login-image > * { position: relative; z-index: 1; }
+
+    .img-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.14); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 6px 14px; border-radius: var(--radius-full);
+      color: rgba(255,255,255,0.92); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: var(--space-sm); width: fit-content;
+    }
+    .img-title {
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;
+      color: #ffffff; line-height: 1.12; margin-bottom: 4px;
+    }
+    .img-desc {
+      font-size: 0.775rem; color: rgba(255,255,255,0.72);
+      max-width: 240px; line-height: 1.5;
+    }
+
+    /* Stats row on hero */
+    .img-stats {
+      display: flex; gap: 16px; margin-top: 10px;
+    }
+    .stat-item { display: flex; flex-direction: column; gap: 1px; }
+    .stat-value {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      color: #fff;
+    }
+    .stat-label { font-size: 0.65rem; color: rgba(255,255,255,0.6); letter-spacing: 0.05em; }
+
+    /* Form panel */
+    .login-form-panel {
+      background: var(--surface-lowest);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 18px 24px; overflow-y: auto;
+    }
+    .form-card { width: 100%; max-width: 320px; }
+
+    .form-header { margin-bottom: 10px; }
+    .form-eyebrow {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .form-title {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+      color: var(--on-surface); margin-bottom: 2px; line-height: 1.2;
+    }
+    .form-subtitle { color: var(--secondary); font-size: 0.75rem; line-height: 1.45; }
+
+    .form-fields { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+
+    .field-group .field-label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: var(--on-surface); margin-bottom: 3px;
+    }
+    .field-group .input-wrap {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-high); border-radius: var(--radius-md);
+      padding: 0 14px; border: 1.5px solid transparent; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field-group .input-wrap:focus-within {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.08);
+    }
+    .field-group .input-wrap .material-symbols-rounded { color: var(--secondary); font-size: 17px; }
+    .field-group .input-wrap input {
+      flex: 1; background: transparent; border: none; outline: none;
+      padding: 7px 0; font-size: 0.8rem; color: var(--on-surface);
+    }
+    .field-group .input-wrap input::placeholder { color: var(--on-surface-variant); }
+    .password-hint { font-size: 0.65rem; color: var(--secondary); margin-top: 2px; }
+
+    .btn-full {
+      width: 100%; padding: 9px; border-radius: var(--radius-md);
+      background: var(--primary); color: var(--on-primary);
+      font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+      box-shadow: 0 2px 8px rgba(0,109,74,0.22);
+      letter-spacing: 0.01em;
+    }
+    .btn-full:hover {
+      background: #005a3d; box-shadow: 0 4px 16px rgba(0,109,74,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-full:active { transform: translateY(0); }
+    .btn-full:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .form-error {
+      background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+      padding: 7px 12px; border-radius: var(--radius-md); font-size: 0.775rem;
+      margin-bottom: 8px; display: none;
+    }
+
+    .divider {
+      height: 1px; background: var(--outline-variant);
+      margin: 8px 0;
+    }
+
+    .support-links { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+    .support-link {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 0.8125rem; color: var(--secondary);
+    }
+    .support-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .support-link a:hover { text-decoration: underline; }
+
+    /* Mobile branding header */
+    .mobile-brand-header {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; gap: 10px;
+      padding: 36px var(--space-lg) 28px;
+      background: linear-gradient(145deg, #002d1e 0%, #005c3b 55%, #007a52 100%);
+      text-align: center;
+    }
+    .mobile-brand-header .brand-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mobile-brand-header .brand-icon .material-symbols-rounded { font-size: 28px; color: #fff; }
+    .mobile-brand-header .brand-name {
+      font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;
+      color: #fff; letter-spacing: -0.02em;
+    }
+    .mobile-brand-header .brand-tagline {
+      font-size: 0.8125rem; color: rgba(255,255,255,0.72);
+      line-height: 1.5; max-width: 260px;
+    }
+    .mobile-brand-header .brand-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      padding: 4px 12px; border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9); margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 0; }
+      .login-shell { grid-template-columns: 1fr; border-radius: 0; box-shadow: none; min-height: 100vh; }
+      .login-image { display: none; }
+      .mobile-brand-header { display: flex; }
+      .login-form-panel { padding: 0; align-items: stretch; justify-content: flex-start; }
+      .login-form-panel .form-card { padding: var(--space-lg) var(--space-md); max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-shell">
+
+    <!-- Left: Hero Image Panel -->
+    <div class="login-image">
+      <div class="img-badge">
+        <span class="material-symbols-rounded" style="font-size:14px;">admin_panel_settings</span>
+        Admin Portal
+      </div>
+      <h1 class="img-title">Build Smarter<br>Assessments.</h1>
+      <p class="img-desc">Join as an administrator to design, manage, and analyse examinations with precision and ease.</p>
+      <div class="img-stats">
+        <div class="stat-item">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">Secure</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">∞</span>
+          <span class="stat-label">Exams</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Real‑time</span>
+          <span class="stat-label">Results</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form Panel -->
+    <div class="login-form-panel">
+
+      <!-- Mobile-only branding header -->
+      <div class="mobile-brand-header">
+        <div class="brand-badge">
+          <span class="material-symbols-rounded" style="font-size:13px;">admin_panel_settings</span>
+          Admin Portal
+        </div>
+        <div class="brand-icon">
+          <span class="material-symbols-rounded">admin_panel_settings</span>
+        </div>
+        <div class="brand-name">Prashiksha</div>
+        <p class="brand-tagline">Create your admin account to manage examinations.</p>
+      </div>
+
+      <div class="form-card">
+
+        <div class="form-header">
+          <div class="form-eyebrow">
+            <span class="material-symbols-rounded" style="font-size:14px;">verified</span>
+            Administrator
+          </div>
+          <h2 class="form-title">Create Your Account</h2>
+          <p class="form-subtitle">Set up your admin account to start creating and managing exams on Prashiksha.</p>
+        </div>
+
+        <div class="form-error" id="formError"></div>
+
+        <form id="signupForm" novalidate>
+          <div class="form-fields">
+            <div class="field-group">
+              <label class="field-label" for="name">Full Name</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">person</span>
+                <input type="text" id="name" placeholder="Your full name" required autocomplete="name" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="email">Email Address</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">mail</span>
+                <input type="email" id="email" placeholder="admin@institution.edu" required autocomplete="email" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="password">Password</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">lock</span>
+                <input type="password" id="password" placeholder="Create a strong password" required minlength="6" autocomplete="new-password" />
+              </div>
+              <p class="password-hint">Must be at least 6 characters</p>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="confirmPassword">Confirm Password</label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">lock_reset</span>
+                <input type="password" id="confirmPassword" placeholder="Re-enter your password" required autocomplete="new-password" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-full" id="submitBtn">Create Account</button>
+        </form>
+
+        <div class="divider"></div>
+
+        <div class="support-links">
+          <p class="support-link">Already have an account? <a href="admin_login.html">Sign In</a></p>
+          <p class="support-link">Are you a student? <a href="student_login.html">Student Login</a></p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    if (isLoggedIn()) {
+      const user = getUser();
+      if (user?.role === 'admin') {
+        window.location.href = 'admin_dashboard.html';
+      } else {
+        clearAuth();
+      }
+    }
+
+    const form = document.getElementById('signupForm');
+    const errorEl = document.getElementById('formError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!name || !email || !password) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (password !== confirmPassword) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role: 'admin' }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        saveAuth(data.token, data.user);
+        window.location.href = 'admin_dashboard.html';
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

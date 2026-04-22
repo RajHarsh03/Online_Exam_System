@@ -12,7 +12,7 @@ const questionSchema = new mongoose.Schema({
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
   subject: { type: String },
   exam: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam' },
-  createdBy: { type: String, required: true }, // Clerk user ID
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Question', questionSchema);

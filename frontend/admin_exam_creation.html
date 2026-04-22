@@ -232,18 +232,16 @@
               <textarea class="textarea-standalone" id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
             </div>
             <div class="field-group">
-              <label class="field-label" for="examStatus">Status</label>
-              <div class="input-wrap" style="padding:0 14px;">
-                <span class="material-symbols-rounded icon">toggle_on</span>
-                <select id="examStatus" name="examStatus" style="flex:1;background:transparent;border:none;outline:none;padding:12px 0;font-size:0.875rem;color:var(--on-surface);cursor:pointer;">
-                  <option value="draft">Draft (not visible to students)</option>
-                  <option value="published">Published (visible to students)</option>
-                </select>
+              <label class="field-label" for="scheduledDate">Scheduled Date &amp; Time <span style="color:var(--secondary);font-weight:400;">(Optional — used for code expiry)</span></label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">event</span>
+                <input type="datetime-local" id="scheduledDate" name="scheduledDate" style="flex:1;background:transparent;border:none;outline:none;padding:12px 0;font-size:0.875rem;color:var(--on-surface);" />
               </div>
-              <p class="hint-text">Draft exams are only visible to admins.</p>
+              <p class="hint-text">The exam access code expires at this time + duration.</p>
             </div>
           </div>
         </div>
+
 
         <!-- Sections 2 & 3 row -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
@@ -369,7 +367,6 @@
       const duration = parseInt(document.getElementById('timeLimit').value) || 0;
       const posMarks = parseFloat(document.getElementById('posMarks').value) || 4;
       const passingMarks = parseInt(document.getElementById('passingMarks').value) || 0;
-      const status = document.getElementById('examStatus').value;
       const totalMarks = numQuestions * posMarks;
 
       const errors = [];
@@ -381,14 +378,16 @@
 
       if (errors.length) { showBanner(errors.join(' '), 'error'); return null; }
 
-      return { title, subject, description, duration, totalMarks, passingMarks, status };
+      return { title, subject, description, duration, totalMarks, passingMarks,
+        scheduledDate: document.getElementById('scheduledDate').value || undefined };
     }
 
     // ── Submit exam to API ──
+    // statusOverride: 'draft' (Save as Draft btn) or 'published' (Create Exam btn)
     async function submitExam(statusOverride) {
       const data = collectFormData();
       if (!data) return;
-      if (statusOverride) data.status = statusOverride;
+      data.status = statusOverride || 'draft';
 
       const createBtn = document.getElementById('createBtn');
       const draftBtn = document.getElementById('saveDraftBtn');
@@ -401,10 +400,10 @@
           method: 'POST',
           body: JSON.stringify(data),
         });
-        showBanner(`✓ Exam "${exam.title}" created! Redirecting to add questions…`, 'success');
+        showBanner(`✓ Exam "${exam.title}" created successfully! Redirecting…`, 'success');
         setTimeout(() => {
           window.location.href = 'question_management.html';
-        }, 1400);
+        }, 1500);
       } catch (err) {
         showBanner('Error creating exam: ' + err.message, 'error');
         createBtn.disabled = false;
@@ -415,11 +414,11 @@
 
     document.getElementById('examForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      submitExam();
+      submitExam('published');   // Create Exam = publish immediately
     });
 
     document.getElementById('saveDraftBtn').addEventListener('click', () => {
-      submitExam('draft');
+      submitExam('draft');       // Save as Draft = draft
     });
 
     // Reset border on focus

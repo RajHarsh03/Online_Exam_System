@@ -207,6 +207,16 @@
                 <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password" />
               </div>
             </div>
+            <div class="field-group">
+              <label class="field-label" for="instituteCode">
+                Institute Code
+                <span style="font-weight:400;color:var(--secondary);"> — provided by your administrator</span>
+              </label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded">domain</span>
+                <input type="text" id="instituteCode" placeholder="e.g. INS-ABC123" required autocomplete="off" style="text-transform:uppercase;letter-spacing:0.05em;" />
+              </div>
+            </div>
           </div>
 
           <button type="submit" class="btn-full" id="submitBtn">Create Account</button>
@@ -240,9 +250,10 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
+      const instituteCode = document.getElementById('instituteCode').value.trim().toUpperCase();
 
-      if (!name || !email || !password) {
-        errorEl.textContent = 'Please fill in all fields.';
+      if (!name || !email || !password || !instituteCode) {
+        errorEl.textContent = 'Please fill in all fields including the Institute Code.';
         errorEl.style.display = 'block';
         return;
       }
@@ -264,7 +275,7 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, role: 'student' }),
+          body: JSON.stringify({ name, email, password, role: 'student', instituteCode }),
         });
         const data = await res.json();
 

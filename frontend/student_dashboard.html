@@ -11,6 +11,11 @@
   <style>
     body { background: var(--surface); }
 
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     /*  Dashboard content area */
     .dashboard-body { padding: var(--space-md) var(--space-lg); }
 
@@ -328,96 +333,170 @@
     </header>
 
     <main>
+      <!-- ── Instructions Modal ── -->
+      <div id="instructionsModal" style="
+        display:none;position:fixed;inset:0;z-index:9999;
+        background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+        align-items:center;justify-content:center;padding:16px;
+      ">
+        <div style="
+          background:#fff;border-radius:20px;max-width:520px;width:100%;
+          box-shadow:0 24px 60px rgba(0,0,0,0.2);overflow:hidden;
+          animation:slideUp 0.3s ease;
+        ">
+          <!-- Header -->
+          <div style="background:linear-gradient(135deg,#003d2a,#006d4a);padding:24px 28px 20px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <div style="width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span class="material-symbols-rounded" style="color:#fff;font-size:22px;">assignment</span>
+              </div>
+              <div>
+                <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">Exam Instructions</div>
+                <div id="modalExamTitle" style="font-size:1.1rem;font-weight:800;color:#fff;font-family:var(--font-display);"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);font-size:0.8rem;">
+                <span class="material-symbols-rounded" style="font-size:15px;">schedule</span>
+                <span id="modalDuration"></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);font-size:0.8rem;">
+                <span class="material-symbols-rounded" style="font-size:15px;">quiz</span>
+                <span id="modalQuestions"></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);font-size:0.8rem;">
+                <span class="material-symbols-rounded" style="font-size:15px;">stars</span>
+                <span id="modalMarks"></span>
+              </div>
+            </div>
+          </div>
+          <!-- Body -->
+          <div style="padding:24px 28px;">
+            <p id="modalDesc" style="font-size:0.875rem;color:#526075;margin-bottom:20px;line-height:1.6;"></p>
+            <div style="background:#f8fffe;border:1px solid #c6f0dd;border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+              <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#006d4a;margin-bottom:10px;">Before you begin</div>
+              <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.835rem;color:#2c3437;">
+                  <span class="material-symbols-rounded" style="font-size:16px;color:#16a34a;flex-shrink:0;margin-top:1px;">check_circle</span>
+                  Ensure you have a stable internet connection.
+                </li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.835rem;color:#2c3437;">
+                  <span class="material-symbols-rounded" style="font-size:16px;color:#16a34a;flex-shrink:0;margin-top:1px;">check_circle</span>
+                  Do not refresh or close the browser during the exam.
+                </li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.835rem;color:#2c3437;">
+                  <span class="material-symbols-rounded" style="font-size:16px;color:#16a34a;flex-shrink:0;margin-top:1px;">check_circle</span>
+                  The timer starts as soon as you click <strong>Start Exam</strong>.
+                </li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.835rem;color:#2c3437;">
+                  <span class="material-symbols-rounded" style="font-size:16px;color:#16a34a;flex-shrink:0;margin-top:1px;">check_circle</span>
+                  Each question can only be answered once — choose carefully.
+                </li>
+                <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.835rem;color:#2c3437;">
+                  <span class="material-symbols-rounded" style="font-size:16px;color:#e0a020;flex-shrink:0;margin-top:1px;">warning</span>
+                  The exam will auto-submit when time runs out.
+                </li>
+              </ul>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <button onclick="closeModal()" style="
+                flex:1;padding:11px;border-radius:var(--radius-md);
+                border:1px solid var(--outline-variant);background:#fff;
+                color:var(--secondary);font-size:0.875rem;font-weight:600;cursor:pointer;
+              ">Cancel</button>
+              <button onclick="startExam()" id="startExamBtn" style="
+                flex:2;padding:11px;border-radius:var(--radius-md);
+                border:none;background:linear-gradient(135deg,#003d2a,#006d4a);
+                color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;
+                display:flex;align-items:center;justify-content:center;gap:6px;
+              ">
+                <span class="material-symbols-rounded" style="font-size:18px;">play_arrow</span>
+                Start Exam
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Dashboard body -->
       <div class="dashboard-body">
 
         <!-- Welcome header -->
         <div class="welcome-header">
-          <h1 class="headline">Ready for today?</h1>
-          <p class="sub">You have 3 active assessments pending. Ensure you are in a quiet environment before starting your proctored sessions.</p>
+          <h1 class="headline" id="welcomeHeadline">Welcome back!</h1>
+          <p class="sub" id="welcomeSub">Enter your exam code below to join an exam assigned by your instructor.</p>
         </div>
 
-        <!-- Exams grid -->
-        <div class="exams-grid">
-
-          <!-- Priority exam (large card) -->
-          <div class="priority-card">
-            <div class="priority-badge">
-              <span class="material-symbols-rounded">star</span>
-              Priority Assessment
+        <!-- ── Join Exam by Code ── -->
+        <div style="
+          background: linear-gradient(135deg, #002d1e 0%, #005a3d 100%);
+          border-radius: var(--radius-xl); padding: 18px 20px;
+          margin-bottom: var(--space-md); display:flex; align-items:center;
+          justify-content:space-between; flex-wrap:wrap; gap:14px;
+          box-shadow: 0 4px 16px rgba(0,90,61,0.22);
+        ">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-rounded" style="color:#fff;font-size:20px;">key</span>
             </div>
-
-            <h2 class="exam-title">Advanced Cellular Biology Midterm</h2>
-            <p class="exam-desc">Comprehensive examination covering modules 4 through 7. Requires active webcam proctoring.</p>
-
-            <div class="exam-meta">
-              <div class="meta-item">
-                <span class="material-symbols-rounded">schedule</span>
-                <div>
-                  <div class="meta-label">Duration</div>
-                  <div class="meta-value">120 Minutes</div>
-                </div>
-              </div>
-              <div class="meta-item">
-                <span class="material-symbols-rounded">event</span>
-                <div>
-                  <div class="meta-label">Deadline</div>
-                  <div class="meta-value">Today, 11:59 PM</div>
-                </div>
-              </div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:2px;">Join an Exam</div>
+              <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);">Enter the exam code provided by your instructor</div>
             </div>
-
-            <a href="exam_interface.html" class="btn btn-primary" style="width:fit-content;">
-              Start Exam Now
-            </a>
           </div>
-
-          <!-- Secondary exams column -->
-          <div class="secondary-exams">
-
-            <div class="secondary-card">
-              <div class="sec-badge">
-                <span class="material-symbols-rounded">lock</span>
-                Proctored
-              </div>
-              <h3 class="sec-title">Introduction to Modern Physics</h3>
-              <p class="sec-desc">Multiple choice and short answer evaluation.</p>
-              <div class="sec-footer">
-                <div class="sec-duration">
-                  <span class="material-symbols-rounded">timer</span>
-                  60 Min
-                </div>
-                <button class="btn-begin-sm" onclick="window.location.href='exam_interface.html'">Begin</button>
-              </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+            <div style="
+              display:flex;align-items:center;gap:8px;
+              background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+              border-radius: var(--radius-md); padding: 0 12px;
+            ">
+              <span class="material-symbols-rounded" style="color:rgba(255,255,255,0.6);font-size:16px;">tag</span>
+              <input
+                id="examCodeInput"
+                type="text"
+                placeholder="e.g. EXM-ABC123"
+                maxlength="12"
+                style="background:transparent;border:none;outline:none;color:#fff;font-size:0.875rem;font-weight:600;letter-spacing:0.06em;width:140px;padding:9px 0;text-transform:uppercase;"
+                oninput="this.value=this.value.toUpperCase()"
+                onkeydown="if(event.key==='Enter')joinExamByCode()"
+              />
             </div>
-
-            <div class="secondary-card">
-              <div class="sec-badge">
-                <span class="material-symbols-rounded">menu_book</span>
-                Open Book
-              </div>
-              <h3 class="sec-title">European History Essay</h3>
-              <p class="sec-desc">Upload your final written submission here.</p>
-              <div class="sec-footer">
-                <div class="sec-duration">
-                  <span class="material-symbols-rounded">timer</span>
-                  Untimed
-                </div>
-                <button class="btn-upload-sm">Upload</button>
-              </div>
-            </div>
-
+            <button onclick="joinExamByCode()" id="joinExamBtn" style="
+              background:#fff;color:#003d2a;border:none;
+              padding:9px 18px;border-radius:var(--radius-md);
+              font-size:0.85rem;font-weight:700;cursor:pointer;
+              transition:background 0.2s;white-space:nowrap;
+            ">Join Exam</button>
           </div>
         </div>
+        <!-- Join feedback -->
+        <div id="examJoinFeedback" style="display:none;margin:-8px 0 var(--space-md);padding:10px 14px;border-radius:var(--radius-md);font-size:0.825rem;font-weight:500;"></div>
+
+        <!-- Empty state (shown when no exam is active) -->
+        <div id="emptyState" style="
+          text-align:center;padding:60px 20px;
+          background:var(--surface-lowest);border-radius:var(--radius-xl);
+          box-shadow:var(--shadow-card);
+        ">
+          <div style="width:64px;height:64px;background:var(--primary-container);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+            <span class="material-symbols-rounded" style="font-size:30px;color:var(--primary);">assignment</span>
+          </div>
+          <h2 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--on-surface);margin-bottom:8px;">No active exam</h2>
+          <p style="font-size:0.875rem;color:var(--secondary);max-width:320px;margin:0 auto;">Enter your exam code above to join an exam. Your instructor will provide the code before the exam begins.</p>
+        </div>
+
       </div>
 
       <script src="js/auth.js"></script>
       <script>
-    // Auth guard
+    // ── Auth guard ──
     const currentUser = requireAuth('student_login.html');
-    if (currentUser) updateUserUI(currentUser);
+    if (currentUser) {
+      updateUserUI(currentUser);
+      document.getElementById('welcomeHeadline').textContent = `Ready, ${currentUser.name.split(' ')[0]}?`;
+    }
 
-    // Logout handlers
+    // ── Logout handlers ──
     document.getElementById('drawerLogoutBtn').addEventListener('click', (e) => {
       e.preventDefault();
       handleLogout('student_login.html');
@@ -431,17 +510,93 @@
       document.getElementById('drawerOverlay').classList.toggle('open');
       document.body.style.overflow = document.getElementById('studentDrawer').classList.contains('open') ? 'hidden' : '';
     }
-    // Animate entrance
-        document.querySelectorAll('.priority-card, .secondary-card').forEach((el, i) => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateY(20px)';
-          el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-          setTimeout(() => {
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-          }, 100 + i * 100);
+
+    // ── State: the fetched exam object ──
+    let pendingExam = null;
+
+    // ── Join Exam by Code ──
+    async function joinExamByCode() {
+      const input = document.getElementById('examCodeInput');
+      const btn = document.getElementById('joinExamBtn');
+      const code = input.value.trim().toUpperCase();
+
+      if (!code) { showFeedback('Please enter an exam code.', 'error'); input.focus(); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      hideFeedback();
+
+      try {
+        // Use apiFetch — it reads from 'prashiksha_token', not 'token'
+        const data = await apiFetch('/api/exams/join', {
+          method: 'POST',
+          body: JSON.stringify({ code }),
         });
+
+
+        // Store the exam and show the instructions modal
+        pendingExam = data;
+        showInstructionsModal(data);
+
+      } catch (err) {
+        showFeedback(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Join Exam';
+      }
+    }
+
+    // ── Instructions Modal ──
+    function showInstructionsModal(exam) {
+      document.getElementById('modalExamTitle').textContent = exam.title;
+      document.getElementById('modalDuration').textContent = `${exam.duration} min`;
+      document.getElementById('modalQuestions').textContent = `${exam.totalQuestions || 'N/A'} questions`;
+      document.getElementById('modalMarks').textContent = `${exam.totalMarks} marks`;
+      document.getElementById('modalDesc').textContent =
+        exam.description || `Subject: ${exam.subject}. Read all instructions carefully before starting.`;
+
+      const modal = document.getElementById('instructionsModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('instructionsModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function startExam() {
+      if (!pendingExam) return;
+      sessionStorage.setItem('activeExam', JSON.stringify(pendingExam));
+      window.location.href = 'exam_interface.html';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('instructionsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ── Feedback helpers ──
+    function showFeedback(msg, type) {
+      const el = document.getElementById('examJoinFeedback');
+      el.textContent = msg;
+      el.style.display = 'block';
+      if (type === 'error') {
+        el.style.background = '#fef2f2';
+        el.style.color = '#dc2626';
+        el.style.border = '1px solid #fecaca';
+      } else {
+        el.style.background = '#f0fdf4';
+        el.style.color = '#16a34a';
+        el.style.border = '1px solid #bbf7d0';
+      }
+    }
+
+    function hideFeedback() {
+      document.getElementById('examJoinFeedback').style.display = 'none';
+    }
       </script>
+
     </main>
   </div>
 </body>

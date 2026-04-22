@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
-  <title>Exam — Advanced Cognitive Psychology | Prashiksha</title>
+  <title>Exam — Prashiksha</title>
   <meta name="description" content="Online examination interface for Prashiksha." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -20,7 +20,6 @@
       position: sticky; top: 0; z-index: 100;
       gap: 4px;
     }
-
     .exam-info { display: flex; flex-direction: column; }
     .exam-name { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; }
     .exam-sub  { font-size: 0.65rem; color: var(--secondary); margin-top: 0px; }
@@ -51,14 +50,12 @@
     .submit-btn:hover { background: var(--surface-high); color: var(--on-surface); }
 
     /* ── Question area ── */
-    .exam-body { max-width: 740px; margin: 0 auto; padding: var(--space-md) var(--space-lg); }
+    .exam-body { max-width: 740px; margin: 0 auto; padding: var(--space-md) var(--space-lg); padding-bottom: 70px; }
 
     /* Q progress row */
     .q-progress-row {
       display: flex; align-items: center; justify-content: space-between;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
-      flex-wrap: wrap;
+      gap: var(--space-sm); margin-bottom: var(--space-md); flex-wrap: wrap;
     }
     .q-number-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -72,24 +69,18 @@
       display: flex; align-items: center; gap: 4px;
       font-size: 0.8rem; font-weight: 500; color: var(--secondary);
       background: none; border: none; cursor: pointer;
-      transition: color var(--transition);
-      padding: 4px 8px;
-      flex-shrink: 0;
+      transition: color var(--transition); padding: 4px 8px; flex-shrink: 0;
     }
-    .flag-btn:hover{ color: var(--primary); }
+    .flag-btn:hover { color: var(--primary); }
     .flag-btn.flagged { color: var(--primary); }
 
     /* Question card */
     .question-card {
-      background: var(--surface-lowest);
-      border-radius: var(--radius-xl);
-      padding: var(--space-lg);
-      box-shadow: var(--shadow-card);
-      margin-bottom: var(--space-md);
+      background: var(--surface-lowest); border-radius: var(--radius-xl);
+      padding: var(--space-lg); box-shadow: var(--shadow-card); margin-bottom: var(--space-md);
     }
     .question-text {
-      font-family: var(--font-body);
-      font-size: 0.9375rem; line-height: 1.7;
+      font-family: var(--font-body); font-size: 0.9375rem; line-height: 1.7;
       color: var(--on-surface); margin-bottom: var(--space-lg);
     }
 
@@ -97,99 +88,57 @@
     .options-list { display: flex; flex-direction: column; gap: var(--space-sm); }
     .option {
       display: flex; align-items: flex-start; gap: var(--space-sm);
-      padding: 14px 16px;
-      border-radius: var(--radius-lg);
-      background: var(--surface-high);
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all var(--transition);
+      padding: 14px 16px; border-radius: var(--radius-lg);
+      background: var(--surface-high); cursor: pointer;
+      border: 2px solid transparent; transition: all var(--transition);
     }
     .option:hover { background: var(--surface-low); border-color: var(--outline-variant); }
-    .option.selected {
-      background: rgba(105,246,184,0.18);
-      border-color: var(--primary-container);
-    }
+    .option.selected { background: rgba(105,246,184,0.18); border-color: var(--primary-container); }
     .option-radio {
       width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
       border: 2px solid var(--surface-highest);
       display: flex; align-items: center; justify-content: center;
       transition: all var(--transition); margin-top: 2px;
     }
-    .option.selected .option-radio {
-      border-color: var(--primary);
-      background: var(--primary);
-    }
+    .option.selected .option-radio { border-color: var(--primary); background: var(--primary); }
     .option.selected .option-radio::after {
-      content: ''; display: block;
-      width: 8px; height: 8px; border-radius: 50%; background: #fff;
+      content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: #fff;
     }
     .option-text { font-size: 0.8125rem; line-height: 1.55; color: var(--on-surface); flex: 1; }
 
     /* Nav footer */
     .exam-footer {
       display: flex; align-items: center; justify-content: space-between;
-      gap: var(--space-sm);
-      padding: 8px var(--space-md);
-      background: var(--surface-lowest);
-      border-top: 1px solid var(--surface-high);
-      position: fixed; bottom: 0; left: 0; right: 0;
-      flex-wrap: wrap;
+      gap: var(--space-sm); padding: 8px var(--space-md);
+      background: var(--surface-lowest); border-top: 1px solid var(--surface-high);
+      position: fixed; bottom: 0; left: 0; right: 0; flex-wrap: wrap;
     }
     .prev-btn {
       display: flex; align-items: center; gap: 4px;
       font-size: 0.8rem; font-weight: 600; color: var(--secondary);
       background: none; border: none; cursor: pointer;
-      transition: color var(--transition);
-      padding: 6px 10px;
-      flex-shrink: 0;
+      transition: color var(--transition); padding: 6px 10px; flex-shrink: 0;
     }
     .prev-btn:hover { color: var(--primary); }
     .prev-btn:disabled { opacity: 0.3; cursor: default; }
+    .exam-footer .btn { padding: 6px 12px; font-size: 0.8rem; flex-shrink: 0; }
 
-    .exam-footer .btn {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      flex-shrink: 0;
+    /* Loading / Error state */
+    .loading-state {
+      text-align: center; padding: 80px 20px;
+      color: var(--secondary); font-size: 0.9rem;
     }
-
-    /* Bottom padding so content isn't hidden behind footer */
-    .exam-body { padding-bottom: 70px; }
+    .loading-state .material-symbols-rounded { font-size: 40px; display: block; margin-bottom: 12px; }
 
     @media (max-width: 768px) {
-      .exam-header {
-        padding: 6px var(--space-sm);
-        gap: 6px;
-      }
-
-      .exam-body {
-        padding: var(--space-sm);
-        padding-bottom: 80px;
-      }
-
-      .question-card {
-        padding: var(--space-md);
-      }
-
-      .exam-footer {
-        padding: 8px var(--space-sm);
-        gap: 6px;
-      }
+      .exam-header { padding: 6px var(--space-sm); gap: 6px; }
+      .exam-body { padding: var(--space-sm); padding-bottom: 80px; }
+      .question-card { padding: var(--space-md); }
+      .exam-footer { padding: 8px var(--space-sm); gap: 6px; }
     }
-
     @media (max-width: 560px) {
-      .exam-footer {
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .exam-footer .btn,
-      .prev-btn,
-      .submit-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-        flex-shrink: 0;
-      }
+      .exam-footer { flex-direction: row; align-items: center; gap: 4px; }
+      .exam-footer .btn, .prev-btn, .submit-btn { padding: 6px 10px; font-size: 0.75rem; flex-shrink: 0; }
     }
   </style>
 </head>
@@ -202,142 +151,265 @@
         <span class="material-symbols-rounded" style="color:var(--primary);font-size:16px;">menu_book</span>
       </div>
       <div class="exam-info">
-        <div class="exam-name">Advanced Cognitive Psychology</div>
-        <div class="exam-sub">Final Examination &bull; Candidate ID: 88492</div>
+        <div class="exam-name" id="examName">Loading…</div>
+        <div class="exam-sub" id="examSub">Please wait</div>
       </div>
     </div>
 
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="timer-widget" id="timerWidget">
         <span class="material-symbols-rounded">timer</span>
-        <span class="timer-value" id="timer">01:42:15</span>
+        <span class="timer-value" id="timer">--:--</span>
       </div>
-
       <button class="submit-btn" id="submitBtn" onclick="submitExam()">Submit Exam</button>
     </div>
   </header>
 
   <!-- Question body -->
-  <div class="exam-body">
-    <div class="q-progress-row">
-      <div class="q-number-badge">
-        Question <span id="qNum">14</span> <em>of <span id="qTotal">50</span></em>
-      </div>
-      <button class="flag-btn" id="flagBtn" onclick="toggleFlag()">
-        <span class="material-symbols-rounded" style="font-size:16px;">bookmark</span>
-        Flag for review
-      </button>
-    </div>
-
-    <div class="question-card">
-      <p class="question-text" id="questionText">
-        In the context of working memory models, which component is primarily responsible for temporarily holding and manipulating visual and spatial information, and how does it interact with the central executive during complex problem-solving tasks involving mental rotation?
-      </p>
-
-      <div class="options-list" id="optionsList"></div>
+  <div class="exam-body" id="examBody">
+    <div class="loading-state">
+      <span class="material-symbols-rounded">hourglass_top</span>
+      Loading exam…
     </div>
   </div>
 
   <!-- Footer navigation -->
   <div class="exam-footer">
-    <button class="prev-btn" id="prevBtn" onclick="prevQuestion()">
+    <button class="prev-btn" id="prevBtn" onclick="prevQuestion()" disabled>
       Previous Question
     </button>
-
     <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
       Save &amp; Next
     </button>
   </div>
 
+  <script src="js/auth.js"></script>
   <script>
-    /* ── Questions data ── */
-    const questions = [
-      {
-        id: 14,
-        text: 'In the context of working memory models, which component is primarily responsible for temporarily holding and manipulating visual and spatial information, and how does it interact with the central executive during complex problem-solving tasks involving mental rotation?',
-        options: [
-          'The Phonological Loop; it acts as an active rehearsal mechanism that offloads spatial tracking from the central executive.',
-          'The Visuospatial Sketchpad; it stores spatial layouts while the central executive directs attention and cognitive resources to manipulate that stored image.',
-          'The Episodic Buffer; it integrates visual stimuli directly into long-term memory without requiring central executive intervention.',
-          'The Semantic Network; it bypasses working memory entirely to retrieve pre-existing spatial maps for complex problem-solving.',
-        ],
-        correct: 1,
-      },
-      {
-        id: 15,
-        text: 'Which psychological theory best explains why individuals often continue investing in a failing course of action due to accumulated prior investments?',
-        options: [
-          'Cognitive Dissonance Theory',
-          'Self-Determination Theory',
-          'Sunk Cost Fallacy, a cognitive bias within Prospect Theory',
-          'Attribution Error in Social Cognitive Frameworks',
-        ],
-        correct: 2,
-      },
-    ];
+    // ── Auth guard ──
+    const currentUser = requireAuth('student_login.html');
 
+    // ── Load exam from sessionStorage (set during join flow) ──
+    let exam = null;
+    let questions = [];
     let currentQ = 0;
-    let selected = new Array(questions.length).fill(null);
-    let flagged  = new Array(questions.length).fill(false);
+    let answers   = {};   // { questionId: selectedOptionIndex }
+    let flagged   = {};   // { questionId: bool }
+    let timerInterval = null;
+    let secondsLeft   = 0;
 
-    /* Timer */
-    let seconds = 6135; // 1:42:15
-    function updateTimer() {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      document.getElementById('timer').textContent =
-        `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if (seconds < 300) document.getElementById('timerWidget').classList.add('warning');
-      if (seconds > 0) seconds--;
-    }
-    setInterval(updateTimer, 1000);
+    function init() {
+      const raw = sessionStorage.getItem('activeExam');
+      if (!raw) {
+        showError('No active exam found. Please join an exam from your dashboard.');
+        return;
+      }
 
-    /* Render question */
-    function renderQuestion() {
-      const q = questions[currentQ % questions.length];
-      document.getElementById('qNum').textContent = q.id;
-      document.getElementById('questionText').textContent = q.text;
+      exam = JSON.parse(raw);
 
-      const list = document.getElementById('optionsList');
-      list.innerHTML = q.options.map((opt, i) => `
-        <div class="option ${selected[currentQ] === i ? 'selected' : ''}"
-             onclick="selectOption(${i})" id="opt${i}">
-          <div class="option-radio"></div>
-          <span class="option-text">${opt}</span>
-        </div>
-      `).join('');
+      // Set header info
+      document.title = `${exam.title} — Prashiksha`;
+      document.getElementById('examName').textContent = exam.title;
+      document.getElementById('examSub').textContent =
+        `${exam.subject} • ${currentUser ? currentUser.name : 'Student'}`;
 
-      document.getElementById('flagBtn').classList.toggle('flagged', flagged[currentQ]);
-      document.getElementById('prevBtn').disabled = currentQ === 0;
-    }
+      // Set up questions
+      if (!exam.questions || exam.questions.length === 0) {
+        showError('This exam has no questions yet. Please contact your instructor.');
+        return;
+      }
 
-    function selectOption(idx) {
-      selected[currentQ] = idx;
+      questions = exam.questions;
+      answers   = {};
+      flagged   = {};
+
+      // Start timer — exam.duration is in minutes
+      secondsLeft = (exam.duration || 30) * 60;
+      startTimer();
+
+      // Render first question
       renderQuestion();
     }
 
-    function toggleFlag() {
-      flagged[currentQ] = !flagged[currentQ];
-      document.getElementById('flagBtn').classList.toggle('flagged', flagged[currentQ]);
+    // ── Timer ──
+    function startTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        updateTimerDisplay();
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          autoSubmit();
+        }
+      }, 1000);
     }
 
+    function updateTimerDisplay() {
+      const h = Math.floor(secondsLeft / 3600);
+      const m = Math.floor((secondsLeft % 3600) / 60);
+      const s = secondsLeft % 60;
+      const display = h > 0
+        ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      document.getElementById('timer').textContent = display;
+      // Warning when < 5 mins
+      document.getElementById('timerWidget').classList.toggle('warning', secondsLeft < 300);
+    }
+
+    // ── Render question ──
+    function renderQuestion() {
+      const body = document.getElementById('examBody');
+      const q = questions[currentQ];
+      const qId = q._id || q.id || currentQ;
+      const opts = q.options || [];
+
+      body.innerHTML = `
+        <div class="q-progress-row">
+          <div class="q-number-badge">
+            Question <span id="qNum">${currentQ + 1}</span>
+            <em>of <span id="qTotal">${questions.length}</span></em>
+          </div>
+          <button class="flag-btn ${flagged[qId] ? 'flagged' : ''}" id="flagBtn" onclick="toggleFlag()">
+            <span class="material-symbols-rounded" style="font-size:16px;">bookmark</span>
+            ${flagged[qId] ? 'Flagged' : 'Flag for review'}
+          </button>
+        </div>
+
+        <div class="question-card">
+          <p class="question-text">${q.text || q.questionText || 'Question text unavailable'}</p>
+          <div class="options-list" id="optionsList">
+            ${opts.map((opt, i) => `
+              <div class="option ${answers[qId] === i ? 'selected' : ''}"
+                   onclick="selectOption(${i})" id="opt${i}">
+                <div class="option-radio"></div>
+                <span class="option-text">${opt.text || opt}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('prevBtn').disabled = currentQ === 0;
+      document.getElementById('nextBtn').textContent =
+        currentQ === questions.length - 1 ? 'Submit Exam' : 'Save & Next';
+    }
+
+    // ── Select an option ──
+    function selectOption(idx) {
+      const q = questions[currentQ];
+      const qId = q._id || q.id || currentQ;
+      answers[qId] = idx;
+
+      // Update UI without full re-render
+      document.querySelectorAll('.option').forEach((el, i) => {
+        el.classList.toggle('selected', i === idx);
+      });
+    }
+
+    // ── Flag toggle ──
+    function toggleFlag() {
+      const q = questions[currentQ];
+      const qId = q._id || q.id || currentQ;
+      flagged[qId] = !flagged[qId];
+      const btn = document.getElementById('flagBtn');
+      if (btn) {
+        btn.classList.toggle('flagged', flagged[qId]);
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">bookmark</span>
+          ${flagged[qId] ? 'Flagged' : 'Flag for review'}`;
+      }
+    }
+
+    // ── Navigation ──
     function nextQuestion() {
-      if (currentQ < questions.length - 1) { currentQ++; renderQuestion(); }
-      else { submitExam(); }
+      if (currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+        window.scrollTo(0, 0);
+      } else {
+        submitExam();
+      }
     }
 
     function prevQuestion() {
-      if (currentQ > 0) { currentQ--; renderQuestion(); }
+      if (currentQ > 0) {
+        currentQ--;
+        renderQuestion();
+        window.scrollTo(0, 0);
+      }
     }
 
+    // ── Submit ──
     function submitExam() {
-      if (confirm('Are you sure you want to submit the exam? This action cannot be undone.')) {
+      const answered = Object.keys(answers).length;
+      const total    = questions.length;
+      const unanswered = total - answered;
+
+      const msg = unanswered > 0
+        ? `You have ${unanswered} unanswered question(s). Submit anyway?`
+        : 'Submit the exam? This cannot be undone.';
+
+      if (!confirm(msg)) return;
+      doSubmit();
+    }
+
+    function autoSubmit() {
+      alert('Time is up! Your exam is being submitted automatically.');
+      doSubmit();
+    }
+
+    async function doSubmit() {
+      clearInterval(timerInterval);
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtn').textContent = 'Submitting…';
+
+      // Build submission payload to match /api/results expectations
+      const answersPayload = questions.map((q, idx) => {
+        const qId = q._id || q.id || String(idx);
+        return {
+          questionId:     qId,
+          selectedOption: answers[qId] !== undefined ? answers[qId] : null,
+        };
+      });
+
+      const timeTaken = (exam.duration * 60) - secondsLeft; // seconds spent
+
+      try {
+        const result = await apiFetch(`/api/results`, {
+          method: 'POST',
+          body: JSON.stringify({
+            examId:    exam._id,
+            answers:   answersPayload,
+            timeTaken,
+          }),
+        });
+        sessionStorage.setItem('examResult', JSON.stringify(result));
+        window.location.href = 'exam_result.html';
+      } catch (err) {
+        sessionStorage.setItem('examResult', JSON.stringify({
+          examTitle: exam.title,
+          answers: answersPayload,
+          error: err.message,
+        }));
         window.location.href = 'exam_result.html';
       }
     }
 
-    renderQuestion();
+    // ── Error state ──
+    function showError(msg) {
+      document.getElementById('examBody').innerHTML = `
+        <div class="loading-state">
+          <span class="material-symbols-rounded">error</span>
+          ${msg}
+          <br><br>
+          <a href="student_dashboard.html" class="btn btn-primary" style="display:inline-flex;gap:6px;align-items:center;margin-top:8px;">
+            <span class="material-symbols-rounded" style="font-size:16px;">arrow_back</span>
+            Back to Dashboard
+          </a>
+        </div>`;
+      document.getElementById('timer').textContent = '--:--';
+    }
+
+    // ── Start ──
+    init();
   </script>
 </body>
 </html>
