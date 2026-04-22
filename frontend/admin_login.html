@@ -237,8 +237,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Login failed');
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          throw new Error('Server returned an unexpected response. Please try again.');
+        }
+        if (!res.ok) throw new Error(data?.error || 'Login failed');
 
         if (data.user.role !== 'admin') {
           throw new Error('This portal is for administrators only.');

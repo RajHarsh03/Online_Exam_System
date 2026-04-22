@@ -30,16 +30,6 @@
     .search-bar-lg input { background: transparent; font-size: 0.8125rem; color: var(--on-surface); flex: 1; }
     .search-bar-lg .material-symbols-rounded { color: var(--secondary); font-size: 18px; }
 
-    .filter-btn {
-      width: 38px; height: 38px; border-radius: var(--radius-md);
-      display: flex; align-items: center; justify-content: center;
-      background: var(--surface-lowest); box-shadow: var(--shadow-card);
-      color: var(--secondary); cursor: pointer;
-      border: 1px solid var(--outline-variant);
-      transition: all var(--transition);
-    }
-    .filter-btn:hover { background: var(--surface-low); color: var(--on-surface); }
-
     .status-filter {
       appearance: none;
       background: var(--surface-lowest);
@@ -56,7 +46,6 @@
       padding-right: 28px;
     }
 
-    /* Student table card */
     .table-card {
       background: var(--surface-lowest);
       border-radius: var(--radius-xl);
@@ -65,9 +54,7 @@
     }
 
     .student-table { width: 100%; border-collapse: collapse; }
-    .student-table thead tr {
-      background: var(--surface-low);
-    }
+    .student-table thead tr { background: var(--surface-low); }
     .student-table th {
       text-align: left; padding: 10px 16px;
       font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
@@ -80,19 +67,16 @@
 
     .student-cell { display: flex; align-items: center; gap: 14px; }
     .student-avatar {
-      width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
       background: var(--primary-container);
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.75rem; color: var(--primary);
+      font-weight: 700; font-size: 0.8rem; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 0.02em;
     }
-    .student-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .student-info { display: flex; flex-direction: column; }
-    .student-name { font-weight: 600; }
-    .student-email { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; }
+    .student-name { font-weight: 600; color: var(--on-surface); }
+    .student-email-cell { color: var(--secondary); font-size: 0.8rem; }
+    .date-cell { color: var(--secondary); font-size: 0.8rem; white-space: nowrap; }
 
-    .mono { font-family: 'Courier New', monospace; font-size: 0.8125rem; }
-
-    /* Row actions */
     .row-actions { display: flex; align-items: center; gap: 8px; }
     .action-icon-btn {
       width: 34px; height: 34px; border-radius: var(--radius-sm);
@@ -101,46 +85,40 @@
       cursor: pointer; transition: all var(--transition); border: none;
     }
     .action-icon-btn:hover { background: var(--surface-high); color: var(--primary); }
+    .action-icon-btn.danger:hover { background: #fef2f2; color: #dc2626; }
 
-    /* Pagination */
+    .empty-state {
+      padding: 56px 24px; text-align: center;
+    }
+    .empty-state .material-symbols-rounded {
+      font-size: 48px; color: var(--surface-highest);
+      display: block; margin-bottom: 12px;
+    }
+    .empty-state p { color: var(--secondary); font-size: 0.875rem; }
+
+    /* Skeleton shimmer */
+    .skeleton-bar {
+      height: 14px; border-radius: 999px;
+      background: linear-gradient(90deg, var(--surface-low) 25%, var(--surface-high) 50%, var(--surface-low) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
       padding: var(--space-sm) var(--space-md);
       border-top: 1px solid var(--surface-low);
     }
     .table-footer p { font-size: 0.8rem; color: var(--secondary); }
-    .pagination { display: flex; gap: 4px; }
-    .page-btn {
-      width: 32px; height: 32px; border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 500;
-      background: var(--surface-low); color: var(--secondary);
-      cursor: pointer; transition: all var(--transition); border: none;
-    }
-    .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; }
-    .page-btn:disabled { opacity: 0.4; cursor: default; }
-
-    .sidebar-cta { padding: var(--space-sm); }
 
     @media (max-width: 768px) {
-      .roster-header,
-      .roster-search-wrap,
-      .table-footer {
-        flex-direction: column;
-        align-items: stretch;
+      .roster-header, .roster-search-wrap, .table-footer {
+        flex-direction: column; align-items: stretch;
       }
-
-      .search-bar-lg {
-        width: 100%;
-      }
-
-      .table-card {
-        overflow-x: auto;
-      }
-
-      .student-table {
-        min-width: 720px;
-      }
+      .search-bar-lg { width: 100%; }
+      .table-card { overflow-x: auto; }
+      .student-table { min-width: 620px; }
     }
   </style>
 </head>
@@ -191,7 +169,7 @@
           <span class="material-symbols-rounded nav-icon">help_outline</span>
           Support
         </a>
-        <a href="admin_login.html" class="nav-item">
+        <a href="admin_login.html" class="nav-item" id="logoutLink">
           <span class="material-symbols-rounded nav-icon">logout</span>
           Logout
         </a>
@@ -210,25 +188,22 @@
         </div>
       </div>
 
-      <!-- Header row -->
+      <!-- Header -->
       <div class="roster-header">
         <div>
           <h1 class="page-title">Student Roster</h1>
-          <p class="page-subtitle">Manage enrolled students, viewing academic details and platform access.</p>
+          <p class="page-subtitle" id="pageSubtitle">Loading registered students…</p>
         </div>
         <div class="roster-search-wrap">
           <div class="search-bar-lg">
             <span class="material-symbols-rounded">search</span>
-            <input type="text" id="studentSearch" placeholder="Search by name, ID, or institute…" oninput="filterStudents()" />
+            <input type="text" id="studentSearch" placeholder="Search by name or email…" oninput="filterStudents()" />
           </div>
           <select class="status-filter" id="statusFilter" onchange="filterStudents()">
             <option value="">All Status</option>
             <option value="active">Active</option>
-            <option value="pending">Pending</option>
+            <option value="inactive">Inactive</option>
           </select>
-          <button class="filter-btn" title="Filter">
-            <span class="material-symbols-rounded">filter_list</span>
-          </button>
         </div>
       </div>
 
@@ -238,27 +213,23 @@
           <thead>
             <tr>
               <th>Student</th>
-              <th>Student ID</th>
-              <th>Institute ID</th>
+              <th>Email Address</th>
+              <th>Joined</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="studentTableBody"></tbody>
+          <tbody id="studentTableBody">
+            <tr><td><div class="skeleton-bar" style="width:55%;"></div></td><td><div class="skeleton-bar" style="width:80%;"></div></td><td><div class="skeleton-bar" style="width:45%;"></div></td><td><div class="skeleton-bar" style="width:40%;"></div></td><td><div class="skeleton-bar" style="width:25%;"></div></td></tr>
+            <tr><td><div class="skeleton-bar" style="width:65%;"></div></td><td><div class="skeleton-bar" style="width:70%;"></div></td><td><div class="skeleton-bar" style="width:50%;"></div></td><td><div class="skeleton-bar" style="width:35%;"></div></td><td><div class="skeleton-bar" style="width:25%;"></div></td></tr>
+            <tr><td><div class="skeleton-bar" style="width:50%;"></div></td><td><div class="skeleton-bar" style="width:75%;"></div></td><td><div class="skeleton-bar" style="width:45%;"></div></td><td><div class="skeleton-bar" style="width:40%;"></div></td><td><div class="skeleton-bar" style="width:25%;"></div></td></tr>
+          </tbody>
         </table>
         <div class="table-footer">
-          <p id="studentCount">Showing 1 to 3 of 45 entries</p>
-          <div class="pagination">
-            <button class="page-btn" disabled>‹</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">›</button>
-          </div>
+          <p id="studentCount">Loading…</p>
         </div>
       </div>
     </main>
-
   </div>
 
   <script src="js/auth.js"></script>
@@ -271,67 +242,132 @@
     document.querySelectorAll('.sidebar .nav-item').forEach(el => {
       el.addEventListener('click', () => { if (window.innerWidth <= 1024) closeAdminSidebar(); });
     });
-
-    document.querySelector('a[href="admin_login.html"]').addEventListener('click', (e) => {
+    document.getElementById('logoutLink').addEventListener('click', (e) => {
       e.preventDefault();
       handleLogout('admin_login.html');
     });
 
-    const students = [
-      { name: 'Eleanor Vance', email: 'evance@scholar.edu', id: 'STU-2023-8942', institute: 'INS-NE-04', status: 'ACTIVE', initials: 'EV', img: 'https://i.pravatar.cc/80?img=47' },
-      { name: 'Marcus Chen',   email: 'mchen@scholar.edu',  id: 'STU-2023-7719', institute: 'INS-NE-04', status: 'PENDING', initials: 'MC', img: 'https://i.pravatar.cc/80?img=12' },
-      { name: 'Sarah Jenkins', email: 'sjenkins@scholar.edu',id: 'STU-2022-4011', institute: 'INS-MW-12', status: 'ACTIVE',  initials: 'SJ', img: '' },
-      { name: 'Amir Hassan',   email: 'ahassan@scholar.edu', id: 'STU-2023-5501', institute: 'INS-SE-07', status: 'ACTIVE',  initials: 'AH', img: '' },
-      { name: 'Priya Sharma',  email: 'psharma@scholar.edu', id: 'STU-2022-3301', institute: 'INS-NE-04', status: 'PENDING', initials: 'PS', img: '' },
-    ];
+    // ── State ──
+    let allStudents = [];
 
-    const statusChip = { ACTIVE: 'chip-solid', PENDING: 'chip-neutral' };
+    // ── Helpers ──
+    function initials(name) {
+      return (name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
 
+    function formatDate(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    // ── Render ──
     function renderStudents(list) {
       const tbody = document.getElementById('studentTableBody');
-      tbody.innerHTML = list.map(s => `
-        <tr>
-          <td>
-            <div class="student-cell">
-              <div class="student-avatar">
-                ${s.img ? `<img src="${s.img}" alt="${s.name}" />` : `<span>${s.initials}</span>`}
+
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <span class="material-symbols-rounded">group_off</span>
+                <p>${allStudents.length === 0
+                  ? 'No students have registered yet.'
+                  : 'No students match your current search or filter.'}</p>
               </div>
-              <div class="student-info">
+            </td>
+          </tr>`;
+        document.getElementById('studentCount').textContent = '0 students';
+        return;
+      }
+
+      tbody.innerHTML = list.map(s => {
+        const active = s.isActive !== false;
+        const statusChip = active
+          ? `<span class="chip chip-solid" style="font-size:0.7rem;padding:3px 10px;">Active</span>`
+          : `<span class="chip chip-neutral" style="font-size:0.7rem;padding:3px 10px;">Inactive</span>`;
+        const toggleTitle = active ? 'Deactivate account' : 'Activate account';
+        const toggleIcon  = active ? 'block' : 'check_circle';
+        const dangerClass = active ? 'danger' : '';
+
+        return `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar">${initials(s.name)}</div>
                 <span class="student-name">${s.name}</span>
-                <span class="student-email">${s.email}</span>
               </div>
-            </div>
-          </td>
-          <td class="mono">${s.id}</td>
-          <td class="mono">${s.institute}</td>
-          <td><span class="chip ${statusChip[s.status]}">${s.status}</span></td>
-          <td>
-            <div class="row-actions">
-              <button class="action-icon-btn" title="View student">
-                <span class="material-symbols-rounded" style="font-size:18px;">visibility</span>
-              </button>
-              <button class="action-icon-btn" title="More options">
-                <span class="material-symbols-rounded" style="font-size:18px;">more_vert</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-      document.getElementById('studentCount').textContent = `Showing 1 to ${list.length} of 45 entries`;
+            </td>
+            <td class="student-email-cell">${s.email}</td>
+            <td class="date-cell">${formatDate(s.createdAt)}</td>
+            <td>${statusChip}</td>
+            <td>
+              <div class="row-actions">
+                <button class="action-icon-btn ${dangerClass}"
+                  title="${toggleTitle}"
+                  data-id="${s._id}"
+                  onclick="toggleStatus('${s._id}', this)">
+                  <span class="material-symbols-rounded" style="font-size:18px;">${toggleIcon}</span>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('studentCount').textContent =
+        `${list.length} student${list.length !== 1 ? 's' : ''} shown`;
     }
 
-    renderStudents(students);
-
+    // ── Filter ──
     function filterStudents() {
       const term = document.getElementById('studentSearch').value.toLowerCase();
-      const filtered = students.filter(s =>
-        s.name.toLowerCase().includes(term) ||
-        s.id.toLowerCase().includes(term) ||
-        s.institute.toLowerCase().includes(term) ||
-        s.email.toLowerCase().includes(term)
-      );
+      const statusVal = document.getElementById('statusFilter').value;
+
+      const filtered = allStudents.filter(s => {
+        const matchSearch = !term ||
+          s.name.toLowerCase().includes(term) ||
+          s.email.toLowerCase().includes(term);
+        const active = s.isActive !== false;
+        const matchStatus = !statusVal ||
+          (statusVal === 'active' && active) ||
+          (statusVal === 'inactive' && !active);
+        return matchSearch && matchStatus;
+      });
+
       renderStudents(filtered);
     }
+
+    // ── Toggle active/inactive ──
+    async function toggleStatus(id, btn) {
+      btn.disabled = true;
+      try {
+        const result = await apiFetch(`/api/students/${id}/status`, { method: 'PATCH' });
+        const s = allStudents.find(x => x._id === id);
+        if (s) s.isActive = result.isActive;
+        filterStudents();
+      } catch (err) {
+        alert('Failed to update status: ' + err.message);
+        btn.disabled = false;
+      }
+    }
+
+    // ── Load from API ──
+    async function loadStudents() {
+      try {
+        allStudents = await apiFetch('/api/students');
+        const count = allStudents.length;
+        document.getElementById('pageSubtitle').textContent =
+          `${count} registered student${count !== 1 ? 's' : ''} on the platform.`;
+        renderStudents(allStudents);
+      } catch (err) {
+        document.getElementById('studentTableBody').innerHTML = `
+          <tr><td colspan="5" style="text-align:center;padding:32px;color:#dc2626;font-size:0.875rem;">
+            Failed to load students: ${err.message}
+          </td></tr>`;
+        document.getElementById('studentCount').textContent = 'Error';
+      }
+    }
+
+    if (user) loadStudents();
   </script>
 </body>
 </html>

@@ -331,74 +331,93 @@
           </h2>
 
           <form id="questionForm" novalidate>
-            <div class="field-group mb-md">
-              <label class="field-label" for="subjectDomain">Subject Domain</label>
-              <select class="select-standalone" id="subjectDomain" name="subjectDomain">
-                <option value="">Select a domain…</option>
-                <option value="mathematics">Mathematics</option>
-                <option value="physics">Physics</option>
-                <option value="chemistry">Chemistry</option>
-                <option value="biology">Biology</option>
-                <option value="literature">Literature</option>
-                <option value="history">History</option>
-                <option value="comp-logic">Comp Logic</option>
-              </select>
+
+            <!-- No-exam guard banner -->
+            <div id="noExamBanner" style="display:none;background:#fef3c7;border:1px solid #fcd34d;color:#92400e;padding:14px 16px;border-radius:var(--radius-md);margin-bottom:var(--space-md);font-size:0.875rem;">
+              <div style="display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:4px;">
+                <span class="material-symbols-rounded" style="font-size:18px;">warning</span>
+                No Exams Found
+              </div>
+              <p style="margin:0;">You must create an exam before adding questions. <a href="admin_exam_creation.html" style="color:#78350f;font-weight:600;text-decoration:underline;">Create an Exam →</a></p>
             </div>
 
-            <div class="field-group mb-md">
-              <label class="field-label" for="qPrompt">Question Prompt</label>
-              <textarea class="textarea-draft" id="qPrompt" name="qPrompt" placeholder="Enter the examination question clearly and concisely..."></textarea>
-            </div>
-
-            <div class="field-group mb-md">
-              <div class="flex items-center justify-between mb-sm" style="margin-bottom:8px;">
-                <label class="field-label" style="margin-bottom:0;">Answer Options</label>
-                <span style="font-size:0.75rem;color:var(--primary);font-weight:500;cursor:pointer;" id="selectCorrectHint">Select Correct</span>
-              </div>
-              <div class="answer-options" id="answerOptions">
-                <div class="answer-option" data-idx="0" onclick="selectAnswer(0)">
-                  <div class="answer-radio"></div>
-                  <div class="answer-letter">A</div>
-                  <input type="text" class="answer-input" placeholder="First possible answer" />
-                </div>
-                <div class="answer-option" data-idx="1" onclick="selectAnswer(1)">
-                  <div class="answer-radio"></div>
-                  <div class="answer-letter">B</div>
-                  <input type="text" class="answer-input" placeholder="Second possible answer" />
-                </div>
-                <div class="answer-option" data-idx="2" onclick="selectAnswer(2)">
-                  <div class="answer-radio"></div>
-                  <div class="answer-letter">C</div>
-                  <input type="text" class="answer-input" placeholder="Third possible answer" />
-                </div>
-                <div class="answer-option" data-idx="3" onclick="selectAnswer(3)">
-                  <div class="answer-radio"></div>
-                  <div class="answer-letter">D</div>
-                  <input type="text" class="answer-input" placeholder="Fourth possible answer" />
-                </div>
-              </div>
-            </div>
-
-            <div class="meta-row mb-md">
-              <div class="field-group">
-                <label class="field-label" for="qPoints">Points</label>
-                <input type="number" class="input-standalone" id="qPoints" name="qPoints" value="1" min="1" />
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="qDifficulty">Difficulty</label>
-                <select class="select-standalone" id="qDifficulty" name="qDifficulty">
-                  <option value="standard">Standard</option>
-                  <option value="easy">Easy</option>
-                  <option value="hard">Hard</option>
+            <div id="questionFormFields">
+              <div class="field-group mb-md">
+                <label class="field-label" for="examSelect">Assign to Exam <span style="color:#ef4444;">*</span></label>
+                <select class="select-standalone" id="examSelect" name="examSelect">
+                  <option value="">Loading exams…</option>
                 </select>
               </div>
-            </div>
 
-            <div class="draft-actions">
-              <button type="button" class="btn btn-ghost" onclick="clearForm()">Clear Form</button>
-              <button type="submit" class="btn btn-primary">
-                Commit to Bank
-              </button>
+              <div class="field-group mb-md">
+                <label class="field-label" for="subjectDomain">Subject Domain</label>
+                <select class="select-standalone" id="subjectDomain" name="subjectDomain">
+                  <option value="">Select a domain…</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="physics">Physics</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="biology">Biology</option>
+                  <option value="literature">Literature</option>
+                  <option value="history">History</option>
+                  <option value="comp-logic">Comp Logic</option>
+                </select>
+              </div>
+
+              <div class="field-group mb-md">
+                <label class="field-label" for="qPrompt">Question Prompt</label>
+                <textarea class="textarea-draft" id="qPrompt" name="qPrompt" placeholder="Enter the examination question clearly and concisely..."></textarea>
+              </div>
+
+              <div class="field-group mb-md">
+                <div class="flex items-center justify-between mb-sm" style="margin-bottom:8px;">
+                  <label class="field-label" style="margin-bottom:0;">Answer Options</label>
+                  <span style="font-size:0.75rem;color:var(--primary);font-weight:500;cursor:pointer;" id="selectCorrectHint">Select Correct</span>
+                </div>
+                <div class="answer-options" id="answerOptions">
+                  <div class="answer-option" data-idx="0" onclick="selectAnswer(0)">
+                    <div class="answer-radio"></div>
+                    <div class="answer-letter">A</div>
+                    <input type="text" class="answer-input" placeholder="First possible answer" />
+                  </div>
+                  <div class="answer-option" data-idx="1" onclick="selectAnswer(1)">
+                    <div class="answer-radio"></div>
+                    <div class="answer-letter">B</div>
+                    <input type="text" class="answer-input" placeholder="Second possible answer" />
+                  </div>
+                  <div class="answer-option" data-idx="2" onclick="selectAnswer(2)">
+                    <div class="answer-radio"></div>
+                    <div class="answer-letter">C</div>
+                    <input type="text" class="answer-input" placeholder="Third possible answer" />
+                  </div>
+                  <div class="answer-option" data-idx="3" onclick="selectAnswer(3)">
+                    <div class="answer-radio"></div>
+                    <div class="answer-letter">D</div>
+                    <input type="text" class="answer-input" placeholder="Fourth possible answer" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="meta-row mb-md">
+                <div class="field-group">
+                  <label class="field-label" for="qPoints">Points</label>
+                  <input type="number" class="input-standalone" id="qPoints" name="qPoints" value="1" min="1" />
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="qDifficulty">Difficulty</label>
+                  <select class="select-standalone" id="qDifficulty" name="qDifficulty">
+                    <option value="medium">Standard</option>
+                    <option value="easy">Easy</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="draft-actions">
+                <button type="button" class="btn btn-ghost" onclick="clearForm()">Clear Form</button>
+                <button type="submit" class="btn btn-primary" id="commitBtn">
+                  Commit to Bank
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -447,10 +466,39 @@
 
     // ── Data ──
     let questions = [];
+    let exams = [];
     const domainColors = {
       mathematics: 'chip-primary', literature: 'chip-neutral', physics: 'chip-success',
       'comp-logic': 'chip-warning', biology: 'chip-danger', history: 'chip-neutral', chemistry: 'chip-primary'
     };
+
+    // ── Load exams from API + populate dropdown ──
+    async function loadExams() {
+      try {
+        exams = await apiFetch('/api/exams');
+        const select = document.getElementById('examSelect');
+
+        if (!exams.length) {
+          // Show guard banner, hide the form fields
+          document.getElementById('noExamBanner').style.display = 'block';
+          document.getElementById('questionFormFields').style.display = 'none';
+          return;
+        }
+
+        // Populate dropdown
+        select.innerHTML = '<option value="">Select an exam…</option>' +
+          exams.map(e => `<option value="${e._id}">${e.title} (${e.subject})</option>`).join('');
+
+        // Auto-select if only one exam
+        if (exams.length === 1) select.value = exams[0]._id;
+
+        // Filter questions list when exam changes
+        select.addEventListener('change', () => loadQuestions(select.value));
+
+      } catch (err) {
+        console.error('Failed to load exams:', err);
+      }
+    }
 
     // ── Render question list ──
     function renderQuestions(list) {
@@ -473,10 +521,11 @@
       document.getElementById('qCount').textContent = `${list.length} question${list.length !== 1 ? 's' : ''}`;
     }
 
-    // ── Load questions from API ──
-    async function loadQuestions() {
+    // ── Load questions from API (optionally filtered by exam) ──
+    async function loadQuestions(examId) {
       try {
-        questions = await apiFetch('/api/questions');
+        const url = examId ? `/api/questions?exam=${examId}` : '/api/questions';
+        questions = await apiFetch(url);
         renderQuestions(questions);
       } catch (err) {
         console.error('Failed to load questions:', err);
@@ -504,16 +553,20 @@
       document.getElementById('questionForm').reset();
       document.querySelectorAll('.answer-option').forEach(el => el.classList.remove('selected'));
       selectedAnswer = null;
+      // Re-populate exam select after reset (reset clears it)
+      loadExams();
     }
 
     // ── Form submit → POST /api/questions ──
     document.getElementById('questionForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const examId = document.getElementById('examSelect').value;
       const subject = document.getElementById('subjectDomain').value;
       const questionText = document.getElementById('qPrompt').value.trim();
       const marks = parseInt(document.getElementById('qPoints').value) || 1;
       const difficulty = document.getElementById('qDifficulty').value;
 
+      if (!examId) { alert('Please select an exam to assign this question to.'); return; }
       if (!subject || !questionText) { alert('Please fill in Subject Domain and Question Prompt.'); return; }
       if (selectedAnswer === null) { alert('Please select the correct answer.'); return; }
 
@@ -525,18 +578,23 @@
       }));
       if (options.some(o => !o.text)) { alert('Please fill in all answer options.'); return; }
 
-      const submitBtn = e.target.querySelector('[type="submit"]');
+      const submitBtn = document.getElementById('commitBtn');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Saving…';
 
       try {
         await apiFetch('/api/questions', {
           method: 'POST',
-          body: JSON.stringify({ questionText, type: 'mcq', options, marks, difficulty, subject }),
+          body: JSON.stringify({ questionText, type: 'mcq', options, marks, difficulty, subject, exam: examId }),
         });
         clearForm();
-        await loadQuestions();
-        alert('Question committed to bank!');
+        await loadQuestions(examId);
+        // Show brief success feedback
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#15803d;color:#fff;padding:12px 20px;border-radius:var(--radius-md);font-size:0.875rem;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:9999;';
+        banner.textContent = '✓ Question saved to exam!';
+        document.body.appendChild(banner);
+        setTimeout(() => banner.remove(), 3000);
       } catch (err) {
         alert('Error saving question: ' + err.message);
       } finally {
@@ -555,7 +613,10 @@
     const user = requireAdmin();
     if (user) {
       updateUserUI(user);
-      loadQuestions();
+      loadExams().then(() => {
+        // Load all questions initially
+        loadQuestions();
+      });
     }
   </script>
 </body>

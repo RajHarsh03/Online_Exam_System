@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
     enum: ['student', 'admin'],
     default: 'student',
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 }, { timestamps: true });
 
 // Hash password before saving

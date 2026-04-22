@@ -9,61 +9,150 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
-    /* Stat card accent override for first card */
-    .stat-card:first-child { position: relative; }
-    .stat-card-lozenge {
-      position: absolute; top: -1px; right: -1px;
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
     }
-
-    /* Activity feed */
-    .activity-item {
-      display: flex; align-items: flex-start; gap: var(--space-sm);
-      padding: var(--space-xs) 0;
-    }
-    .activity-item + .activity-item { border-top: 1px solid var(--surface-low); }
-    .activity-icon-wrap {
-      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
-    }
-    .activity-icon-wrap.success { background: #d1fae5; color: #065f46; }
-    .activity-icon-wrap.info    { background: #dbeafe; color: #1d4ed8; }
-    .activity-icon-wrap.warn    { background: #fee2e2; color: #991b1b; }
-    .activity-body { flex: 1; }
-    .activity-title { font-weight: 600; font-size: 0.8125rem; }
-    .activity-subtitle { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; }
-    .activity-time { font-size: 0.7rem; color: var(--secondary); white-space: nowrap; }
-
-    /* System status card */
-    .status-card {
+    .stat-card {
+      background: var(--surface-lowest);
       border-radius: var(--radius-xl);
-      overflow: hidden;
-      min-height: 110px;
-      background: url('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600&q=60') center/cover no-repeat;
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex; flex-direction: column; gap: 8px;
+      position: relative; overflow: hidden;
+      transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-float); }
+    .stat-card-accent {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      background: var(--primary-container);
       display: flex; align-items: center; justify-content: center;
-      position: relative;
     }
-    .status-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(44,52,55,0.45);
-    }
-    .status-card-content {
-      position: relative; z-index: 1;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      color: #fff; text-align: center;
-    }
-    .status-card-content .material-symbols-rounded { font-size: 26px; color: #6ee7b7; }
-    .status-card-content span { font-weight: 600; font-size: 0.875rem; }
+    .stat-label { font-size: 0.775rem; color: var(--secondary); font-weight: 500; }
+    .stat-value { font-size: 2rem; font-weight: 800; font-family: var(--font-display); color: var(--on-surface); line-height: 1; }
+    .stat-sub   { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; }
+    .stat-delta { font-size: 0.75rem; color: #059669; font-weight: 600; }
 
-    /* Progress panel */
-    .progress-section { padding: var(--space-sm) 0; }
-    .progress-section h3 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; margin-bottom: var(--space-sm); }
+    /* Skeleton pulse */
+    .skel {
+      display: inline-block; border-radius: 6px;
+      background: linear-gradient(90deg, var(--surface-low) 25%, var(--surface-high) 50%, var(--surface-low) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* Date badge */
+    /* ── Content grid ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    /* ── Section card ── */
+    .dash-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+    }
+    .dash-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    .dash-card-header h2 {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dash-card-header h2 .material-symbols-rounded { color: var(--primary); font-size: 20px; }
+
+    /* ── Exam list rows ── */
+    .exam-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--surface-low);
+    }
+    .exam-row:last-child { border-bottom: none; }
+    .exam-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-md); flex-shrink: 0;
+      background: var(--primary-container);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .exam-icon .material-symbols-rounded { color: var(--primary); font-size: 18px; }
+    .exam-info { flex: 1; min-width: 0; }
+    .exam-title { font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .exam-meta  { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; }
+
+    /* ── Student list rows ── */
+    .student-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--surface-low);
+    }
+    .student-row:last-child { border-bottom: none; }
+    .student-avatar-sm {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: var(--primary-container);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; color: var(--primary);
+      text-transform: uppercase;
+    }
+    .student-info-sm { flex: 1; min-width: 0; }
+    .student-name-sm  { font-size: 0.875rem; font-weight: 600; }
+    .student-email-sm { font-size: 0.75rem; color: var(--secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .student-date-sm  { font-size: 0.7rem; color: var(--secondary); white-space: nowrap; }
+
+    /* ── Quick stats bottom row ── */
+    .quick-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-md); margin-top: var(--space-md);
+    }
+    .quick-stat-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .quick-stat-icon {
+      width: 48px; height: 48px; border-radius: var(--radius-lg); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .quick-stat-icon.green { background: #d1fae5; color: #065f46; }
+    .quick-stat-icon.blue  { background: #dbeafe; color: #1d4ed8; }
+    .quick-stat-icon.amber { background: #fef3c7; color: #92400e; }
+    .quick-stat-icon .material-symbols-rounded { font-size: 22px; }
+    .quick-stat-label { font-size: 0.775rem; color: var(--secondary); font-weight: 500; }
+    .quick-stat-value { font-size: 1.5rem; font-weight: 800; font-family: var(--font-display); color: var(--on-surface); }
+
+    /* ── Date badge ── */
     .date-badge {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 0.8125rem; color: var(--secondary); font-weight: 500;
     }
     .date-badge .material-symbols-rounded { font-size: 16px; color: var(--primary); }
+
+    /* Empty state */
+    .dash-empty {
+      text-align: center; padding: 28px 16px;
+      color: var(--secondary); font-size: 0.8125rem;
+    }
+    .dash-empty .material-symbols-rounded { font-size: 36px; color: var(--surface-highest); display: block; margin-bottom: 8px; }
+
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .dash-grid  { grid-template-columns: 1fr; }
+      .quick-stats { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .quick-stats { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -86,25 +175,20 @@
       </div>
 
       <nav class="sidebar-nav">
-        <a href="admin_dashboard.html" class="nav-item active" id="nav-dashboard">
-          <span class="material-symbols-rounded nav-icon">dashboard</span>
-          Dashboard
+        <a href="admin_dashboard.html" class="nav-item active">
+          <span class="material-symbols-rounded nav-icon">dashboard</span>Dashboard
         </a>
-        <a href="admin_exam_creation.html" class="nav-item" id="nav-exams">
-          <span class="material-symbols-rounded nav-icon">assignment</span>
-          Exams
+        <a href="admin_exam_creation.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">assignment</span>Exams
         </a>
-        <a href="question_management.html" class="nav-item" id="nav-questions">
-          <span class="material-symbols-rounded nav-icon">quiz</span>
-          Questions
+        <a href="question_management.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">quiz</span>Questions
         </a>
-        <a href="student_list.html" class="nav-item" id="nav-students">
-          <span class="material-symbols-rounded nav-icon">group</span>
-          Students
+        <a href="student_list.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">group</span>Students
         </a>
-        <a href="admin_results_overview.html" class="nav-item" id="nav-results">
-          <span class="material-symbols-rounded nav-icon">bar_chart</span>
-          Results
+        <a href="admin_results_overview.html" class="nav-item">
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>Results
         </a>
       </nav>
 
@@ -117,12 +201,10 @@
 
       <div class="sidebar-footer">
         <a href="#" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">help_outline</span>
-          Support
+          <span class="material-symbols-rounded nav-icon">help_outline</span>Support
         </a>
-        <a href="admin_login.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">logout</span>
-          Logout
+        <a href="admin_login.html" class="nav-item" id="logoutLink">
+          <span class="material-symbols-rounded nav-icon">logout</span>Logout
         </a>
       </div>
     </aside>
@@ -130,19 +212,20 @@
     <!-- Main content -->
     <main class="main-content">
       <!-- Top bar -->
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:var(--space-md); border-bottom:1px solid var(--outline-variant); margin-bottom:var(--space-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:var(--space-md);border-bottom:1px solid var(--outline-variant);margin-bottom:var(--space-md);">
         <div></div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
           <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
           <div class="user-avatar">AD</div>
         </div>
       </div>
+
       <!-- Page header -->
-      <div class="page-header-row mb-md" style="flex-direction:column; align-items:flex-start; gap:8px;">
-        <div class="page-header" style="margin-bottom:0; text-align:left;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-md);margin-bottom:var(--space-md);">
+        <div>
           <h1 class="page-title">Overview</h1>
-          <p class="page-subtitle">Welcome back. Here is the current state of the academic sanctuary.</p>
+          <p class="page-subtitle" id="welcomeMsg">Welcome back. Loading platform data…</p>
         </div>
         <div class="date-badge">
           <span class="material-symbols-rounded">calendar_month</span>
@@ -150,142 +233,227 @@
         </div>
       </div>
 
-      <!-- Stats row -->
+      <!-- ── Stat cards ── -->
       <div class="stats-grid">
-        <div class="stat-card" style="position:relative; overflow:visible;">
-          <span class="chip chip-solid" style="position:absolute;top:-10px;left:var(--space-md);">Active Term</span>
-          <div class="stat-icon">
-            <span class="material-symbols-rounded" style="color:var(--primary);">assignment</span>
-          </div>
+        <div class="stat-card">
+          <div class="stat-card-accent" style="background:linear-gradient(90deg,var(--primary),#00c88c);"></div>
+          <div class="stat-icon"><span class="material-symbols-rounded" style="color:var(--primary);">assignment</span></div>
           <div class="stat-label">Total Exams</div>
-          <div class="stat-value">124</div>
+          <div class="stat-value" id="stat-exams"><span class="skel" style="width:40px;height:28px;"></span></div>
+          <div class="stat-sub" id="stat-exams-sub">&nbsp;</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">
-            <span class="material-symbols-rounded" style="color:var(--primary);">group</span>
-          </div>
-          <div class="stat-label">Enrolled Students</div>
-          <div class="stat-value">8,405</div>
-          <div class="stat-delta">↗ +12%</div>
+          <div class="stat-card-accent" style="background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+          <div class="stat-icon" style="background:#dbeafe;"><span class="material-symbols-rounded" style="color:#1d4ed8;">group</span></div>
+          <div class="stat-label">Registered Students</div>
+          <div class="stat-value" id="stat-students"><span class="skel" style="width:40px;height:28px;"></span></div>
+          <div class="stat-sub" id="stat-students-sub">&nbsp;</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">
-            <span class="material-symbols-rounded" style="color:var(--primary);">library_books</span>
-          </div>
-          <div class="stat-label">Question Bank Size</div>
-          <div class="stat-value">42.5k</div>
+          <div class="stat-card-accent" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa);"></div>
+          <div class="stat-icon" style="background:#ede9fe;"><span class="material-symbols-rounded" style="color:#7c3aed;">library_books</span></div>
+          <div class="stat-label">Question Bank</div>
+          <div class="stat-value" id="stat-questions"><span class="skel" style="width:40px;height:28px;"></span></div>
+          <div class="stat-sub" id="stat-questions-sub">&nbsp;</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-accent" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+          <div class="stat-icon" style="background:#fef3c7;"><span class="material-symbols-rounded" style="color:#d97706;">bar_chart</span></div>
+          <div class="stat-label">Total Submissions</div>
+          <div class="stat-value" id="stat-results"><span class="skel" style="width:40px;height:28px;"></span></div>
+          <div class="stat-sub" id="stat-results-sub">&nbsp;</div>
         </div>
       </div>
 
-      <!-- Content grid -->
-      <div class="content-grid">
+      <!-- ── Content grid ── -->
+      <div class="dash-grid">
 
-        <!-- Activity feed -->
-        <div class="card">
-          <div class="flex items-center justify-between mb-md">
-            <h2 style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;">Recent Examination Activity</h2>
-            <a href="admin_results_overview.html" class="btn-ghost btn" style="padding:6px 0;font-size:0.875rem;">View All</a>
+        <!-- Recent Exams -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h2>
+              <span class="material-symbols-rounded">assignment</span>
+              Recent Exams
+            </h2>
+            <a href="admin_exam_creation.html" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;">+ New Exam</a>
           </div>
-
-          <div class="activity-item">
-            <div class="activity-icon-wrap success">
-              <span class="material-symbols-rounded">check_circle</span>
-            </div>
-            <div class="activity-body">
-              <div class="activity-title">Advanced Calculus 301 concluded</div>
-              <div class="activity-subtitle">245 students submitted</div>
-            </div>
-            <div class="activity-time">10 mins ago</div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon-wrap info">
-              <span class="material-symbols-rounded">edit_note</span>
-            </div>
-            <div class="activity-body">
-              <div class="activity-title">New Exam Draft Created: Bioethics</div>
-              <div class="activity-subtitle">By Dr. Eleanor Vance</div>
-            </div>
-            <div class="activity-time">2 hrs ago</div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon-wrap warn">
-              <span class="material-symbols-rounded">warning</span>
-            </div>
-            <div class="activity-body">
-              <div class="activity-title">Flagged submission in Literature 101</div>
-              <div class="activity-subtitle">Requires manual review</div>
-            </div>
-            <div class="activity-time">5 hrs ago</div>
+          <div id="recentExamsList">
+            <!-- skeleton -->
+            <div class="exam-row"><div class="skel" style="width:36px;height:36px;border-radius:8px;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div class="skel" style="width:70%;height:13px;"></div><div class="skel" style="width:45%;height:11px;"></div></div></div>
+            <div class="exam-row"><div class="skel" style="width:36px;height:36px;border-radius:8px;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div class="skel" style="width:60%;height:13px;"></div><div class="skel" style="width:40%;height:11px;"></div></div></div>
           </div>
         </div>
 
-        <!-- Right column -->
-        <div class="flex-col gap-md">
-          <!-- Grading progress -->
-          <div class="card">
-            <h3 style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;margin-bottom:var(--space-md);">Grading Progress</h3>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar-label"><span>Midterm Series</span><span class="pct">78%</span></div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width:78%;"></div>
-              </div>
-            </div>
-            <div class="progress-bar-wrap" style="margin-top:var(--space-sm);">
-              <div class="progress-bar-label"><span>Finals Series</span><span class="pct">12%</span></div>
-              <div class="progress-track">
-                <div class="progress-fill" style="width:12%;"></div>
-              </div>
-            </div>
+        <!-- Recent Students -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h2>
+              <span class="material-symbols-rounded">group</span>
+              New Registrations
+            </h2>
+            <a href="student_list.html" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;">View All</a>
           </div>
-
-          <!-- System status -->
-          <div class="status-card">
-            <div class="status-card-content">
-              <span class="material-symbols-rounded">cloud_done</span>
-              <span>All Systems Operational</span>
-            </div>
+          <div id="recentStudentsList">
+            <div class="student-row"><div class="skel" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div class="skel" style="width:55%;height:13px;"></div><div class="skel" style="width:75%;height:11px;"></div></div></div>
+            <div class="student-row"><div class="skel" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div class="skel" style="width:60%;height:13px;"></div><div class="skel" style="width:70%;height:11px;"></div></div></div>
           </div>
         </div>
 
       </div>
+
+      <!-- ── Quick stats bottom row ── -->
+      <div class="quick-stats">
+        <div class="quick-stat-card">
+          <div class="quick-stat-icon green">
+            <span class="material-symbols-rounded">publish</span>
+          </div>
+          <div>
+            <div class="quick-stat-label">Published Exams</div>
+            <div class="quick-stat-value" id="qs-published"><span class="skel" style="width:30px;height:22px;"></span></div>
+          </div>
+        </div>
+        <div class="quick-stat-card">
+          <div class="quick-stat-icon blue">
+            <span class="material-symbols-rounded">edit_note</span>
+          </div>
+          <div>
+            <div class="quick-stat-label">Draft Exams</div>
+            <div class="quick-stat-value" id="qs-drafts"><span class="skel" style="width:30px;height:22px;"></span></div>
+          </div>
+        </div>
+        <div class="quick-stat-card">
+          <div class="quick-stat-icon amber">
+            <span class="material-symbols-rounded">person_check</span>
+          </div>
+          <div>
+            <div class="quick-stat-label">Active Students</div>
+            <div class="quick-stat-value" id="qs-active-students"><span class="skel" style="width:30px;height:22px;"></span></div>
+          </div>
+        </div>
+      </div>
+
     </main>
-
   </div>
 
   <script src="js/auth.js"></script>
   <script>
-    // Auth guard
     const user = requireAdmin();
     if (!user) { /* redirected */ }
+    if (user) updateUserUI(user);
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 1024) closeAdminSidebar();
+    window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeAdminSidebar(); });
+    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach(el => {
+      el.addEventListener('click', () => { if (window.innerWidth <= 1024) closeAdminSidebar(); });
     });
-
-    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach((el) => {
-      el.addEventListener('click', () => {
-        if (window.innerWidth <= 1024) closeAdminSidebar();
-      });
-    });
-
-    // Logout handler
-    document.querySelector('a[href="admin_login.html"]').addEventListener('click', (e) => {
+    document.getElementById('logoutLink').addEventListener('click', (e) => {
       e.preventDefault();
       handleLogout('admin_login.html');
     });
 
-    // Set current date
-    const now = new Date();
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
-      month: 'long', day: 'numeric', year: 'numeric'
+    // ── Date ──
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'long', year: 'numeric'
     });
 
-    // Update user avatar
-    if (user) updateUserUI(user);
+    // ── Helpers ──
+    function initials(name) {
+      return (name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+    function timeAgo(iso) {
+      if (!iso) return '';
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1)  return 'just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24)  return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      return `${days}d ago`;
+    }
+    function statusChip(status) {
+      const map = {
+        published: 'chip-solid',
+        draft:     'chip-neutral',
+        archived:  'chip-warning',
+      };
+      return `<span class="chip ${map[status] || 'chip-neutral'}" style="font-size:0.65rem;padding:2px 8px;">${status}</span>`;
+    }
+
+    // ── Render recent exams ──
+    function renderRecentExams(exams) {
+      const el = document.getElementById('recentExamsList');
+      if (!exams.length) {
+        el.innerHTML = `<div class="dash-empty"><span class="material-symbols-rounded">assignment_late</span>No exams created yet.</div>`;
+        return;
+      }
+      el.innerHTML = exams.map(e => `
+        <div class="exam-row">
+          <div class="exam-icon"><span class="material-symbols-rounded">assignment</span></div>
+          <div class="exam-info">
+            <div class="exam-title">${e.title}</div>
+            <div class="exam-meta">${e.subject} &nbsp;·&nbsp; ${timeAgo(e.createdAt)}</div>
+          </div>
+          ${statusChip(e.status)}
+        </div>`).join('');
+    }
+
+    // ── Render recent students ──
+    function renderRecentStudents(students) {
+      const el = document.getElementById('recentStudentsList');
+      if (!students.length) {
+        el.innerHTML = `<div class="dash-empty"><span class="material-symbols-rounded">group_off</span>No students registered yet.</div>`;
+        return;
+      }
+      el.innerHTML = students.map(s => `
+        <div class="student-row">
+          <div class="student-avatar-sm">${initials(s.name)}</div>
+          <div class="student-info-sm">
+            <div class="student-name-sm">${s.name}</div>
+            <div class="student-email-sm">${s.email}</div>
+          </div>
+          <div class="student-date-sm">${timeAgo(s.createdAt)}</div>
+        </div>`).join('');
+    }
+
+    // ── Fetch & populate dashboard ──
+    async function loadDashboard() {
+      try {
+        const data = await apiFetch('/api/dashboard');
+        const { stats, recentExams, recentStudents } = data;
+
+        // Stat cards
+        document.getElementById('stat-exams').textContent      = stats.totalExams;
+        document.getElementById('stat-exams-sub').textContent  = `${stats.publishedExams} published · ${stats.draftExams} draft`;
+        document.getElementById('stat-students').textContent   = stats.totalStudents;
+        document.getElementById('stat-students-sub').textContent = `${stats.activeStudents} active accounts`;
+        document.getElementById('stat-questions').textContent  = stats.totalQuestions;
+        document.getElementById('stat-questions-sub').textContent = 'across all exams';
+        document.getElementById('stat-results').textContent   = stats.totalResults;
+        document.getElementById('stat-results-sub').textContent  = 'exam submissions total';
+
+        // Quick stats
+        document.getElementById('qs-published').textContent       = stats.publishedExams;
+        document.getElementById('qs-drafts').textContent          = stats.draftExams;
+        document.getElementById('qs-active-students').textContent = stats.activeStudents;
+
+        // Welcome message
+        document.getElementById('welcomeMsg').textContent =
+          `Welcome back, ${user.name}. Here is the current state of the platform.`;
+
+        // Lists
+        renderRecentExams(recentExams);
+        renderRecentStudents(recentStudents);
+
+      } catch (err) {
+        document.getElementById('welcomeMsg').textContent = 'Failed to load dashboard data.';
+        console.error(err);
+      }
+    }
+
+    if (user) loadDashboard();
   </script>
 </body>
 </html>
