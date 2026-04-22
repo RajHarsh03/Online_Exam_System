@@ -200,6 +200,9 @@
       <!-- Progress indicator -->
       <div class="progress-indicator"><div class="progress-indicator-fill"></div></div>
 
+      <!-- Status banner -->
+      <div id="formBanner" style="display:none;margin-bottom:var(--space-md);padding:12px 16px;border-radius:var(--radius-md);font-size:0.875rem;font-weight:500;"></div>
+
       <form id="examForm" novalidate>
 
         <!-- Section 1: Examination Identity -->
@@ -209,14 +212,36 @@
             Examination Identity
           </h2>
 
-          <div class="field-group mb-md">
-            <label class="field-label" for="examName">Exam Name</label>
-            <input type="text" class="input-standalone" id="examName" name="examName" placeholder="e.g., Advanced Calculus Final 2024" />
+          <div class="form-grid-2 mb-md">
+            <div class="field-group">
+              <label class="field-label" for="examName">Exam Name <span style="color:#ef4444;">*</span></label>
+              <input type="text" class="input-standalone" id="examName" name="examName" placeholder="e.g., Advanced Calculus Final 2024" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="examSubject">Subject <span style="color:#ef4444;">*</span></label>
+              <div class="input-wrap">
+                <span class="material-symbols-rounded icon">book</span>
+                <input type="text" id="examSubject" name="examSubject" placeholder="e.g., Mathematics, Physics…" />
+              </div>
+            </div>
           </div>
 
-          <div class="field-group">
-            <label class="field-label" for="examDesc">Internal Description <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
-            <textarea class="textarea-standalone" id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
+          <div class="form-grid-2">
+            <div class="field-group">
+              <label class="field-label" for="examDesc">Internal Description <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
+              <textarea class="textarea-standalone" id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="examStatus">Status</label>
+              <div class="input-wrap" style="padding:0 14px;">
+                <span class="material-symbols-rounded icon">toggle_on</span>
+                <select id="examStatus" name="examStatus" style="flex:1;background:transparent;border:none;outline:none;padding:12px 0;font-size:0.875rem;color:var(--on-surface);cursor:pointer;">
+                  <option value="draft">Draft (not visible to students)</option>
+                  <option value="published">Published (visible to students)</option>
+                </select>
+              </div>
+              <p class="hint-text">Draft exams are only visible to admins.</p>
+            </div>
           </div>
         </div>
 
@@ -231,7 +256,7 @@
             </h2>
 
             <div class="field-group mb-md">
-              <label class="field-label" for="numQuestions">Number of Questions</label>
+              <label class="field-label" for="numQuestions">Number of Questions <span style="color:#ef4444;">*</span></label>
               <div class="input-wrap">
                 <span class="material-symbols-rounded icon">format_list_numbered</span>
                 <input type="number" id="numQuestions" name="numQuestions" placeholder="e.g., 50" min="1" />
@@ -239,7 +264,7 @@
             </div>
 
             <div class="field-group">
-              <label class="field-label" for="timeLimit">Time Limit (Minutes)</label>
+              <label class="field-label" for="timeLimit">Time Limit (Minutes) <span style="color:#ef4444;">*</span></label>
               <div class="input-wrap">
                 <span class="material-symbols-rounded icon">timer</span>
                 <input type="number" id="timeLimit" name="timeLimit" placeholder="e.g., 120" min="1" />
@@ -259,21 +284,21 @@
                 <label class="field-label" for="posMarks">Positive Marks (per correct)</label>
                 <div class="mark-input-wrap">
                   <div class="mark-sign pos">+</div>
-                  <input type="number" id="posMarks" name="posMarks" placeholder="4.0" step="0.5" min="0" />
+                  <input type="number" id="posMarks" name="posMarks" placeholder="4.0" step="0.5" min="0" value="4" />
                 </div>
               </div>
               <div class="field-group">
                 <label class="field-label" for="negMarks">Negative Marks (per incorrect)</label>
                 <div class="mark-input-wrap">
                   <div class="mark-sign neg">−</div>
-                  <input type="number" id="negMarks" name="negMarks" placeholder="1.0" step="0.5" min="0" />
+                  <input type="number" id="negMarks" name="negMarks" placeholder="1.0" step="0.5" min="0" value="1" />
                 </div>
                 <p class="hint-text">Leave 0 for no penalty.</p>
               </div>
             </div>
 
             <div class="field-group">
-              <label class="field-label" for="passingMarks">Minimum Passing Marks</label>
+              <label class="field-label" for="passingMarks">Minimum Passing Marks <span style="color:#ef4444;">*</span></label>
               <div class="input-wrap">
                 <span class="material-symbols-rounded icon">flag</span>
                 <input type="number" id="passingMarks" name="passingMarks" placeholder="e.g., 40" min="0" />
@@ -286,7 +311,12 @@
         <!-- Form actions -->
         <div class="form-actions">
           <a href="admin_dashboard.html" class="btn btn-ghost">Cancel</a>
+          <button type="button" class="btn btn-outline" id="saveDraftBtn">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">save</span>
+            Save as Draft
+          </button>
           <button type="submit" class="btn btn-primary" id="createBtn">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">check_circle</span>
             Create Exam
           </button>
         </div>
@@ -313,26 +343,88 @@
       handleLogout('admin_login.html');
     });
 
+    // ── Banner helpers ──
+    function showBanner(msg, type = 'error') {
+      const el = document.getElementById('formBanner');
+      el.textContent = msg;
+      el.style.display = 'block';
+      if (type === 'error') {
+        el.style.background = '#fef2f2';
+        el.style.border = '1px solid #fecaca';
+        el.style.color = '#dc2626';
+      } else {
+        el.style.background = '#f0fdf4';
+        el.style.border = '1px solid #bbf7d0';
+        el.style.color = '#15803d';
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ── Collect + validate form data ──
+    function collectFormData() {
+      const title = document.getElementById('examName').value.trim();
+      const subject = document.getElementById('examSubject').value.trim();
+      const description = document.getElementById('examDesc').value.trim();
+      const numQuestions = parseInt(document.getElementById('numQuestions').value) || 0;
+      const duration = parseInt(document.getElementById('timeLimit').value) || 0;
+      const posMarks = parseFloat(document.getElementById('posMarks').value) || 4;
+      const passingMarks = parseInt(document.getElementById('passingMarks').value) || 0;
+      const status = document.getElementById('examStatus').value;
+      const totalMarks = numQuestions * posMarks;
+
+      const errors = [];
+      if (!title) errors.push('Exam Name is required.');
+      if (!subject) errors.push('Subject is required.');
+      if (!numQuestions || numQuestions < 1) errors.push('Number of Questions must be at least 1.');
+      if (!duration || duration < 1) errors.push('Time Limit must be at least 1 minute.');
+      if (passingMarks < 0) errors.push('Passing Marks cannot be negative.');
+
+      if (errors.length) { showBanner(errors.join(' '), 'error'); return null; }
+
+      return { title, subject, description, duration, totalMarks, passingMarks, status };
+    }
+
+    // ── Submit exam to API ──
+    async function submitExam(statusOverride) {
+      const data = collectFormData();
+      if (!data) return;
+      if (statusOverride) data.status = statusOverride;
+
+      const createBtn = document.getElementById('createBtn');
+      const draftBtn = document.getElementById('saveDraftBtn');
+      createBtn.disabled = true;
+      draftBtn.disabled = true;
+      createBtn.textContent = 'Saving…';
+
+      try {
+        const exam = await apiFetch('/api/exams', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+        showBanner(`✓ Exam "${exam.title}" created! Redirecting to add questions…`, 'success');
+        setTimeout(() => {
+          window.location.href = 'question_management.html';
+        }, 1400);
+      } catch (err) {
+        showBanner('Error creating exam: ' + err.message, 'error');
+        createBtn.disabled = false;
+        draftBtn.disabled = false;
+        createBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">check_circle</span> Create Exam';
+      }
+    }
+
     document.getElementById('examForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const examName = document.getElementById('examName').value.trim();
-      if (!examName) {
-        document.getElementById('examName').style.borderColor = '#ef4444';
-        document.getElementById('examName').focus();
-        return;
-      }
-      const btn = document.getElementById('createBtn');
-      btn.textContent = 'Creating…';
-      btn.disabled = true;
-      setTimeout(() => {
-        alert('Exam created successfully!');
-        window.location.href = 'admin_dashboard.html';
-      }, 1000);
+      submitExam();
     });
 
-    // Reset error state on focus
-    document.getElementById('examName').addEventListener('focus', (e) => {
-      e.target.style.borderColor = '';
+    document.getElementById('saveDraftBtn').addEventListener('click', () => {
+      submitExam('draft');
+    });
+
+    // Reset border on focus
+    ['examName', 'examSubject'].forEach(id => {
+      document.getElementById(id).addEventListener('focus', e => { e.target.style.borderColor = ''; });
     });
   </script>
 </body>

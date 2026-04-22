@@ -21,6 +21,7 @@ app.use('/api/exams', require('./routes/exams'));
 app.use('/api/questions', require('./routes/questions'));
 app.use('/api/results', require('./routes/results'));
 app.use('/api/students', require('./routes/students'));
+app.use('/api/dashboard', require('./routes/dashboard'));
 
 // ── Database Connection ──────────────────────────────
 mongoose.connect(process.env.MONGODB_URI)
