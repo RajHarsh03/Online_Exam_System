@@ -17,6 +17,7 @@ const resultSchema = new mongoose.Schema({
   percentage:    { type: Number },
   rank:          { type: Number },         // rank within exam (1 = highest score)
   status: { type: String, enum: ['passed', 'failed'] },
+  isPublished: { type: Boolean, default: false },   // admin must publish before student can view
   submittedAt: { type: Date, default: Date.now },
   timeTaken:   { type: Number },           // seconds
 }, { timestamps: true });

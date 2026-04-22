@@ -186,7 +186,7 @@
   <script src="js/auth.js"></script>
   <script>
     // ── Auth guard ──
-    const currentUser = requireAuth('student_login.html');
+    const currentUser = requireStudent();
 
     // ── Load exam from sessionStorage (set during join flow) ──
     let exam = null;
@@ -381,15 +381,15 @@
             timeTaken,
           }),
         });
+        // Save full result + exam context for the result page
         sessionStorage.setItem('examResult', JSON.stringify(result));
+        sessionStorage.setItem('activeExam',  JSON.stringify(exam));
         window.location.href = 'exam_result.html';
       } catch (err) {
-        sessionStorage.setItem('examResult', JSON.stringify({
-          examTitle: exam.title,
-          answers: answersPayload,
-          error: err.message,
-        }));
-        window.location.href = 'exam_result.html';
+        // Re-enable button so student can retry
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'Submit Exam';
+        alert(`Submission failed: ${err.message}\n\nPlease try again or contact your instructor.`);
       }
     }
 

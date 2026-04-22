@@ -14,240 +14,223 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-md);
+      align-items: start;
     }
 
-    /* ── Draft new question panel ── */
-    .draft-panel {
+    /* ── Shared card ── */
+    .panel-card {
       background: var(--surface-lowest);
       border-radius: var(--radius-xl);
-      padding: var(--space-md);
-      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(44,52,55,0.06), 0 4px 16px rgba(44,52,55,0.04);
+      border: 1px solid var(--outline-variant);
     }
-    .draft-panel h2 {
-      font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700;
-      display: flex; align-items: center; gap: 6px;
-      margin-bottom: var(--space-md);
-    }
-    .draft-panel h2 .material-symbols-rounded { color: var(--primary); }
 
-    /* Select dropdown */
-    .select-standalone {
-      width: 100%;
-      background: var(--surface-high);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
+    /* ── Panel header strip ── */
+    .panel-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .panel-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .panel-icon .material-symbols-rounded { font-size: 18px; color: #fff; }
+    .panel-icon.green  { background: linear-gradient(135deg, var(--primary), #00a060); box-shadow: 0 4px 10px rgba(0,109,74,0.25); }
+    .panel-icon.indigo { background: linear-gradient(135deg, #4f46e5, #7c3aed); box-shadow: 0 4px 10px rgba(79,70,229,0.25); }
+    .panel-header-text h2 { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; color: var(--on-surface); margin: 0; }
+    .panel-header-text p  { font-size: 0.72rem; color: var(--secondary); margin: 2px 0 0; }
+
+    .panel-body { padding: 22px; }
+
+    /* ── Selects ── */
+    .styled-select-wrap {
+      position: relative; margin-bottom: 4px;
+    }
+    .styled-select-wrap .ss-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: var(--secondary); pointer-events: none; z-index: 1;
+    }
+    .styled-select-wrap select {
+      width: 100%; padding: 13px 40px 13px 44px;
       font-size: 0.875rem; color: var(--on-surface);
-      border: 1px solid transparent;
-      appearance: none;
+      background: var(--surface); border: 1.5px solid var(--outline-variant);
+      border-radius: var(--radius-md); outline: none; cursor: pointer;
+      appearance: none; font-family: var(--font-body);
+      transition: border-color 0.2s, box-shadow 0.2s;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%23526075' d='m7 10 5 5 5-5z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
-      cursor: pointer;
-      transition: border-color var(--transition);
+      background-color: var(--surface);
     }
-    .select-standalone:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+    .styled-select-wrap select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,109,74,0.1);
+    }
 
-    /* Answer options */
-    .answer-options { display: flex; flex-direction: column; gap: 10px; }
+    .field-label-sm { font-size: 0.72rem; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
+
+    /* ── Textarea ── */
+    .styled-textarea {
+      width: 100%; padding: 14px 16px;
+      font-size: 0.875rem; color: var(--on-surface);
+      background: var(--surface); border: 1.5px solid var(--outline-variant);
+      border-radius: var(--radius-md); outline: none; resize: vertical; min-height: 96px;
+      font-family: var(--font-body); line-height: 1.6;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .styled-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+    .styled-textarea::placeholder { color: var(--on-surface-variant); }
+
+    /* ── Answer options ── */
+    .answer-options { display: flex; flex-direction: column; gap: 8px; }
     .answer-option {
       display: flex; align-items: center; gap: 10px;
-      background: var(--surface-high);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      cursor: pointer;
-      border: 1.5px solid transparent;
-      transition: all var(--transition);
+      background: var(--surface); border: 1.5px solid var(--outline-variant);
+      border-radius: var(--radius-md); padding: 10px 14px;
+      cursor: pointer; transition: all 0.18s ease;
     }
-    .answer-option:hover { border-color: var(--outline-variant); }
+    .answer-option:hover { border-color: rgba(0,109,74,0.4); background: rgba(0,109,74,0.03); }
     .answer-option.selected {
       border-color: var(--primary);
       background: rgba(0,109,74,0.06);
+      box-shadow: 0 0 0 3px rgba(0,109,74,0.1);
     }
     .answer-radio {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 2px solid var(--surface-highest);
-      flex-shrink: 0; transition: all var(--transition);
+      width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+      border: 2px solid var(--outline-variant);
       display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
     }
-    .answer-option.selected .answer-radio {
-      border-color: var(--primary);
-      background: var(--primary);
-    }
+    .answer-option.selected .answer-radio { border-color: var(--primary); background: var(--primary); }
     .answer-option.selected .answer-radio::after {
-      content: '';
-      display: block; width: 6px; height: 6px;
+      content: ''; display: block; width: 6px; height: 6px;
       border-radius: 50%; background: #fff;
     }
     .answer-letter {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--surface-highest);
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--surface-high); color: var(--secondary);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 600; color: var(--secondary);
+      font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+      transition: all 0.18s;
     }
+    .answer-option.selected .answer-letter { background: var(--primary); color: #fff; }
     .answer-input {
       flex: 1; background: transparent; border: none; outline: none;
-      font-size: 0.9375rem; color: var(--on-surface);
+      font-size: 0.875rem; color: var(--on-surface); font-family: var(--font-body);
+    }
+    .answer-input::placeholder { color: var(--on-surface-variant); }
+
+    /* ── Number + select mini row ── */
+    .meta-mini-input {
+      width: 100%; padding: 13px 14px;
+      font-size: 0.875rem; font-weight: 600; color: var(--on-surface);
+      background: var(--surface); border: 1.5px solid var(--outline-variant);
+      border-radius: var(--radius-md); outline: none; font-family: var(--font-display);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .meta-mini-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+
+    /* ── Draft actions ── */
+    .draft-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid var(--outline-variant);
+    }
+    .btn-clear {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: var(--radius-xl);
+      font-size: 0.8rem; font-weight: 600;
+      background: transparent; border: 1.5px solid var(--outline-variant);
+      color: var(--secondary); cursor: pointer; transition: all 0.2s;
+    }
+    .btn-clear:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+    .btn-commit {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px; border-radius: var(--radius-xl);
+      font-size: 0.8125rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), #00a060);
+      color: #fff; border: none; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,109,74,0.3); transition: all 0.2s;
+    }
+    .btn-commit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,109,74,0.38); }
+    .btn-commit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Correct answer hint pill ── */
+    .answer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .correct-hint {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.72rem; font-weight: 600; color: var(--primary);
+      background: rgba(0,109,74,0.1); padding: 3px 8px; border-radius: var(--radius-full);
+      cursor: default;
     }
 
-    .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
-
-    .draft-actions { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-lg); }
-
-    .textarea-draft {
-      width: 100%;
-      background: var(--surface-high);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      font-size: 0.875rem; color: var(--on-surface);
-      border: 1px solid transparent; resize: vertical; min-height: 80px;
-      transition: border-color var(--transition);
-    }
-    .textarea-draft:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
-    .textarea-draft::placeholder { color: var(--on-surface-variant); }
-
-    /* ── Repository Index Panel ── */
-    .repo-panel {
-      background: var(--surface-lowest);
-      border-radius: var(--radius-xl);
-      padding: var(--space-md);
-      box-shadow: var(--shadow-card);
-      display: flex; flex-direction: column;
-    }
-    .repo-header {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      margin-bottom: var(--space-md); gap: var(--space-sm);
-    }
-    .repo-header h2 { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700; }
-
-    .search-bar {
+    /* ── Repository Panel ── */
+    .repo-search {
       display: flex; align-items: center; gap: 8px;
-      background: var(--surface-low);
-      border-radius: var(--radius-full);
-      padding: 9px 16px; flex: 1; max-width: 260px;
-      border: 1px solid transparent;
-      transition: border-color var(--transition);
+      background: var(--surface); border: 1.5px solid var(--outline-variant);
+      border-radius: var(--radius-full); padding: 9px 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .search-bar:focus-within { border-color: var(--outline-variant); }
-    .search-bar input { background: transparent; font-size: 0.875rem; color: var(--on-surface); flex: 1; }
-    .search-bar .material-symbols-rounded { color: var(--secondary); font-size: 18px; }
+    .repo-search:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,109,74,0.1); }
+    .repo-search input { background: transparent; font-size: 0.875rem; color: var(--on-surface); flex: 1; outline: none; border: none; }
+    .repo-search .material-symbols-rounded { color: var(--secondary); font-size: 18px; }
 
-    /* Question list */
-    .q-list { flex: 1; overflow-y: auto; }
+    /* Column header */
+    .q-table-header {
+      display: grid; grid-template-columns: 1fr 120px 80px;
+      padding: 8px 12px; margin-top: 12px;
+      background: var(--surface-high); border-radius: var(--radius-md);
+    }
+    .q-table-header span { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
+
+    .q-list { flex: 1; overflow-y: auto; margin-top: 4px; }
     .q-row {
       display: grid; grid-template-columns: 1fr 120px 80px;
       align-items: center; gap: var(--space-sm);
-      padding: 14px 0; border-bottom: 1px solid var(--surface-low);
-      cursor: pointer; transition: background var(--transition);
+      padding: 12px 12px; border-radius: var(--radius-md);
+      cursor: pointer; transition: background 0.15s, transform 0.15s;
+      border-bottom: 1px solid var(--surface-high);
     }
-    .q-row:hover { background: var(--surface-low); margin: 0 -16px; padding: 14px 16px; border-radius: var(--radius-md); }
-    .q-snippet { font-size: 0.8125rem; color: var(--on-surface); }
-    .q-metrics { display: flex; flex-direction: column; gap: 2px; }
-    .q-metric { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; color: var(--secondary); }
-    .q-metric span { font-size: 14px; }
+    .q-row:last-child { border-bottom: none; }
+    .q-row:hover { background: var(--surface-high); transform: translateX(2px); }
+    .q-snippet { font-size: 0.8125rem; color: var(--on-surface); line-height: 1.4; }
+    .q-metrics { display: flex; flex-direction: column; gap: 3px; }
+    .q-metric { font-size: 0.72rem; display: flex; align-items: center; gap: 4px; color: var(--secondary); }
+    .q-metric .material-symbols-rounded { font-size: 13px; }
 
-    /* Table header */
-    .q-table-header {
-      display: grid; grid-template-columns: 1fr 120px 80px;
-      padding: 8px 0; margin-bottom: 4px;
-      border-bottom: 2px solid var(--surface-low);
-    }
-    .q-table-header span { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
-
-    .repo-footer { margin-top: var(--space-sm); display: flex; align-items: center; justify-content: space-between; }
+    .repo-footer { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--outline-variant); }
     .repo-footer p { font-size: 0.8rem; color: var(--secondary); }
 
     .pagination { display: flex; gap: 4px; }
     .page-btn {
-      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      width: 32px; height: 32px; border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 500; background: var(--surface-low); color: var(--secondary);
-      cursor: pointer; transition: all var(--transition); border: none;
+      font-size: 0.8rem; font-weight: 600;
+      background: var(--surface-high); color: var(--secondary);
+      cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s;
     }
-    .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; }
-    .page-btn:disabled { opacity: 0.4; cursor: default; background: var(--surface-high); }
+    .page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn:disabled { opacity: 0.35; cursor: default; }
 
-    /* Add question CTA in sidebar */
-    .sidebar-cta { padding: var(--space-sm); }
 
-    @media (max-width: 1024px) {
-      .questions-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
+    @media (max-width: 1024px) { .questions-grid { grid-template-columns: 1fr; } }
     @media (max-width: 768px) {
-      .meta-row,
-      .repo-header,
-      .draft-actions,
-      .repo-footer {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .search-bar {
-        max-width: none;
-      }
-
-      .q-table-header {
-        display: none;
-      }
-
-      .q-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        padding: 12px 0;
-      }
-
-      .q-row:hover {
-        margin: 0;
-        padding: 12px 0;
-        border-radius: 0;
-      }
-
-      .q-metrics {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px 16px;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .questions-grid { gap: 8px; }
-      
-      .draft-panel {
-        padding: 10px;
-      }
-      .draft-panel h2 { font-size: 0.8rem; margin-bottom: 8px; }
-      
-      .select-standalone { font-size: 0.8rem; padding: 8px 10px; }
-      .answer-option { padding: 8px 10px; gap: 8px; }
-      .answer-input { font-size: 0.8rem; }
-      .answer-letter { width: 20px; height: 20px; font-size: 0.7rem; }
-      
-      .textarea-draft { font-size: 0.8rem; padding: 8px 10px; min-height: 60px; }
-      
-      .meta-row { grid-template-columns: 1fr; gap: 8px; }
-      .draft-actions { margin-top: 8px; gap: 6px; }
-      
-      .repo-panel { padding: 10px; }
-      .repo-header h2 { font-size: 0.8rem; }
-      
-      .search-bar { font-size: 0.75rem; padding: 6px 12px; max-width: none; }
-      .search-bar input { font-size: 0.75rem; }
-      .search-bar .material-symbols-rounded { font-size: 16px; }
-      
-      .q-snippet { font-size: 0.75rem; }
-      .q-metric { font-size: 0.65rem; }
-      .q-metric span { font-size: 12px; }
-      
-      .page-btn { width: 26px; height: 26px; font-size: 0.75rem; }
+      .q-table-header { display: none; }
+      .q-row { grid-template-columns: 1fr; gap: 6px; padding: 10px; }
+      .repo-footer { flex-direction: column; gap: 10px; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="admin-layout">
-    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation" style="color:#526075;" onmouseenter="this.style.color='#2c3437'" onmouseleave="this.style.color='#526075'">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation" style="color:#526075;">
       <span class="material-symbols-rounded">menu_open</span>
     </button>
     <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
@@ -263,38 +246,29 @@
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
-
       <nav class="sidebar-nav">
         <a href="admin_dashboard.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">dashboard</span>
-          Dashboard
+          <span class="material-symbols-rounded nav-icon">dashboard</span>Dashboard
         </a>
         <a href="admin_exam_creation.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">assignment</span>
-          Exams
+          <span class="material-symbols-rounded nav-icon">assignment</span>Exams
         </a>
         <a href="question_management.html" class="nav-item active">
-          <span class="material-symbols-rounded nav-icon">quiz</span>
-          Questions
+          <span class="material-symbols-rounded nav-icon">quiz</span>Questions
         </a>
         <a href="student_list.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">group</span>
-          Students
+          <span class="material-symbols-rounded nav-icon">group</span>Students
         </a>
         <a href="admin_results_overview.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">bar_chart</span>
-          Results
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>Results
         </a>
       </nav>
-
       <div class="sidebar-footer">
         <a href="#" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">help_outline</span>
-          Support
+          <span class="material-symbols-rounded nav-icon">help_outline</span>Support
         </a>
-        <a href="admin_login.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">logout</span>
-          Logout
+        <a href="admin_login.html" class="nav-item" id="logoutLink">
+          <span class="material-symbols-rounded nav-icon">logout</span>Logout
         </a>
       </div>
     </aside>
@@ -302,9 +276,9 @@
     <!-- Main content -->
     <main class="main-content">
       <!-- Top bar -->
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:var(--space-md); border-bottom:1px solid var(--outline-variant); margin-bottom:var(--space-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:var(--space-md);border-bottom:1px solid var(--outline-variant);margin-bottom:var(--space-md);">
         <div></div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
           <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
           <div class="user-avatar">AD</div>
@@ -316,151 +290,171 @@
         <p class="page-subtitle">Manage the central repository of examination questions. Add, review, or refine content for upcoming assessments.</p>
       </div>
 
-      <!-- Progress indicator -->
-      <div style="height:3px;background:var(--surface-high);border-radius:999px;margin-bottom:var(--space-lg);overflow:hidden;">
-        <div style="height:100%;width:55%;background:linear-gradient(90deg,var(--primary),var(--primary-container));border-radius:999px;"></div>
-      </div>
-
       <div class="questions-grid">
 
-        <!-- Draft New Question -->
-        <div class="draft-panel">
-          <h2>
-            <span class="material-symbols-rounded">add_circle</span>
-            Draft New Question
-          </h2>
-
-          <form id="questionForm" novalidate>
+        <!-- ── Draft New Question ── -->
+        <div class="panel-card">
+          <div class="panel-header" style="background:linear-gradient(135deg,rgba(0,109,74,0.06),rgba(0,109,74,0.02));">
+            <div class="panel-icon green">
+              <span class="material-symbols-rounded">add_circle</span>
+            </div>
+            <div class="panel-header-text">
+              <h2>Draft New Question</h2>
+              <p>Compose a question and commit it to the exam bank</p>
+            </div>
+          </div>
+          <div class="panel-body">
 
             <!-- No-exam guard banner -->
-            <div id="noExamBanner" style="display:none;background:#fef3c7;border:1px solid #fcd34d;color:#92400e;padding:14px 16px;border-radius:var(--radius-md);margin-bottom:var(--space-md);font-size:0.875rem;">
-              <div style="display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:4px;">
+            <div id="noExamBanner" style="display:none;background:#fef3c7;border:1.5px solid #fcd34d;color:#92400e;padding:14px 16px;border-radius:var(--radius-md);margin-bottom:20px;font-size:0.875rem;">
+              <div style="display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:4px;">
                 <span class="material-symbols-rounded" style="font-size:18px;">warning</span>
                 No Exams Found
               </div>
-              <p style="margin:0;">You must create an exam before adding questions. <a href="admin_exam_creation.html" style="color:#78350f;font-weight:600;text-decoration:underline;">Create an Exam →</a></p>
+              <p style="margin:0;">You must create an exam before adding questions.
+                <a href="admin_exam_creation.html" style="color:#78350f;font-weight:700;text-decoration:underline;">Create an Exam →</a>
+              </p>
             </div>
 
-            <div id="questionFormFields">
-              <div class="field-group mb-md">
-                <label class="field-label" for="examSelect">Assign to Exam <span style="color:#ef4444;">*</span></label>
-                <select class="select-standalone" id="examSelect" name="examSelect">
-                  <option value="">Loading exams…</option>
-                </select>
-              </div>
+            <form id="questionForm" novalidate>
+              <div id="questionFormFields" style="display:flex;flex-direction:column;gap:16px;">
 
-              <div class="field-group mb-md">
-                <label class="field-label" for="subjectDomain">Subject Domain</label>
-                <select class="select-standalone" id="subjectDomain" name="subjectDomain">
-                  <option value="">Select a domain…</option>
-                  <option value="mathematics">Mathematics</option>
-                  <option value="physics">Physics</option>
-                  <option value="chemistry">Chemistry</option>
-                  <option value="biology">Biology</option>
-                  <option value="literature">Literature</option>
-                  <option value="history">History</option>
-                  <option value="comp-logic">Comp Logic</option>
-                </select>
-              </div>
-
-              <div class="field-group mb-md">
-                <label class="field-label" for="qPrompt">Question Prompt</label>
-                <textarea class="textarea-draft" id="qPrompt" name="qPrompt" placeholder="Enter the examination question clearly and concisely..."></textarea>
-              </div>
-
-              <div class="field-group mb-md">
-                <div class="flex items-center justify-between mb-sm" style="margin-bottom:8px;">
-                  <label class="field-label" style="margin-bottom:0;">Answer Options</label>
-                  <span style="font-size:0.75rem;color:var(--primary);font-weight:500;cursor:pointer;" id="selectCorrectHint">Select Correct</span>
-                </div>
-                <div class="answer-options" id="answerOptions">
-                  <div class="answer-option" data-idx="0" onclick="selectAnswer(0)">
-                    <div class="answer-radio"></div>
-                    <div class="answer-letter">A</div>
-                    <input type="text" class="answer-input" placeholder="First possible answer" />
-                  </div>
-                  <div class="answer-option" data-idx="1" onclick="selectAnswer(1)">
-                    <div class="answer-radio"></div>
-                    <div class="answer-letter">B</div>
-                    <input type="text" class="answer-input" placeholder="Second possible answer" />
-                  </div>
-                  <div class="answer-option" data-idx="2" onclick="selectAnswer(2)">
-                    <div class="answer-radio"></div>
-                    <div class="answer-letter">C</div>
-                    <input type="text" class="answer-input" placeholder="Third possible answer" />
-                  </div>
-                  <div class="answer-option" data-idx="3" onclick="selectAnswer(3)">
-                    <div class="answer-radio"></div>
-                    <div class="answer-letter">D</div>
-                    <input type="text" class="answer-input" placeholder="Fourth possible answer" />
+                <!-- Assign to Exam -->
+                <div>
+                  <label class="field-label-sm" for="examSelect">Assign to Exam <span style="color:#ef4444;">*</span></label>
+                  <div class="styled-select-wrap">
+                    <span class="ss-icon material-symbols-rounded">assignment</span>
+                    <select id="examSelect" name="examSelect">
+                      <option value="">Loading exams…</option>
+                    </select>
                   </div>
                 </div>
-              </div>
 
-              <div class="meta-row mb-md">
-                <div class="field-group">
-                  <label class="field-label" for="qPoints">Points</label>
-                  <input type="number" class="input-standalone" id="qPoints" name="qPoints" value="1" min="1" />
+                <!-- Subject Domain -->
+                <div>
+                  <label class="field-label-sm" for="subjectDomain">Subject Domain</label>
+                  <div class="styled-select-wrap">
+                    <span class="ss-icon material-symbols-rounded">category</span>
+                    <select id="subjectDomain" name="subjectDomain">
+                      <option value="">Select a domain…</option>
+                      <option value="mathematics">Mathematics</option>
+                      <option value="physics">Physics</option>
+                      <option value="chemistry">Chemistry</option>
+                      <option value="biology">Biology</option>
+                      <option value="literature">Literature</option>
+                      <option value="history">History</option>
+                      <option value="comp-logic">Comp Logic</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="field-group">
-                  <label class="field-label" for="qDifficulty">Difficulty</label>
-                  <select class="select-standalone" id="qDifficulty" name="qDifficulty">
-                    <option value="medium">Standard</option>
-                    <option value="easy">Easy</option>
-                    <option value="hard">Hard</option>
-                  </select>
-                </div>
-              </div>
 
-              <div class="draft-actions">
-                <button type="button" class="btn btn-ghost" onclick="clearForm()">Clear Form</button>
-                <button type="submit" class="btn btn-primary" id="commitBtn">
-                  Commit to Bank
-                </button>
+                <!-- Question Prompt -->
+                <div>
+                  <label class="field-label-sm" for="qPrompt">Question Prompt</label>
+                  <textarea class="styled-textarea" id="qPrompt" name="qPrompt" placeholder="Enter the examination question clearly and concisely…"></textarea>
+                </div>
+
+                <!-- Answer Options -->
+                <div>
+                  <div class="answer-header">
+                    <label class="field-label-sm" style="margin-bottom:0;">Answer Options</label>
+                    <span class="correct-hint">
+                      <span class="material-symbols-rounded" style="font-size:12px;">touch_app</span>
+                      Tap to mark correct
+                    </span>
+                  </div>
+                  <div class="answer-options" id="answerOptions">
+                    <div class="answer-option" data-idx="0" onclick="selectAnswer(0)">
+                      <div class="answer-radio"></div>
+                      <div class="answer-letter">A</div>
+                      <input type="text" class="answer-input" placeholder="First possible answer" onclick="event.stopPropagation()" />
+                    </div>
+                    <div class="answer-option" data-idx="1" onclick="selectAnswer(1)">
+                      <div class="answer-radio"></div>
+                      <div class="answer-letter">B</div>
+                      <input type="text" class="answer-input" placeholder="Second possible answer" onclick="event.stopPropagation()" />
+                    </div>
+                    <div class="answer-option" data-idx="2" onclick="selectAnswer(2)">
+                      <div class="answer-radio"></div>
+                      <div class="answer-letter">C</div>
+                      <input type="text" class="answer-input" placeholder="Third possible answer" onclick="event.stopPropagation()" />
+                    </div>
+                    <div class="answer-option" data-idx="3" onclick="selectAnswer(3)">
+                      <div class="answer-radio"></div>
+                      <div class="answer-letter">D</div>
+                      <input type="text" class="answer-input" placeholder="Fourth possible answer" onclick="event.stopPropagation()" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Points + Difficulty -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <div>
+                    <label class="field-label-sm" for="qPoints">Points per Correct</label>
+                    <input type="number" class="meta-mini-input" id="qPoints" name="qPoints" value="1" min="1" />
+                  </div>
+                  <div>
+                    <label class="field-label-sm" for="qDifficulty">Difficulty Level</label>
+                    <div class="styled-select-wrap">
+                      <span class="ss-icon material-symbols-rounded">signal_cellular_alt</span>
+                      <select id="qDifficulty" name="qDifficulty" style="padding-left:44px;">
+                        <option value="medium">Standard</option>
+                        <option value="easy">Easy</option>
+                        <option value="hard">Hard</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="draft-actions">
+                  <button type="button" class="btn-clear" onclick="clearForm()">
+                    <span class="material-symbols-rounded" style="font-size:16px;">restart_alt</span>Clear Form
+                  </button>
+                  <button type="submit" class="btn-commit" id="commitBtn">
+                    <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>Commit
+                  </button>
+                </div>
+
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
 
-        <!-- Repository Index -->
-        <div class="repo-panel">
-          <div class="repo-header">
-            <h2>Repository Index</h2>
-            <div class="search-bar">
-              <span class="material-symbols-rounded">search</span>
-              <input type="text" id="searchInput" placeholder="Search prompts…" oninput="filterQuestions()" />
+        <!-- ── Repository Index ── -->
+        <div class="panel-card" style="display:flex;flex-direction:column;">
+          <div class="panel-header" style="background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(79,70,229,0.02));">
+            <div class="panel-icon indigo">
+              <span class="material-symbols-rounded">library_books</span>
             </div>
+            <div class="panel-header-text">
+              <h2>Repository Index</h2>
+              <p>All questions currently in the bank</p>
+            </div>
+
           </div>
-
-          <div class="q-table-header">
-            <span>Prompt Snippet</span>
-            <span>Domain</span>
-            <span>Metrics</span>
-          </div>
-
-          <div class="q-list" id="questionList"></div>
-
-          <div class="repo-footer">
-            <p id="qCount">Showing 1 to 4 of 248 entries</p>
-            <div class="pagination">
-              <button class="page-btn" disabled>‹</button>
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">›</button>
+          <div class="panel-body" style="flex:1;display:flex;flex-direction:column;">
+            <div class="q-table-header">
+              <span>Prompt Snippet</span>
+              <span>Domain</span>
+              <span>Metrics</span>
+            </div>
+            <div class="q-list" id="questionList"></div>
+            <div class="repo-footer">
+              <p id="qCount">0 questions</p>
+              <div class="pagination" id="pagination"></div>
             </div>
           </div>
         </div>
 
       </div>
     </main>
-
   </div>
 
   <script src="js/auth.js"></script>
   <script>
     window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeAdminSidebar(); });
-    document.querySelectorAll('.sidebar .nav-item, .sidebar-cta .btn').forEach(el => {
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => {
       el.addEventListener('click', () => { if (window.innerWidth <= 1024) closeAdminSidebar(); });
     });
 
@@ -472,80 +466,69 @@
       'comp-logic': 'chip-warning', biology: 'chip-danger', history: 'chip-neutral', chemistry: 'chip-primary'
     };
 
-    // ── Load exams from API + populate dropdown ──
+    // ── Toast (no-op — toast removed) ──
+    function showToast(msg) { /* removed */ }
+
+    // ── Load exams + populate dropdown ──
     async function loadExams() {
       try {
         exams = await apiFetch('/api/exams');
         const select = document.getElementById('examSelect');
-
         if (!exams.length) {
-          // Show guard banner, hide the form fields
           document.getElementById('noExamBanner').style.display = 'block';
           document.getElementById('questionFormFields').style.display = 'none';
           return;
         }
-
-        // Populate dropdown
         select.innerHTML = '<option value="">Select an exam…</option>' +
           exams.map(e => `<option value="${e._id}">${e.title} (${e.subject})</option>`).join('');
-
-        // Auto-select if only one exam
         if (exams.length === 1) select.value = exams[0]._id;
-
-        // Filter questions list when exam changes
         select.addEventListener('change', () => loadQuestions(select.value));
-
-      } catch (err) {
-        console.error('Failed to load exams:', err);
-      }
+      } catch (err) { console.error('Failed to load exams:', err); }
     }
 
     // ── Render question list ──
     function renderQuestions(list) {
       const el = document.getElementById('questionList');
       if (!list.length) {
-        el.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--secondary);font-size:0.875rem;">No questions yet. Draft one on the left panel!</p>';
+        el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--secondary);">
+          <span class="material-symbols-rounded" style="font-size:36px;display:block;margin-bottom:8px;opacity:0.4;">inbox</span>
+          <span style="font-size:0.875rem;">No questions yet — draft one on the left!</span>
+        </div>`;
         document.getElementById('qCount').textContent = '0 questions';
         return;
       }
       el.innerHTML = list.map(q => `
         <div class="q-row" data-id="${q._id}">
-          <div class="q-snippet">${q.questionText.substring(0, 70)}${q.questionText.length > 70 ? '…' : ''}</div>
-          <span class="chip ${domainColors[q.subject] || 'chip-neutral'}" style="font-size:0.7rem;padding:3px 10px;">${q.subject || 'General'}</span>
+          <div class="q-snippet">${q.questionText.substring(0, 72)}${q.questionText.length > 72 ? '…' : ''}</div>
+          <span class="chip ${domainColors[q.subject] || 'chip-neutral'}" style="font-size:0.68rem;padding:3px 10px;">${q.subject || 'General'}</span>
           <div class="q-metrics">
-            <div class="q-metric"><span class="material-symbols-rounded">add_circle</span> ${q.marks} pt</div>
-            <div class="q-metric"><span class="material-symbols-rounded">balance</span> ${q.difficulty}</div>
+            <div class="q-metric"><span class="material-symbols-rounded">add_circle</span>${q.marks} pt</div>
+            <div class="q-metric"><span class="material-symbols-rounded">signal_cellular_alt</span>${q.difficulty}</div>
           </div>
         </div>
       `).join('');
       document.getElementById('qCount').textContent = `${list.length} question${list.length !== 1 ? 's' : ''}`;
     }
 
-    // ── Load questions from API (optionally filtered by exam) ──
     async function loadQuestions(examId) {
       try {
         const url = examId ? `/api/questions?exam=${examId}` : '/api/questions';
         questions = await apiFetch(url);
         renderQuestions(questions);
-      } catch (err) {
-        console.error('Failed to load questions:', err);
-      }
+      } catch (err) { console.error('Failed to load questions:', err); }
     }
 
     function filterQuestions() {
       const term = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = questions.filter(q =>
+      renderQuestions(questions.filter(q =>
         q.questionText.toLowerCase().includes(term) || (q.subject || '').toLowerCase().includes(term)
-      );
-      renderQuestions(filtered);
+      ));
     }
 
     // ── Answer selection ──
     let selectedAnswer = null;
     function selectAnswer(idx) {
-      document.querySelectorAll('.answer-option').forEach((el, i) => {
-        el.classList.toggle('selected', i === idx);
-      });
+      document.querySelectorAll('.answer-option').forEach((el, i) => el.classList.toggle('selected', i === idx));
       selectedAnswer = idx;
     }
 
@@ -553,34 +536,29 @@
       document.getElementById('questionForm').reset();
       document.querySelectorAll('.answer-option').forEach(el => el.classList.remove('selected'));
       selectedAnswer = null;
-      // Re-populate exam select after reset (reset clears it)
       loadExams();
     }
 
-    // ── Form submit → POST /api/questions ──
+    // ── Submit ──
     document.getElementById('questionForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const examId = document.getElementById('examSelect').value;
-      const subject = document.getElementById('subjectDomain').value;
+      const examId       = document.getElementById('examSelect').value;
+      const subject      = document.getElementById('subjectDomain').value;
       const questionText = document.getElementById('qPrompt').value.trim();
-      const marks = parseInt(document.getElementById('qPoints').value) || 1;
-      const difficulty = document.getElementById('qDifficulty').value;
+      const marks        = parseInt(document.getElementById('qPoints').value) || 1;
+      const difficulty   = document.getElementById('qDifficulty').value;
 
-      if (!examId) { alert('Please select an exam to assign this question to.'); return; }
+      if (!examId)        { alert('Please select an exam.'); return; }
       if (!subject || !questionText) { alert('Please fill in Subject Domain and Question Prompt.'); return; }
-      if (selectedAnswer === null) { alert('Please select the correct answer.'); return; }
+      if (selectedAnswer === null)   { alert('Please select the correct answer option.'); return; }
 
-      // Gather options
-      const inputs = document.querySelectorAll('.answer-input');
-      const options = Array.from(inputs).map((inp, i) => ({
-        text: inp.value.trim(),
-        isCorrect: i === selectedAnswer,
-      }));
-      if (options.some(o => !o.text)) { alert('Please fill in all answer options.'); return; }
+      const inputs  = document.querySelectorAll('.answer-input');
+      const options = Array.from(inputs).map((inp, i) => ({ text: inp.value.trim(), isCorrect: i === selectedAnswer }));
+      if (options.some(o => !o.text)) { alert('Please fill in all four answer options.'); return; }
 
-      const submitBtn = document.getElementById('commitBtn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Saving…';
+      const btn = document.getElementById('commitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;animation:spin 1s linear infinite;">sync</span>Saving…';
 
       try {
         await apiFetch('/api/questions', {
@@ -589,35 +567,28 @@
         });
         clearForm();
         await loadQuestions(examId);
-        // Show brief success feedback
-        const banner = document.createElement('div');
-        banner.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#15803d;color:#fff;padding:12px 20px;border-radius:var(--radius-md);font-size:0.875rem;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:9999;';
-        banner.textContent = '✓ Question saved to exam!';
-        document.body.appendChild(banner);
-        setTimeout(() => banner.remove(), 3000);
+        showToast('Question saved to exam!');
       } catch (err) {
         alert('Error saving question: ' + err.message);
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Commit to Bank';
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>Commit to Bank';
       }
     });
 
-    // ── Logout handler ──
-    document.querySelector('a[href="admin_login.html"]').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await handleLogout('admin_login.html');
+    document.getElementById('logoutLink').addEventListener('click', (e) => {
+      e.preventDefault(); handleLogout('admin_login.html');
     });
 
-    // ── Init: Auth guard + load data ──
+    // ── Init ──
     const user = requireAdmin();
     if (user) {
       updateUserUI(user);
-      loadExams().then(() => {
-        // Load all questions initially
-        loadQuestions();
-      });
+      loadExams().then(() => loadQuestions());
     }
   </script>
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
 </body>
 </html>

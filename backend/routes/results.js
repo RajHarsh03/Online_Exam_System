@@ -15,15 +15,26 @@ async function recomputeRanks(examId) {
   }
 }
 
-// ── GET /api/results — list results (students see own; admins see all) ──
+// ── GET /api/results — list results (students see own; admins see student-only) ──
 router.get('/', requireAuth, async (req, res) => {
   try {
-    const filter = req.user.role === 'admin' ? {} : { student: req.user.id };
+    let filter = {};
+
+    if (req.user.role === 'admin') {
+      // Only return results submitted by actual students (not admin test submissions)
+      const studentIds = await User.find({ role: 'student' }).distinct('_id');
+      filter.student = { $in: studentIds };
+    } else {
+      // Student sees only their OWN PUBLISHED results
+      filter.student = req.user.id;
+      filter.isPublished = true;
+    }
+
     if (req.query.exam) filter.exam = req.query.exam;
 
     const results = await Result.find(filter)
-      .populate('exam',    'title subject totalMarks passingMarks')
-      .populate('student', 'name email')
+      .populate('exam',    'title subject totalMarks passingMarks duration')
+      .populate('student', 'name email role')
       .sort({ submittedAt: -1 });
 
     res.json(results);
@@ -35,12 +46,16 @@ router.get('/', requireAuth, async (req, res) => {
 // ── GET /api/results/stats — aggregate stats for admin results overview ──
 router.get('/stats', requireAdmin, async (req, res) => {
   try {
-    const total  = await Result.countDocuments();
-    const passed = await Result.countDocuments({ status: 'passed' });
-    const failed = await Result.countDocuments({ status: 'failed' });
+    // Only count real student submissions
+    const studentIds = await User.find({ role: 'student' }).distinct('_id');
+    const studentFilter = { student: { $in: studentIds } };
 
-    // Average percentage across all results
+    const total  = await Result.countDocuments(studentFilter);
+    const passed = await Result.countDocuments({ ...studentFilter, status: 'passed' });
+    const failed = await Result.countDocuments({ ...studentFilter, status: 'failed' });
+
     const avgAgg = await Result.aggregate([
+      { $match: { student: { $in: studentIds } } },
       { $group: { _id: null, avg: { $avg: '$percentage' } } }
     ]);
     const avgScore = avgAgg[0] ? Math.round(avgAgg[0].avg) : 0;
@@ -55,11 +70,16 @@ router.get('/stats', requireAdmin, async (req, res) => {
 // ── GET /api/results/leaderboard/:examId — ranked results for one exam ──
 router.get('/leaderboard/:examId', requireAdmin, async (req, res) => {
   try {
-    const results = await Result.find({ exam: req.params.examId })
+    // Only rank actual students, not admin test submissions
+    const studentIds = await User.find({ role: 'student' }).distinct('_id');
+
+    const results = await Result.find({
+      exam: req.params.examId,
+      student: { $in: studentIds },
+    })
       .populate('student', 'name email')
       .sort({ obtainedMarks: -1, submittedAt: 1 });
 
-    // Attach rank on the fly
     const ranked = results.map((r, i) => ({
       rank:         i + 1,
       studentName:  r.student?.name  || r.studentName  || 'Unknown',
@@ -68,6 +88,7 @@ router.get('/leaderboard/:examId', requireAdmin, async (req, res) => {
       totalMarks:    r.totalMarks,
       percentage:    r.percentage,
       status:        r.status,
+      isPublished:   r.isPublished,
       submittedAt:   r.submittedAt,
       timeTaken:     r.timeTaken,
       resultId:      r._id,
@@ -169,6 +190,35 @@ router.post('/', requireAuth, async (req, res) => {
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// ── PATCH /api/results/:id/publish — admin publishes a single result ──
+router.patch('/:id/publish', requireAdmin, async (req, res) => {
+  try {
+    const result = await Result.findByIdAndUpdate(
+      req.params.id,
+      { isPublished: true },
+      { new: true }
+    ).populate('exam', 'title').populate('student', 'name email');
+    if (!result) return res.status(404).json({ error: 'Result not found' });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── PATCH /api/results/publish-all — admin bulk-publishes all results (optional ?exam=id filter) ──
+router.patch('/publish-all', requireAdmin, async (req, res) => {
+  try {
+    const studentIds = await User.find({ role: 'student' }).distinct('_id');
+    const filter = { student: { $in: studentIds }, isPublished: false };
+    if (req.query.exam) filter.exam = req.query.exam;
+
+    const updated = await Result.updateMany(filter, { isPublished: true });
+    res.json({ published: updated.modifiedCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

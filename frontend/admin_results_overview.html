@@ -59,8 +59,21 @@
     .pass-rate-fill { height:100%; background:var(--primary); border-radius:999px; transition:width 0.8s ease; }
     .empty-state { text-align:center; padding:48px 16px; color:var(--secondary); font-size:0.875rem; }
     .empty-state .material-symbols-rounded { font-size:44px; color:var(--surface-highest); display:block; margin-bottom:10px; }
+    /* Publish chip (shown in row after publish) */
+    .published-chip {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 10px; border-radius:var(--radius-full);
+      font-size:0.72rem; font-weight:600; color:var(--primary);
+      background:rgba(0,109,74,0.1);
+    }
+    .unpublished-chip {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 10px; border-radius:var(--radius-full);
+      font-size:0.72rem; font-weight:600; color:#d97706;
+      background:rgba(217,119,6,0.1);
+    }
     @media(max-width:900px){ .results-stats{grid-template-columns:1fr 1fr;} }
-    @media(max-width:600px){ .results-stats{grid-template-columns:1fr;} .results-table-card{overflow-x:auto;} .results-table{min-width:640px;} }
+    @media(max-width:600px){ .results-stats{grid-template-columns:1fr;} .results-table-card{overflow-x:auto;} .results-table{min-width:700px;} }
   </style>
 </head>
 <body>
@@ -102,9 +115,14 @@
           <h1 class="page-title">Results Analytics</h1>
           <p class="page-subtitle">Live evaluation results — ranked by score per exam.</p>
         </div>
-        <button class="btn btn-outline" id="exportBtn" style="white-space:nowrap;">
-          <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">download</span>Export CSV
-        </button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+          <button class="btn btn-outline" id="exportBtn" style="white-space:nowrap;">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">download</span>Export CSV
+          </button>
+          <button id="publishAllBtn" style="display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--radius-xl);font-size:0.8125rem;font-weight:700;background:linear-gradient(135deg,var(--primary),#00a060);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,109,74,0.28);transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+            <span class="material-symbols-rounded" style="font-size:18px;">publish</span>Publish All Results
+          </button>
+        </div>
       </div>
 
       <!-- Stats row -->
@@ -158,6 +176,7 @@
               <th>Status</th>
               <th>Submitted</th>
               <th>Time Taken</th>
+              <th>Published</th>
             </tr>
           </thead>
           <tbody id="resultsTableBody">
@@ -252,12 +271,14 @@
           const raw = await apiFetch('/api/results');
           allResults = raw.map(r => ({
             rank:         r.rank || '—',
+            resultId:     r._id,
             studentName:  r.student?.name  || r.studentName  || 'Unknown',
             studentEmail: r.student?.email || r.studentEmail || '',
             obtainedMarks: r.obtainedMarks,
             totalMarks:    r.totalMarks,
             percentage:    r.percentage,
             status:        r.status,
+            isPublished:   r.isPublished,
             submittedAt:   r.submittedAt,
             timeTaken:     r.timeTaken,
             examTitle:     r.exam?.title || '—',
@@ -285,8 +306,11 @@
           : `<span class="chip chip-danger" style="font-size:0.7rem;padding:3px 10px;">Failed</span>`;
         const scoreClass = r.status === 'passed' ? 'score-pass' : 'score-fail';
         const examCol = !currentExam ? `<div class="s-email">${r.examTitle || ''}</div>` : '';
+        const pubCell = r.isPublished
+          ? `<span class="published-chip"><span class="material-symbols-rounded" style="font-size:13px;">check_circle</span>Published</span>`
+          : `<span class="unpublished-chip"><span class="material-symbols-rounded" style="font-size:13px;">hourglass_top</span>Pending</span>`;
         return `
-          <tr>
+          <tr id="row-${r.resultId}">
             <td>${rankBadge(r.rank)}</td>
             <td>
               <div class="student-cell">
@@ -303,6 +327,7 @@
             <td>${passChip}</td>
             <td style="color:var(--secondary);font-size:0.8rem;">${fmtDate(r.submittedAt)}</td>
             <td style="color:var(--secondary);font-size:0.8rem;">${fmtTime(r.timeTaken)}</td>
+            <td>${pubCell}</td>
           </tr>`;
       }).join('');
 
@@ -320,6 +345,40 @@
       });
       renderResults(filtered);
     }
+
+    // ── Publish ALL results (filtered by current exam if one is selected) ──
+    document.getElementById('publishAllBtn').addEventListener('click', async () => {
+      const pending = allResults.filter(r => !r.isPublished);
+      if (!pending.length) {
+        alert('All results are already published.');
+        return;
+      }
+      if (!confirm(`Publish ${pending.length} result${pending.length !== 1 ? 's' : ''}? Students will be able to view their results immediately.`)) return;
+
+      const btn = document.getElementById('publishAllBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px;animation:spin 1s linear infinite;">sync</span>Publishing…';
+
+      try {
+        const url = currentExam
+          ? `/api/results/publish-all?exam=${currentExam}`
+          : '/api/results/publish-all';
+        const res = await apiFetch(url, { method: 'PATCH' });
+        // Refresh the table so all chips update
+        await loadResults();
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px;">check_circle</span>${res.published} Result${res.published !== 1 ? 's' : ''} Published`;
+        btn.style.background = 'linear-gradient(135deg,#15803d,#16a34a)';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px;">publish</span>Publish All Results';
+          btn.style.background = '';
+        }, 3000);
+      } catch(err) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px;">publish</span>Publish All Results';
+        alert('Failed to publish: ' + err.message);
+      }
+    });
 
     // ── Export CSV ──
     document.getElementById('exportBtn').addEventListener('click', () => {
@@ -339,5 +398,8 @@
       loadExams().then(() => loadResults());
     }
   </script>
+  <style>
+    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+  </style>
 </body>
 </html>

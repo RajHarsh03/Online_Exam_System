@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
-    body { background: var(--surface); }
+    html, body { min-height: 100vh; }
+    body { background: var(--surface-low); min-height: 100vh; }
 
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -118,6 +119,57 @@
       transition: background var(--transition);
     }
     .btn-upload-sm:hover { background: var(--surface-highest); }
+
+    /* ── Past exam result cards ── */
+    .past-exams-section { margin-top: var(--space-lg); }
+    .past-exams-title {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      color: var(--on-surface); margin-bottom: var(--space-sm);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .past-exams-title .material-symbols-rounded { font-size: 18px; color: var(--primary); }
+    .past-exam-card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: var(--space-md) var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--space-md); flex-wrap: wrap;
+      transition: transform var(--transition), box-shadow var(--transition);
+      margin-bottom: var(--space-sm);
+    }
+    .past-exam-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
+    .past-exam-left { flex: 1; min-width: 0; }
+    .past-exam-name {
+      font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .past-exam-meta {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      font-size: 0.75rem; color: var(--secondary);
+    }
+    .past-exam-meta span { display: flex; align-items: center; gap: 3px; }
+    .past-exam-meta .material-symbols-rounded { font-size: 13px; }
+    .past-exam-right { display: flex; align-items: center; gap: var(--space-md); flex-shrink: 0; }
+    .score-pill {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 6px 14px; border-radius: var(--radius-lg);
+      background: var(--surface-low);
+    }
+    .score-pill .pct  { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; }
+    .score-pill .lbl  { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      border-radius: var(--radius-full); padding: 5px 12px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em;
+    }
+    .status-badge.passed { background: var(--primary-container); color: var(--on-primary-container); }
+    .status-badge.failed { background: #fee2e2; color: #991b1b; }
+    @media (max-width: 640px) {
+      .past-exam-card { flex-direction: column; align-items: flex-start; }
+      .past-exam-right { width: 100%; justify-content: space-between; }
+    }
 
     @media (max-width: 1024px) {
       .exams-grid {
@@ -262,7 +314,7 @@
     .topnav-logout-btn .material-symbols-rounded { font-size: 16px; }
   </style>
 </head>
-<body style="background-color: var(--surface-highest);">
+<body>
   <!-- Mobile Drawer Overlay -->
   <div class="student-drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
 
@@ -336,8 +388,9 @@
       <!-- ── Instructions Modal ── -->
       <div id="instructionsModal" style="
         display:none;position:fixed;inset:0;z-index:9999;
-        background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+        background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
         align-items:center;justify-content:center;padding:16px;
+        min-height:100vh;
       ">
         <div style="
           background:#fff;border-radius:20px;max-width:520px;width:100%;
@@ -485,15 +538,96 @@
           <p style="font-size:0.875rem;color:var(--secondary);max-width:320px;margin:0 auto;">Enter your exam code above to join an exam. Your instructor will provide the code before the exam begins.</p>
         </div>
 
+        <!-- Past exam results -->
+        <div class="past-exams-section" id="pastExamsSection" style="display:none;">
+          <div class="past-exams-title">
+            <span class="material-symbols-rounded">history_edu</span>
+            My Past Exams
+          </div>
+          <div id="pastExamsList"></div>
+        </div>
+
       </div>
 
       <script src="js/auth.js"></script>
       <script>
     // ── Auth guard ──
-    const currentUser = requireAuth('student_login.html');
+    const currentUser = requireStudent();
     if (currentUser) {
       updateUserUI(currentUser);
       document.getElementById('welcomeHeadline').textContent = `Ready, ${currentUser.name.split(' ')[0]}?`;
+    }
+
+    // ── Load past exam results ──
+    fetchPastExams();
+
+    async function fetchPastExams() {
+      try {
+        const results = await apiFetch('/api/results');
+        if (!results || results.length === 0) return; // keep empty state
+
+        // Hide empty state, show past exams
+        document.getElementById('emptyState').style.display        = 'none';
+        document.getElementById('pastExamsSection').style.display  = 'block';
+
+        const list = document.getElementById('pastExamsList');
+        list.innerHTML = '';
+
+        results.forEach(r => {
+          const exam       = r.exam  || {};
+          const title      = exam.title   || 'Untitled Exam';
+          const subject    = exam.subject || '—';
+          const obtained   = r.obtainedMarks ?? 0;
+          const total      = r.totalMarks   ?? exam.totalMarks ?? 0;
+          const pct        = r.percentage   ?? (total ? Math.round((obtained/total)*100) : 0);
+          const rank       = r.rank         ? `#${r.rank}` : '—';
+          const timeTaken  = r.timeTaken    ? `${Math.floor(r.timeTaken/60)}m ${r.timeTaken%60}s` : '—';
+          const dateStr    = r.submittedAt
+            ? new Date(r.submittedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+            : '—';
+          const passed     = r.status === 'passed';
+
+          const card = document.createElement('div');
+          card.className = 'past-exam-card';
+          card.style.cursor = 'pointer';
+          card.innerHTML = `
+            <div class="past-exam-left">
+              <div class="past-exam-name">${title}</div>
+              <div class="past-exam-meta">
+                <span><span class="material-symbols-rounded">subject</span>${subject}</span>
+                <span><span class="material-symbols-rounded">leaderboard</span>Rank ${rank}</span>
+                <span><span class="material-symbols-rounded">schedule</span>${timeTaken}</span>
+                <span><span class="material-symbols-rounded">calendar_today</span>${dateStr}</span>
+              </div>
+            </div>
+            <div class="past-exam-right">
+              <div class="score-pill">
+                <span class="pct">${obtained}/${total}</span>
+                <span class="lbl">Score</span>
+              </div>
+              <div class="score-pill">
+                <span class="pct" style="color:${passed?'var(--primary)':'#dc2626'}">${pct}%</span>
+                <span class="lbl">Percent</span>
+              </div>
+              <span class="status-badge ${passed?'passed':'failed'}">
+                <span class="material-symbols-rounded" style="font-size:13px;">${passed?'check_circle':'cancel'}</span>
+                ${passed ? 'Passed' : 'Failed'}
+              </span>
+            </div>`;
+
+          list.appendChild(card);
+        });
+
+      } catch (err) {
+        // Show a subtle error so it's clear the fetch failed
+        document.getElementById('pastExamsSection').style.display = 'block';
+        document.getElementById('pastExamsList').innerHTML = `
+          <div style="padding:16px 20px;background:#fef2f2;border-radius:var(--radius-xl);
+            border:1px solid #fecaca;color:#dc2626;font-size:0.875rem;">
+            <strong>Could not load past exams:</strong> ${err.message}
+          </div>`;
+        console.error('Could not load past exams:', err.message);
+      }
     }
 
     // ── Logout handlers ──

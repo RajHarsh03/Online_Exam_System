@@ -241,6 +241,7 @@
       }
       .summary-item { text-align: left; }
     }
+    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -436,7 +437,7 @@
   <script src="js/auth.js"></script>
   <script>
     // ── Auth guard ──
-    const currentUser = requireAuth('student_login.html');
+    const currentUser = requireStudent();
     if (currentUser) {
       // Populate user chip (same as dashboard's updateUserUI)
       const initials = (currentUser.name || 'S').split(' ')
@@ -461,23 +462,98 @@
         document.getElementById('studentDrawer').classList.contains('open') ? 'hidden' : '';
     }
 
-    // ── Load data from sessionStorage ──
-    const raw  = sessionStorage.getItem('examResult');
-    const exam = JSON.parse(sessionStorage.getItem('activeExam') || 'null');
+    // ── Load data: always fetch fresh from API; sessionStorage used only for published results ──
+    async function loadResult() {
+      const exam = JSON.parse(sessionStorage.getItem('activeExam') || 'null');
 
-    if (!raw) {
+      // Only use sessionStorage cache if it was already published (no stale-pending risk)
+      const raw = sessionStorage.getItem('examResult');
+      if (raw) {
+        try {
+          const cached = JSON.parse(raw);
+          const cachedStudentId = cached.student?._id || cached.student;
+          const currentUserId   = currentUser?._id || currentUser?.id;
+          const isOwner = cachedStudentId && currentUserId && String(cachedStudentId) === String(currentUserId);
+          if (isOwner && cached.isPublished === true) {
+            // Published cache — safe to use
+            renderResult(cached, exam);
+            return;
+          }
+          // Unpublished or wrong user — discard and always refetch
+          sessionStorage.removeItem('examResult');
+        } catch(e) { /* fall through */ }
+      }
+
+      // Always fetch fresh from API
+      try {
+        const results = await apiFetch('/api/results');
+        if (results && results.length > 0) {
+          const latest = results[0]; // sorted newest-first by backend
+          if (latest.isPublished === false) {
+            // Not yet published — show pending, but DON'T cache it
+            showPendingReview(latest.exam?.title || exam?.title || 'your exam');
+            return;
+          }
+          // Published — cache and render
+          sessionStorage.setItem('examResult', JSON.stringify(latest));
+          renderResult(latest, latest.exam || exam || null);
+        } else {
+          // API returned empty — result hasn't been published yet
+          showPendingReview(exam?.title || 'your exam');
+        }
+      } catch(err) {
+        showNoResult(err.message);
+      }
+    }
+
+    function showNoResult(msg) {
       document.querySelector('.result-main').innerHTML =
         `<div style="text-align:center;padding:40px 20px;color:var(--secondary);">
            <span class="material-symbols-rounded" style="font-size:40px;display:block;margin-bottom:12px;">error</span>
-           No result data found.
+           ${msg ? 'Error: ' + msg : 'No result data found.'}
            <br><br>
            <a href="student_dashboard.html" class="btn btn-primary" style="display:inline-flex;gap:6px;align-items:center;">
              <span class="material-symbols-rounded" style="font-size:16px;">arrow_back</span>
              Back to Dashboard
            </a>
          </div>`;
-    } else {
-      const r = JSON.parse(raw);
+    }
+
+    function showPendingReview(examTitle) {
+      document.querySelector('.result-main').innerHTML = `
+        <div style="text-align:center;padding:56px 24px;">
+          <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(217,119,6,0.2);">
+            <span class="material-symbols-rounded" style="font-size:36px;color:#d97706;">hourglass_top</span>
+          </div>
+          <h2 style="font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:var(--on-surface);margin:0 0 8px;">Results Pending Review</h2>
+          <p style="font-size:0.95rem;color:var(--secondary);max-width:360px;margin:0 auto 28px;line-height:1.6;">
+            Your submission for <strong style="color:var(--on-surface);">${examTitle}</strong> has been recorded.
+            Your admin will review and publish your result shortly.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:12px;align-items:center;max-width:300px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:10px;background:var(--surface-high);border-radius:var(--radius-md);padding:12px 16px;width:100%;">
+              <span class="material-symbols-rounded" style="color:#d97706;font-size:20px;">pending</span>
+              <span style="font-size:0.8rem;color:var(--on-surface);">Awaiting admin approval</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:var(--surface-high);border-radius:var(--radius-md);padding:12px 16px;width:100%;opacity:0.5;">
+              <span class="material-symbols-rounded" style="color:var(--secondary);font-size:20px;">visibility</span>
+              <span style="font-size:0.8rem;color:var(--on-surface);">Result visible after publish</span>
+            </div>
+          </div>
+          <a href="student_dashboard.html" class="btn btn-primary" style="display:inline-flex;gap:6px;align-items:center;margin-top:32px;">
+            <span class="material-symbols-rounded" style="font-size:16px;">arrow_back</span>
+            Back to Dashboard
+          </a>
+        </div>`;
+    }
+
+    loadResult();
+
+    // ── Module-level result id (set when renderResult runs) ──
+    let currentResultId = null;
+    let currentResult   = null;  // full result object for certificate
+
+    function renderResult(r, exam) {
 
       // ── Basic info ──
       const title       = r.exam?.title  || exam?.title  || 'Exam';
@@ -487,6 +563,9 @@
       const totalMarks  = r.totalMarks  ?? exam?.totalMarks ?? 0;
       const obtained    = r.obtainedMarks ?? 0;
       const rank        = r.rank;
+      // Store for review modal + certificate
+      currentResultId   = r._id || r.id || null;
+      currentResult     = { r, exam, title, subject, passed, pct, totalMarks, obtained, rank };
       const submittedAt = r.submittedAt ? new Date(r.submittedAt) : new Date();
       const dateStr     = submittedAt.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
 
@@ -506,14 +585,6 @@
       // ── Populate DOM ──
       document.title = `Result — ${title} | Prashiksha`;
 
-      // Header nav
-      document.getElementById('examName').textContent = title;
-      document.getElementById('examSub').textContent  =
-        `${subject ? subject + ' • ' : ''}${currentUser ? currentUser.name : 'Student'}`;
-      const chip = document.getElementById('resultChip');
-      chip.textContent = passed ? 'PASSED' : 'FAILED';
-      chip.classList.add(passed ? 'passed' : 'failed');
-
       document.getElementById('statusChip').textContent    = `STATUS: ${passed ? 'PASSED' : 'FAILED'}`;
       document.getElementById('statusChip').classList.toggle('failed', !passed);
       document.getElementById('resultTitle').textContent   = title;
@@ -527,6 +598,7 @@
       document.getElementById('correctTotal').textContent  = `/ ${totalQ}`;
       document.getElementById('incorrectTotal').textContent= `/ ${totalQ}`;
       document.getElementById('skippedTotal').textContent  = `/ ${totalQ}`;
+
 
       // ── Exam Details card ──
       const examDetails = [
@@ -589,18 +661,38 @@
 
 
 
-      // ── Review Answers Section ──
-      if (exam && exam.questions && exam.questions.length > 0 && answers.length > 0) {
-        // pre-build review list (modal opened on demand)
-        const reviewList = document.getElementById('reviewList');
+      // ── Review Answers Section ── (built on demand in openReviewModal)
+    }
 
-        reviewList.innerHTML = exam.questions.map((q, idx) => {
-          const qId   = String(q._id || q.id || idx);
-          const ans   = answers.find(a => String(a.question) === qId) || {};
-          const sel   = ans.selectedOption;
-          const isOk  = ans.isCorrect;
+    async function openReviewModal() {
+      if (!currentResultId) {
+        alert('Result not loaded yet. Please wait.');
+        return;
+      }
+
+      const reviewList = document.getElementById('reviewList');
+      // Show loading state
+      document.getElementById('reviewModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      reviewList.innerHTML = `<div style="text-align:center;padding:40px;color:var(--secondary);"><span class="material-symbols-rounded" style="font-size:36px;display:block;margin-bottom:8px;animation:spin 1s linear infinite;">sync</span>Loading answers…</div>`;
+
+      try {
+        const r = await apiFetch(`/api/results/${currentResultId}`);
+        const answers = r.answers || [];
+        const questions = answers.map(a => a.question).filter(Boolean);
+
+        if (!answers.length || !questions.length) {
+          reviewList.innerHTML = `<div style="text-align:center;padding:40px;color:var(--secondary);"><span class="material-symbols-rounded" style="font-size:36px;display:block;margin-bottom:8px;">info</span>No answer data available for review.</div>`;
+          return;
+        }
+
+        reviewList.innerHTML = answers.map((ans, idx) => {
+          const q       = ans.question; // populated by backend
+          if (!q) return '';
+          const sel     = ans.selectedOption;
+          const isOk    = ans.isCorrect;
           const skipped = sel === null || sel === undefined;
-          const opts  = q.options || [];
+          const opts    = q.options || [];
           const correctIdx = opts.findIndex(o => o.isCorrect === true);
 
           let badge, borderColor;
@@ -641,17 +733,10 @@
               <div>${optHtml}</div>
             </div>`;
         }).join('');
-      }
-    }
 
-    function openReviewModal() {
-      const list = document.getElementById('reviewList');
-      if (!list || !list.innerHTML.trim()) {
-        alert('Answer review is not available for this result.');
-        return;
+      } catch(err) {
+        reviewList.innerHTML = `<div style="text-align:center;padding:40px;color:#dc2626;"><span class="material-symbols-rounded" style="font-size:36px;display:block;margin-bottom:8px;">error</span>Failed to load: ${err.message}</div>`;
       }
-      document.getElementById('reviewModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
     }
 
     function closeReviewModal() {
@@ -664,7 +749,179 @@
     }
 
     function downloadCert() {
-      alert('Certificate download will be available soon!');
+      if (!currentResult) {
+        alert('Please wait for your result to load first.');
+        return;
+      }
+      const { r, title, subject, passed, pct, totalMarks, obtained } = currentResult;
+      const studentName = r.student?.name || currentUser?.name || 'Student';
+      const dateStr = new Date(r.submittedAt || Date.now()).toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+
+      // ── Canvas setup (A4 landscape: 1123 × 794 @ 96dpi) ──
+      const W = 1123, H = 794;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      // Background gradient
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0,   '#f0fdf7');
+      bg.addColorStop(0.5, '#ffffff');
+      bg.addColorStop(1,   '#f0f9ff');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Outer border
+      ctx.strokeStyle = '#006d4a';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(18, 18, W - 36, H - 36);
+
+      // Inner border
+      ctx.strokeStyle = '#69f6b8';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(30, 30, W - 60, H - 60);
+
+      // Corner ornaments
+      const corners = [[40,40],[W-40,40],[40,H-40],[W-40,H-40]];
+      corners.forEach(([cx,cy]) => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, 10, 0, Math.PI*2);
+        ctx.fillStyle = '#006d4a';
+        ctx.fill();
+      });
+
+      // Header band
+      const hdr = ctx.createLinearGradient(0, 50, 0, 120);
+      hdr.addColorStop(0, 'rgba(0,109,74,0.08)');
+      hdr.addColorStop(1, 'rgba(0,109,74,0)');
+      ctx.fillStyle = hdr;
+      ctx.fillRect(35, 35, W-70, 85);
+
+      // ── Platform name ──
+      ctx.fillStyle = '#006d4a';
+      ctx.font = 'bold 18px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('PRASHIKSHA EXAMINATION BOARD', W/2, 80);
+
+      // Decorative line under platform name
+      ctx.beginPath();
+      ctx.moveTo(W/2 - 180, 92); ctx.lineTo(W/2 + 180, 92);
+      ctx.strokeStyle = '#69f6b8'; ctx.lineWidth = 2; ctx.stroke();
+
+      // ── Certificate of Achievement title ──
+      ctx.fillStyle = '#003d2a';
+      ctx.font = 'italic bold 42px Georgia, serif';
+      ctx.fillText('Certificate of Achievement', W/2, 165);
+
+      // ── Presented to line ──
+      ctx.fillStyle = '#526075';
+      ctx.font = '18px Georgia, serif';
+      ctx.fillText('THIS IS TO CERTIFY THAT', W/2, 210);
+
+      // ── Student name ──
+      ctx.fillStyle = '#003d2a';
+      ctx.font = 'bold 52px Georgia, serif';
+      ctx.fillText(studentName, W/2, 278);
+
+      // Name underline
+      const nameW = ctx.measureText(studentName).width;
+      ctx.beginPath();
+      ctx.moveTo(W/2 - nameW/2, 288); ctx.lineTo(W/2 + nameW/2, 288);
+      ctx.strokeStyle = '#006d4a'; ctx.lineWidth = 2; ctx.stroke();
+
+      // ── Body text ──
+      ctx.fillStyle = '#526075';
+      ctx.font = '18px Georgia, serif';
+      ctx.fillText('has successfully completed the examination', W/2, 330);
+
+      // ── Exam title ──
+      ctx.fillStyle = '#006d4a';
+      ctx.font = 'bold 30px Georgia, serif';
+      ctx.fillText(title + (subject ? ` — ${subject}` : ''), W/2, 375);
+
+      // ── Score band ──
+      const bandY = 405;
+      ctx.fillStyle = 'rgba(0,109,74,0.07)';
+      roundRect(ctx, W/2 - 250, bandY, 500, 64, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,109,74,0.2)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      ctx.fillStyle = '#006d4a';
+      ctx.font = 'bold 30px Georgia, serif';
+      ctx.fillText(`${obtained} / ${totalMarks}  ·  ${pct}%`, W/2, bandY + 30);
+      ctx.fillStyle = '#526075';
+      ctx.font = '14px Georgia, serif';
+      ctx.fillText('Score  ·  Percentage', W/2, bandY + 50);
+
+      // ── Date line ──
+      ctx.fillStyle = '#526075';
+      ctx.font = '16px Georgia, serif';
+      ctx.fillText(`Completed on: ${dateStr}`, W/2, 508);
+
+      // ── Gold seal circle ──
+      const sealX = W - 140, sealY = H - 155, sealR = 65;
+      const sealGrad = ctx.createRadialGradient(sealX, sealY, 10, sealX, sealY, sealR);
+      sealGrad.addColorStop(0,   '#fef3c7');
+      sealGrad.addColorStop(0.6, '#fbbf24');
+      sealGrad.addColorStop(1,   '#d97706');
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, sealR, 0, Math.PI*2);
+      ctx.fillStyle = sealGrad; ctx.fill();
+      ctx.strokeStyle = '#b45309'; ctx.lineWidth = 3; ctx.stroke();
+      // Inner ring
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, sealR - 8, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(180,83,9,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#78350f';
+      ctx.font = 'bold 13px Georgia, serif';
+      ctx.fillText('CERTIFIED', sealX, sealY - 10);
+      ctx.fillText(passed ? 'PASSED' : 'COMPLETED', sealX, sealY + 8);
+      ctx.font = '11px Georgia, serif';
+      ctx.fillText(new Date().getFullYear(), sealX, sealY + 26);
+
+      // ── Signature lines ──
+      const sigY = H - 110;
+      // Left signature
+      ctx.strokeStyle = '#526075'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(100, sigY); ctx.lineTo(310, sigY); ctx.stroke();
+      ctx.fillStyle = '#526075'; ctx.font = '13px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Examiner', 205, sigY + 18);
+      ctx.fillStyle = '#003d2a'; ctx.font = 'italic 16px Georgia, serif';
+      ctx.fillText('Prashiksha Board', 205, sigY - 10);
+
+      // Right signature (left of seal)
+      ctx.strokeStyle = '#526075'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(W - 470, sigY); ctx.lineTo(W - 260, sigY); ctx.stroke();
+      ctx.fillStyle = '#526075'; ctx.font = '13px Georgia, serif';
+      ctx.fillText('Administrator', W - 365, sigY + 18);
+      ctx.fillStyle = '#003d2a'; ctx.font = 'italic 16px Georgia, serif';
+      ctx.fillText('Institution Authority', W - 365, sigY - 10);
+
+      // Footer
+      ctx.fillStyle = 'rgba(82,96,117,0.5)';
+      ctx.font = '12px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Certificate ID: PRSH-${(r._id || r.id || 'DEMO').toString().slice(-8).toUpperCase()}-${new Date().getFullYear()}`, W/2, H - 42);
+
+      // ── Download ──
+      const link = document.createElement('a');
+      link.download = `Certificate_${studentName.replace(/\s+/g,'_')}_${title.replace(/\s+/g,'_')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Helper: rounded rectangle path
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y); ctx.arcTo(x+w, y,   x+w,   y+r,   r);
+      ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h,   r);
+      ctx.lineTo(x+r, y+h); ctx.arcTo(x,   y+h, x,     y+h-r, r);
+      ctx.lineTo(x, y+r); ctx.arcTo(x,   y,   x+r,   y,     r);
+      ctx.closePath();
     }
   </script>
 </body>

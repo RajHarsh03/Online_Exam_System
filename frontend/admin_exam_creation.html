@@ -11,115 +11,230 @@
   <style>
     .main-content { max-width: 100%; }
 
-    /* Form section cards */
+    /* ── Step tracker ── */
+    .step-tracker {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: var(--space-lg);
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: 14px 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .step {
+      display: flex; align-items: center; gap: 10px; flex: 1;
+      position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 100%; height: 2px;
+      background: var(--surface-high);
+      z-index: 0; left: 50%; margin-left: 14px;
+    }
+    .step-bubble {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; z-index: 1;
+      transition: all 0.3s ease;
+    }
+    .step.active .step-bubble { background: var(--primary); color: #fff; box-shadow: 0 0 0 4px rgba(0,109,74,0.18); }
+    .step.done .step-bubble { background: var(--primary-container); color: var(--on-primary-container); }
+    .step.idle .step-bubble { background: var(--surface-high); color: var(--secondary); }
+    .step-label { font-size: 0.8rem; font-weight: 600; color: var(--on-surface); }
+    .step.idle .step-label { color: var(--secondary); }
+
+    /* ── Section cards ── */
     .form-section {
       background: var(--surface-lowest);
       border-radius: var(--radius-xl);
-      padding: var(--space-md);
-      margin-bottom: var(--space-sm);
-      box-shadow: var(--shadow-card);
-    }
-    .section-title {
-      font-family: var(--font-display); font-size: 0.9375rem; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
+      overflow: hidden;
       margin-bottom: var(--space-md);
-      color: var(--on-surface);
+      box-shadow: 0 1px 3px rgba(44,52,55,0.06), 0 4px 16px rgba(44,52,55,0.04);
+      border: 1px solid var(--outline-variant);
+      transition: box-shadow 0.25s ease;
     }
-    .section-title .material-symbols-rounded { color: var(--primary); }
+    .form-section:focus-within {
+      box-shadow: 0 2px 8px rgba(0,109,74,0.08), 0 8px 32px rgba(44,52,55,0.06);
+    }
 
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-md); }
+    /* Gradient banner header for each section */
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 22px;
+      background: linear-gradient(135deg, rgba(0,109,74,0.06) 0%, rgba(0,109,74,0.02) 100%);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .section-icon-wrap {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #00a060);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,109,74,0.25);
+      flex-shrink: 0;
+    }
+    .section-icon-wrap .material-symbols-rounded { font-size: 18px; color: #fff; }
+    .section-header-text h2 {
+      font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
+      color: var(--on-surface); margin: 0;
+    }
+    .section-header-text p { font-size: 0.72rem; color: var(--secondary); margin: 2px 0 0; }
+    .section-body { padding: 22px; }
 
-    .textarea-standalone {
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+
+    /* ── Premium input: floating label style ── */
+    .float-field {
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .float-field .f-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: var(--secondary);
+      pointer-events: none; transition: color 0.2s;
+    }
+    .float-field label {
+      position: absolute; left: 44px; top: 50%; transform: translateY(-50%);
+      font-size: 0.875rem; color: var(--secondary);
+      pointer-events: none; transition: all 0.2s ease;
+      background: transparent; padding: 0 4px;
+    }
+    .float-field input,
+    .float-field textarea,
+    .float-field select {
       width: 100%;
-      background: var(--surface-high);
+      padding: 20px 16px 8px 44px;
+      font-size: 0.875rem; color: var(--on-surface);
+      background: var(--surface);
+      border: 1.5px solid var(--outline-variant);
       border-radius: var(--radius-md);
-      padding: 10px 14px;
-      font-size: 0.875rem;
-      color: var(--on-surface);
-      border: 1px solid transparent;
-      resize: vertical; min-height: 90px;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .textarea-standalone:focus {
-      border-color: var(--primary);
-      box-shadow: none;
       outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+      font-family: var(--font-body);
     }
-    .textarea-standalone::placeholder { color: var(--on-surface-variant); }
+    .float-field textarea { min-height: 100px; padding-top: 26px; resize: vertical; }
+    .float-field select { appearance: none; cursor: pointer; padding-right: 36px; }
+    .float-field .dropdown-arrow {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: var(--secondary); pointer-events: none;
+    }
 
-    /* Positive/negative mark inputs with prefixed icons */
-    .mark-input-wrap {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--surface-high);
+    /* Floating: shrink label when has value or focused */
+    .float-field input:focus,
+    .float-field input:not(:placeholder-shown),
+    .float-field textarea:focus,
+    .float-field textarea:not(:placeholder-shown),
+    .float-field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,109,74,0.1);
+      background: var(--surface-lowest);
+    }
+    .float-field input:focus ~ label,
+    .float-field input:not(:placeholder-shown) ~ label,
+    .float-field textarea:focus ~ label,
+    .float-field textarea:not(:placeholder-shown) ~ label,
+    .float-field select:focus ~ label {
+      top: 8px; transform: none; font-size: 0.68rem; font-weight: 600;
+      color: var(--primary); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .float-field input:focus ~ .f-icon,
+    .float-field textarea:focus ~ .f-icon,
+    .float-field select:focus ~ .f-icon { color: var(--primary); }
+    .float-field input::placeholder,
+    .float-field textarea::placeholder { opacity: 0; }
+
+    /* Simple no-icon input (for number inputs with prefix badges) */
+    .mark-field {
+      background: var(--surface);
+      border: 1.5px solid var(--outline-variant);
       border-radius: var(--radius-md);
+      display: flex; align-items: center; gap: 12px;
       padding: 0 16px;
-      border: 1px solid transparent;
-      transition: border-color var(--transition);
-    }
-    .mark-input-wrap:focus-within { border-color: var(--primary); box-shadow: none; }
-    .mark-sign {
-      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-weight: 700;
-      font-size: 0.875rem;
-    }
-    .mark-sign.pos { background: var(--primary); color: #fff; }
-    .mark-sign.neg { background: #ef4444; color: #fff; }
-    .mark-input-wrap input {
-      flex: 1; padding: 10px 0; font-size: 0.875rem;
-      color: var(--on-surface); background: transparent; border: none; outline: none;
-    }
-
-    /* Footer actions */
-    .form-actions {
-      display: flex; align-items: center; justify-content: flex-end; gap: var(--space-sm);
-      padding: var(--space-md) 0;
-      border-top: 1px solid var(--surface-high);
-      margin-top: var(--space-sm);
-    }
-
-    /* Progress indicator at top */
-    .progress-indicator {
-      height: 3px;
-      background: var(--surface-high);
-      border-radius: var(--radius-full);
-      margin-bottom: var(--space-lg);
+      transition: border-color 0.2s, box-shadow 0.2s;
       overflow: hidden;
     }
-    .progress-indicator-fill {
-      height: 100%;
-      width: 35%;
-      background: linear-gradient(90deg, var(--primary), var(--primary-container));
-      border-radius: var(--radius-full);
+    .mark-field:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,109,74,0.1);
     }
+    .mark-badge {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem;
+    }
+    .mark-badge.pos { background: linear-gradient(135deg,#00a060,var(--primary)); color: #fff; }
+    .mark-badge.neg { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; }
+    .mark-field input {
+      flex: 1; padding: 13px 0; font-size: 0.9rem; font-weight: 600;
+      color: var(--on-surface); background: transparent; border: none; outline: none;
+      font-family: var(--font-display);
+    }
+    .mark-label { font-size: 0.75rem; color: var(--secondary); margin-bottom: 6px; font-weight: 500; }
 
-    .hint-text { font-size: 0.75rem; color: var(--secondary); margin-top: 6px; }
+    .hint-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; color: var(--secondary);
+      margin-top: 7px;
+    }
+    .hint-chip .material-symbols-rounded { font-size: 13px; }
+
+    /* ── Section 2+3 two-col layout ── */
+    .section-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+
+    /* ── Form actions bar ── */
+    .form-actions-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      padding: 16px 22px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--outline-variant);
+    }
+    .actions-left { font-size: 0.8rem; color: var(--secondary); }
+    .actions-right { display: flex; gap: 10px; }
+
+    .btn-draft {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: var(--radius-xl);
+      font-size: 0.8125rem; font-weight: 600;
+      border: 1.5px solid var(--outline-variant);
+      background: transparent; color: var(--on-surface);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-draft:hover { background: var(--surface-high); border-color: var(--primary); color: var(--primary); }
+
+    .btn-publish {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 24px; border-radius: var(--radius-xl);
+      font-size: 0.8125rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), #00a060);
+      color: #fff; border: none; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,109,74,0.3);
+      transition: all 0.2s;
+    }
+    .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,109,74,0.38); }
+    .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Banner ── */
+    #formBanner {
+      display: none; border-radius: var(--radius-md);
+      padding: 12px 18px; font-size: 0.875rem; font-weight: 500;
+      margin-bottom: var(--space-md);
+      animation: fadeDown 0.3s ease;
+    }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
     @media (max-width: 900px) {
-      .main-content { max-width: none; }
-    }
-
-    @media (max-width: 768px) {
-      .form-grid-2,
-      .form-grid-3,
-      form > div[style*="grid-template-columns:1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-      }
-
-      .form-actions {
-        flex-direction: column-reverse;
-        align-items: stretch;
-      }
-
-      .form-actions .btn {
-        width: 100%;
-      }
+      .section-pair, .form-grid-2, .form-grid-3 { grid-template-columns: 1fr !important; }
+      .step-tracker { display: none; }
+      .form-actions-bar { flex-direction: column; gap: 12px; align-items: stretch; }
+      .actions-right { flex-direction: column-reverse; }
     }
   </style>
 </head>
 <body>
   <div class="admin-layout">
-    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation" style="color:#526075;" onmouseenter="this.style.color='#2c3437'" onmouseleave="this.style.color='#526075'">
+    <button class="mobile-nav-trigger" type="button" onclick="toggleAdminSidebar()" aria-label="Open navigation" style="color:#526075;">
       <span class="material-symbols-rounded">menu_open</span>
     </button>
     <button class="mobile-sidebar-backdrop" type="button" onclick="closeAdminSidebar()" aria-label="Close navigation"></button>
@@ -135,38 +250,29 @@
           <span class="material-symbols-rounded">menu_open</span>
         </button>
       </div>
-
       <nav class="sidebar-nav">
         <a href="admin_dashboard.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">dashboard</span>
-          Dashboard
+          <span class="material-symbols-rounded nav-icon">dashboard</span>Dashboard
         </a>
         <a href="admin_exam_creation.html" class="nav-item active">
-          <span class="material-symbols-rounded nav-icon">assignment</span>
-          Exams
+          <span class="material-symbols-rounded nav-icon">assignment</span>Exams
         </a>
         <a href="question_management.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">quiz</span>
-          Questions
+          <span class="material-symbols-rounded nav-icon">quiz</span>Questions
         </a>
         <a href="student_list.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">group</span>
-          Students
+          <span class="material-symbols-rounded nav-icon">group</span>Students
         </a>
         <a href="admin_results_overview.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">bar_chart</span>
-          Results
+          <span class="material-symbols-rounded nav-icon">bar_chart</span>Results
         </a>
       </nav>
-
       <div class="sidebar-footer">
         <a href="#" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">help_outline</span>
-          Support
+          <span class="material-symbols-rounded nav-icon">help_outline</span>Support
         </a>
-        <a href="admin_login.html" class="nav-item">
-          <span class="material-symbols-rounded nav-icon">logout</span>
-          Logout
+        <a href="admin_login.html" class="nav-item" id="logoutLink">
+          <span class="material-symbols-rounded nav-icon">logout</span>Logout
         </a>
       </div>
     </aside>
@@ -175,9 +281,9 @@
     <main class="main-content">
 
       <!-- Top bar -->
-      <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:var(--space-md); border-bottom:1px solid var(--outline-variant); margin-bottom:var(--space-md);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:var(--space-md);border-bottom:1px solid var(--outline-variant);margin-bottom:var(--space-md);">
         <div></div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <button class="icon-btn" title="Notifications"><span class="material-symbols-rounded" style="font-size:20px;">notifications</span></button>
           <button class="icon-btn" title="Settings"><span class="material-symbols-rounded" style="font-size:20px;">settings</span></button>
           <div class="user-avatar">AD</div>
@@ -197,137 +303,181 @@
         <p class="page-subtitle">Define examination parameters, grading schemas, and structural boundaries to construct a new academic assessment.</p>
       </div>
 
-      <!-- Progress indicator -->
-      <div class="progress-indicator"><div class="progress-indicator-fill"></div></div>
+      <!-- Step tracker -->
+      <div class="step-tracker">
+        <div class="step active">
+          <div class="step-bubble">1</div>
+          <div class="step-label">Identity</div>
+        </div>
+        <div class="step idle">
+          <div class="step-bubble">2</div>
+          <div class="step-label">Structure</div>
+        </div>
+        <div class="step idle">
+          <div class="step-bubble">3</div>
+          <div class="step-label">Grading</div>
+        </div>
+        <div class="step idle">
+          <div class="step-bubble">4</div>
+          <div class="step-label">Publish</div>
+        </div>
+      </div>
 
       <!-- Status banner -->
-      <div id="formBanner" style="display:none;margin-bottom:var(--space-md);padding:12px 16px;border-radius:var(--radius-md);font-size:0.875rem;font-weight:500;"></div>
+      <div id="formBanner"></div>
 
       <form id="examForm" novalidate>
 
         <!-- Section 1: Examination Identity -->
         <div class="form-section">
-          <h2 class="section-title">
-            <span class="material-symbols-rounded">title</span>
-            Examination Identity
-          </h2>
-
-          <div class="form-grid-2 mb-md">
-            <div class="field-group">
-              <label class="field-label" for="examName">Exam Name <span style="color:#ef4444;">*</span></label>
-              <input type="text" class="input-standalone" id="examName" name="examName" placeholder="e.g., Advanced Calculus Final 2024" />
+          <div class="section-header">
+            <div class="section-icon-wrap">
+              <span class="material-symbols-rounded">title</span>
             </div>
-            <div class="field-group">
-              <label class="field-label" for="examSubject">Subject <span style="color:#ef4444;">*</span></label>
-              <div class="input-wrap">
-                <span class="material-symbols-rounded icon">book</span>
-                <input type="text" id="examSubject" name="examSubject" placeholder="e.g., Mathematics, Physics…" />
-              </div>
+            <div class="section-header-text">
+              <h2>Examination Identity</h2>
+              <p>Name, subject and scheduling information</p>
             </div>
           </div>
-
-          <div class="form-grid-2">
-            <div class="field-group">
-              <label class="field-label" for="examDesc">Internal Description <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
-              <textarea class="textarea-standalone" id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="scheduledDate">Scheduled Date &amp; Time <span style="color:var(--secondary);font-weight:400;">(Optional — used for code expiry)</span></label>
-              <div class="input-wrap">
-                <span class="material-symbols-rounded icon">event</span>
-                <input type="datetime-local" id="scheduledDate" name="scheduledDate" style="flex:1;background:transparent;border:none;outline:none;padding:12px 0;font-size:0.875rem;color:var(--on-surface);" />
+          <div class="section-body">
+            <div class="form-grid-2" style="margin-bottom:18px;">
+              <div>
+                <div class="float-field">
+                  <input type="text" id="examName" name="examName" placeholder="e.g., Advanced Calculus Final 2024" />
+                  <span class="f-icon material-symbols-rounded">edit</span>
+                  <label for="examName">Exam Name <span style="color:#ef4444;">*</span></label>
+                </div>
               </div>
-              <p class="hint-text">The exam access code expires at this time + duration.</p>
+              <div>
+                <div class="float-field">
+                  <input type="text" id="examSubject" name="examSubject" placeholder="e.g., Mathematics, Physics…" />
+                  <span class="f-icon material-symbols-rounded">book</span>
+                  <label for="examSubject">Subject <span style="color:#ef4444;">*</span></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div>
+                <div class="float-field">
+                  <textarea id="examDesc" name="examDesc" placeholder="Brief notes for administrators..."></textarea>
+                  <span class="f-icon material-symbols-rounded" style="top:20px;transform:none;">notes</span>
+                  <label for="examDesc">Internal Description <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
+                </div>
+              </div>
+              <div>
+                <div class="float-field">
+                  <input type="datetime-local" id="scheduledDate" name="scheduledDate" placeholder=" " />
+                  <span class="f-icon material-symbols-rounded">event</span>
+                  <label for="scheduledDate">Scheduled Date &amp; Time <span style="color:var(--secondary);font-weight:400;">(Optional)</span></label>
+                </div>
+                <div class="hint-chip">
+                  <span class="material-symbols-rounded">info</span>
+                  Access code expires at scheduled time + duration
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Sections 2 & 3 side-by-side -->
+        <div class="section-pair">
 
-        <!-- Sections 2 & 3 row -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
-
-          <!-- Section 2: Mechanics -->
+          <!-- Section 2: Structure -->
           <div class="form-section" style="margin-bottom:0;">
-            <h2 class="section-title">
-              <span class="material-symbols-rounded">settings</span>
-              Mechanics
-            </h2>
-
-            <div class="field-group mb-md">
-              <label class="field-label" for="numQuestions">Number of Questions <span style="color:#ef4444;">*</span></label>
-              <div class="input-wrap">
-                <span class="material-symbols-rounded icon">format_list_numbered</span>
-                <input type="number" id="numQuestions" name="numQuestions" placeholder="e.g., 50" min="1" />
+            <div class="section-header">
+              <div class="section-icon-wrap" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">
+                <span class="material-symbols-rounded">settings</span>
+              </div>
+              <div class="section-header-text">
+                <h2>Exam Structure</h2>
+                <p>Questions count and time parameters</p>
               </div>
             </div>
-
-            <div class="field-group">
-              <label class="field-label" for="timeLimit">Time Limit (Minutes) <span style="color:#ef4444;">*</span></label>
-              <div class="input-wrap">
-                <span class="material-symbols-rounded icon">timer</span>
-                <input type="number" id="timeLimit" name="timeLimit" placeholder="e.g., 120" min="1" />
+            <div class="section-body" style="display:flex;flex-direction:column;gap:18px;">
+              <div class="float-field">
+                <input type="number" id="numQuestions" name="numQuestions" placeholder="50" min="1" />
+                <span class="f-icon material-symbols-rounded">format_list_numbered</span>
+                <label for="numQuestions">Number of Questions <span style="color:#ef4444;">*</span></label>
+              </div>
+              <div class="float-field">
+                <input type="number" id="timeLimit" name="timeLimit" placeholder="120" min="1" />
+                <span class="f-icon material-symbols-rounded">timer</span>
+                <label for="timeLimit">Time Limit (Minutes) <span style="color:#ef4444;">*</span></label>
               </div>
             </div>
           </div>
 
-          <!-- Section 3: Grading Schema -->
+          <!-- Section 3: Grading -->
           <div class="form-section" style="margin-bottom:0;">
-            <h2 class="section-title">
-              <span class="material-symbols-rounded">rule</span>
-              Grading Schema
-            </h2>
-
-            <div class="form-grid-2 mb-md" style="gap:var(--space-sm);">
-              <div class="field-group">
-                <label class="field-label" for="posMarks">Positive Marks (per correct)</label>
-                <div class="mark-input-wrap">
-                  <div class="mark-sign pos">+</div>
-                  <input type="number" id="posMarks" name="posMarks" placeholder="4.0" step="0.5" min="0" value="4" />
-                </div>
+            <div class="section-header">
+              <div class="section-icon-wrap" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+                <span class="material-symbols-rounded">rule</span>
               </div>
-              <div class="field-group">
-                <label class="field-label" for="negMarks">Negative Marks (per incorrect)</label>
-                <div class="mark-input-wrap">
-                  <div class="mark-sign neg">−</div>
-                  <input type="number" id="negMarks" name="negMarks" placeholder="1.0" step="0.5" min="0" value="1" />
-                </div>
-                <p class="hint-text">Leave 0 for no penalty.</p>
+              <div class="section-header-text">
+                <h2>Grading Schema</h2>
+                <p>Marks distribution and pass threshold</p>
               </div>
             </div>
-
-            <div class="field-group">
-              <label class="field-label" for="passingMarks">Minimum Passing Marks <span style="color:#ef4444;">*</span></label>
-              <div class="input-wrap">
-                <span class="material-symbols-rounded icon">flag</span>
-                <input type="number" id="passingMarks" name="passingMarks" placeholder="e.g., 40" min="0" />
+            <div class="section-body" style="display:flex;flex-direction:column;gap:16px;">
+              <div class="form-grid-2" style="gap:12px;">
+                <div>
+                  <div class="mark-label">Positive Marks (per correct) <span style="color:#ef4444;">*</span></div>
+                  <div class="mark-field">
+                    <div class="mark-badge pos">+</div>
+                    <input type="number" id="posMarks" name="posMarks" placeholder="4" step="0.5" min="0" value="4" />
+                    <span style="font-size:0.72rem;color:var(--secondary);">pts</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="mark-label">Negative Marks (per wrong)</div>
+                  <div class="mark-field">
+                    <div class="mark-badge neg">−</div>
+                    <input type="number" id="negMarks" name="negMarks" placeholder="1" step="0.5" min="0" value="1" />
+                    <span style="font-size:0.72rem;color:var(--secondary);">pts</span>
+                  </div>
+                  <div class="hint-chip">
+                    <span class="material-symbols-rounded">info</span>Set 0 for no penalty
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="float-field">
+                  <input type="number" id="passingMarks" name="passingMarks" placeholder="40" min="0" />
+                  <span class="f-icon material-symbols-rounded">flag</span>
+                  <label for="passingMarks">Minimum Passing Marks <span style="color:#ef4444;">*</span></label>
+                </div>
               </div>
             </div>
           </div>
 
         </div>
 
-        <!-- Form actions -->
-        <div class="form-actions">
-          <a href="admin_dashboard.html" class="btn btn-ghost">Cancel</a>
-          <button type="button" class="btn btn-outline" id="saveDraftBtn">
-            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">save</span>
-            Save as Draft
-          </button>
-          <button type="submit" class="btn btn-primary" id="createBtn">
-            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">check_circle</span>
-            Create Exam
-          </button>
+        <!-- Actions bar -->
+        <div class="form-actions-bar">
+          <div class="actions-left">
+            <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle;margin-right:4px;color:var(--primary);">info</span>
+            Fields marked with <strong style="color:#ef4444;">*</strong> are required
+          </div>
+          <div class="actions-right">
+            <a href="admin_dashboard.html" class="btn-draft" style="text-decoration:none;">
+              <span class="material-symbols-rounded" style="font-size:16px;">close</span>Cancel
+            </a>
+            <button type="button" class="btn-draft" id="saveDraftBtn">
+              <span class="material-symbols-rounded" style="font-size:16px;">save</span>Save Draft
+            </button>
+            <button type="submit" class="btn-publish" id="createBtn">
+              <span class="material-symbols-rounded" style="font-size:16px;">rocket_launch</span>Publish Exam
+            </button>
+          </div>
         </div>
 
       </form>
     </main>
-
   </div>
 
   <script src="js/auth.js"></script>
   <script>
     const user = requireAdmin();
-    if (!user) { /* redirected */ }
     if (user) updateUserUI(user);
 
     window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeAdminSidebar(); });
@@ -335,30 +485,54 @@
       el.addEventListener('click', () => { if (window.innerWidth <= 1024) closeAdminSidebar(); });
     });
 
-    // Logout handler
-    document.querySelector('a[href="admin_login.html"]').addEventListener('click', (e) => {
-      e.preventDefault();
-      handleLogout('admin_login.html');
+    document.getElementById('logoutLink').addEventListener('click', (e) => {
+      e.preventDefault(); handleLogout('admin_login.html');
     });
 
     // ── Banner helpers ──
     function showBanner(msg, type = 'error') {
       const el = document.getElementById('formBanner');
-      el.textContent = msg;
+      el.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:6px;">${type==='error'?'error':'check_circle'}</span>${msg}`;
       el.style.display = 'block';
       if (type === 'error') {
         el.style.background = '#fef2f2';
-        el.style.border = '1px solid #fecaca';
+        el.style.border = '1.5px solid #fecaca';
         el.style.color = '#dc2626';
       } else {
         el.style.background = '#f0fdf4';
-        el.style.border = '1px solid #bbf7d0';
+        el.style.border = '1.5px solid #bbf7d0';
         el.style.color = '#15803d';
       }
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // ── Collect + validate form data ──
+    // ── Step tracker updater ──
+    function setStep(n) {
+      document.querySelectorAll('.step').forEach((el, i) => {
+        el.className = 'step ' + (i + 1 < n ? 'done' : i + 1 === n ? 'active' : 'idle');
+      });
+    }
+
+    // Watch inputs to advance steps
+    ['examName','examSubject'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const nameOk = document.getElementById('examName').value.trim();
+        const subOk  = document.getElementById('examSubject').value.trim();
+        setStep(nameOk && subOk ? 2 : 1);
+      });
+    });
+    ['numQuestions','timeLimit'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const q = document.getElementById('numQuestions').value;
+        const t = document.getElementById('timeLimit').value;
+        if (q && t) setStep(3);
+      });
+    });
+    ['posMarks','negMarks','passingMarks'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => setStep(4));
+    });
+
+    // ── Collect + validate ──
     function collectFormData() {
       const title = document.getElementById('examName').value.trim();
       const subject = document.getElementById('examSubject').value.trim();
@@ -372,59 +546,42 @@
       const errors = [];
       if (!title) errors.push('Exam Name is required.');
       if (!subject) errors.push('Subject is required.');
-      if (!numQuestions || numQuestions < 1) errors.push('Number of Questions must be at least 1.');
-      if (!duration || duration < 1) errors.push('Time Limit must be at least 1 minute.');
+      if (!numQuestions || numQuestions < 1) errors.push('Number of Questions must be ≥ 1.');
+      if (!duration || duration < 1) errors.push('Time Limit must be ≥ 1 minute.');
       if (passingMarks < 0) errors.push('Passing Marks cannot be negative.');
-
-      if (errors.length) { showBanner(errors.join(' '), 'error'); return null; }
+      if (errors.length) { showBanner(errors.join(' &nbsp;·&nbsp; '), 'error'); return null; }
 
       return { title, subject, description, duration, totalMarks, passingMarks,
         scheduledDate: document.getElementById('scheduledDate').value || undefined };
     }
 
-    // ── Submit exam to API ──
-    // statusOverride: 'draft' (Save as Draft btn) or 'published' (Create Exam btn)
+    // ── Submit ──
     async function submitExam(statusOverride) {
       const data = collectFormData();
       if (!data) return;
       data.status = statusOverride || 'draft';
 
       const createBtn = document.getElementById('createBtn');
-      const draftBtn = document.getElementById('saveDraftBtn');
-      createBtn.disabled = true;
-      draftBtn.disabled = true;
-      createBtn.textContent = 'Saving…';
+      const draftBtn  = document.getElementById('saveDraftBtn');
+      createBtn.disabled = draftBtn.disabled = true;
+      createBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;animation:spin 1s linear infinite;">sync</span>Saving…';
 
       try {
-        const exam = await apiFetch('/api/exams', {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
-        showBanner(`✓ Exam "${exam.title}" created successfully! Redirecting…`, 'success');
-        setTimeout(() => {
-          window.location.href = 'question_management.html';
-        }, 1500);
+        const exam = await apiFetch('/api/exams', { method: 'POST', body: JSON.stringify(data) });
+        showBanner(`Exam "${exam.title}" created! Redirecting to add questions…`, 'success');
+        setTimeout(() => { window.location.href = 'question_management.html'; }, 1400);
       } catch (err) {
-        showBanner('Error creating exam: ' + err.message, 'error');
-        createBtn.disabled = false;
-        draftBtn.disabled = false;
-        createBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">check_circle</span> Create Exam';
+        showBanner('Error: ' + err.message, 'error');
+        createBtn.disabled = draftBtn.disabled = false;
+        createBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;">rocket_launch</span>Publish Exam';
       }
     }
 
-    document.getElementById('examForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      submitExam('published');   // Create Exam = publish immediately
-    });
-
-    document.getElementById('saveDraftBtn').addEventListener('click', () => {
-      submitExam('draft');       // Save as Draft = draft
-    });
-
-    // Reset border on focus
-    ['examName', 'examSubject'].forEach(id => {
-      document.getElementById(id).addEventListener('focus', e => { e.target.style.borderColor = ''; });
-    });
+    document.getElementById('examForm').addEventListener('submit', (e) => { e.preventDefault(); submitExam('published'); });
+    document.getElementById('saveDraftBtn').addEventListener('click', () => { submitExam('draft'); });
   </script>
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
 </body>
 </html>

@@ -74,6 +74,19 @@ function requireAdmin() {
   return user;
 }
 
+// Guard: require student role (blocks admins from student pages)
+function requireStudent() {
+  const user = requireAuth('student_login.html');
+  if (!user) return null;
+  if (user.role !== 'student') {
+    // Admin is on a student page — clear and redirect to admin login
+    clearAuth();
+    window.location.href = 'admin_login.html';
+    return null;
+  }
+  return user;
+}
+
 // Update user avatar/initials in page
 function updateUserUI(user) {
   if (!user) return;
@@ -91,6 +104,9 @@ function updateUserUI(user) {
 // Logout handler
 function handleLogout(redirectTo = 'student_login.html') {
   clearAuth();
+  // Clear exam session data so the next user on this tab starts clean
+  sessionStorage.removeItem('examResult');
+  sessionStorage.removeItem('activeExam');
   window.location.href = redirectTo;
 }
 
