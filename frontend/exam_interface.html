@@ -52,6 +52,53 @@
     /* ── Question area ── */
     .exam-body { max-width: 740px; margin: 0 auto; padding: var(--space-md) var(--space-lg); padding-bottom: 70px; }
 
+    /* Quick question switcher */
+    .question-grid-panel {
+      position: fixed;
+      left: 14px;
+      top: 96px;
+      width: 60px;
+      background: var(--surface-lowest);
+      border: 1px solid var(--surface-high);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      box-shadow: var(--shadow-card);
+      z-index: 90;
+    }
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .q-grid-btn {
+      width: 100%;
+      height: 24px;
+      border-radius: 8px;
+      border: 1px solid var(--outline-variant);
+      background: var(--surface-lowest);
+      color: var(--on-surface);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      padding: 0;
+    }
+    .q-grid-btn:hover { border-color: var(--primary); }
+    .q-grid-btn.current {
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+    .q-grid-btn.answered {
+      background: #16a34a;
+      border-color: #15803d;
+      color: #fff;
+    }
+    .q-grid-btn.flagged {
+      background: #dc2626;
+      border-color: #b91c1c;
+      color: #fff;
+    }
+
     /* Q progress row */
     .q-progress-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -72,7 +119,7 @@
       transition: color var(--transition); padding: 4px 8px; flex-shrink: 0;
     }
     .flag-btn:hover { color: var(--primary); }
-    .flag-btn.flagged { color: var(--primary); }
+    .flag-btn.flagged { color: #dc2626; }
 
     /* Question card */
     .question-card {
@@ -115,12 +162,13 @@
     }
     .prev-btn {
       display: flex; align-items: center; gap: 4px;
-      font-size: 0.8rem; font-weight: 600; color: var(--secondary);
-      background: none; border: none; cursor: pointer;
-      transition: color var(--transition); padding: 6px 10px; flex-shrink: 0;
+      font-size: 0.8rem; font-weight: 600; color: #fff;
+      background: #2563eb; border: 1px solid #1d4ed8; cursor: pointer;
+      transition: all var(--transition); padding: 6px 10px; flex-shrink: 0;
+      border-radius: var(--radius-md);
     }
-    .prev-btn:hover { color: var(--primary); }
-    .prev-btn:disabled { opacity: 0.3; cursor: default; }
+    .prev-btn:hover { background: #1d4ed8; border-color: #1e40af; }
+    .prev-btn:disabled { opacity: 0.4; cursor: default; }
     .exam-footer .btn { padding: 6px 12px; font-size: 0.8rem; flex-shrink: 0; }
 
     /* Loading / Error state */
@@ -135,6 +183,14 @@
       .exam-body { padding: var(--space-sm); padding-bottom: 80px; }
       .question-card { padding: var(--space-md); }
       .exam-footer { padding: 8px var(--space-sm); gap: 6px; }
+      .question-grid-panel {
+        left: 8px;
+        top: auto;
+        bottom: 88px;
+        width: calc(100% - 16px);
+      }
+      .question-grid { grid-template-columns: repeat(auto-fill, minmax(28px, 1fr)); }
+      .q-grid-btn { height: 28px; }
     }
     @media (max-width: 560px) {
       .exam-footer { flex-direction: row; align-items: center; gap: 4px; }
@@ -143,6 +199,10 @@
   </style>
 </head>
 <body>
+
+  <aside class="question-grid-panel" id="questionGridPanel" aria-label="Question navigator">
+    <div class="question-grid" id="questionGrid"></div>
+  </aside>
 
   <!-- Exam header -->
   <header class="exam-header">
@@ -179,7 +239,7 @@
       Previous Question
     </button>
     <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
-      Save &amp; Next
+      Next
     </button>
   </div>
 
@@ -290,7 +350,37 @@
 
       document.getElementById('prevBtn').disabled = currentQ === 0;
       document.getElementById('nextBtn').textContent =
-        currentQ === questions.length - 1 ? 'Submit Exam' : 'Save & Next';
+        currentQ === questions.length - 1 ? 'Submit Exam' : 'Next';
+
+      renderQuestionGrid();
+    }
+
+    function renderQuestionGrid() {
+      const grid = document.getElementById('questionGrid');
+      if (!grid) return;
+
+      grid.innerHTML = questions.map((q, index) => {
+        const qId = q._id || q.id || index;
+        const isAnswered = answers[qId] !== undefined;
+        const isFlagged = !!flagged[qId];
+        const isCurrent = index === currentQ;
+        return `
+          <button
+            class="q-grid-btn ${isAnswered ? 'answered' : ''} ${isFlagged ? 'flagged' : ''} ${isCurrent ? 'current' : ''}"
+            onclick="jumpToQuestion(${index})"
+            title="Question ${index + 1}"
+            aria-label="Go to question ${index + 1}">
+            ${index + 1}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function jumpToQuestion(index) {
+      if (index < 0 || index >= questions.length) return;
+      currentQ = index;
+      renderQuestion();
+      window.scrollTo(0, 0);
     }
 
     // ── Select an option ──
@@ -303,6 +393,8 @@
       document.querySelectorAll('.option').forEach((el, i) => {
         el.classList.toggle('selected', i === idx);
       });
+
+      renderQuestionGrid();
     }
 
     // ── Flag toggle ──
@@ -316,6 +408,7 @@
         btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">bookmark</span>
           ${flagged[qId] ? 'Flagged' : 'Flag for review'}`;
       }
+      renderQuestionGrid();
     }
 
     // ── Navigation ──
